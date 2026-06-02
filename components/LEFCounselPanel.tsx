@@ -94,7 +94,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
     return (
       <div className="fixed bottom-24 right-4 z-40 select-none md:bottom-6 md:right-6">
         {isOpen ? (
-          <div className="card-2 bg-surface/95 reveal flex h-[460px] max-h-[75vh] w-80 flex-col overflow-hidden rounded-xl border-border shadow-2xl md:w-96">
+          <div className="card-2 bg-surface/95 reveal flex h-[460px] max-h-[75vh] w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-xl border-border shadow-2xl sm:w-80 md:w-96">
             {/* Header */}
             <header className="flex items-center justify-between border-b border-border bg-surface-2 px-4 py-3">
               <div className="flex items-center gap-2">
