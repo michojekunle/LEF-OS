@@ -10,7 +10,7 @@ import {
   getDayNumber,
   type DailyEntry,
 } from '@/lib/utils';
-import { TOTAL_CALENDAR_DAYS } from '@/components/curriculum-data';
+import { TOTAL_CALENDAR_DAYS } from '@/data/curriculum-data';
 import { ProgressBar } from '@/components/ProgressBar';
 
 type Props = {
@@ -19,7 +19,7 @@ type Props = {
   initialEntries: DailyEntry[];
 };
 
-export function StatsClient({ email, initialEntries }: Props) {
+export function StatsClient({ initialEntries }: Props) {
   const entries = useMemo(() => initialEntries, [initialEntries]);
 
   // Overall calculations

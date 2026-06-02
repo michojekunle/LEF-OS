@@ -6,8 +6,14 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  // if "next" is in param, redirect there after sign in
-  const next = searchParams.get('next') ?? '/dashboard';
+
+  // Validate the redirect target — must be a relative path on our own origin.
+  // Guards against open-redirect: //evil.com and newline header injection.
+  const rawNext = searchParams.get('next') ?? '';
+  const next =
+    rawNext.startsWith('/') && !rawNext.startsWith('//') && !/[\r\n]/.test(rawNext)
+      ? rawNext
+      : '/dashboard';
 
   if (code) {
     try {

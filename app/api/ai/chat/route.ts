@@ -23,28 +23,77 @@ export async function POST(request: Request) {
       );
     }
 
-    const { messages, day, topics } = await request.json();
+    const body = await request.json();
+    const { messages, day, topics } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json({ error: 'Missing or invalid messages history' }, { status: 400 });
     }
 
-    // Format chat history for Gemini contents array:
+    // ── Input validation & sanitization ────────────────────────────────────
+    const MAX_MESSAGES = 40; // prevent API cost abuse
+    const MAX_MSG_CHARS = 8_000; // per message
+
+    // Clamp message history length
+    const trimmedMessages = (messages as unknown[]).slice(-MAX_MESSAGES);
+
+    type ChatMessage = { role: 'user' | 'assistant'; content: string };
+
+    // Validate each message shape and content length
+    const safeMsgs: ChatMessage[] = trimmedMessages
+      .filter(
+        (m): m is ChatMessage =>
+          m !== null &&
+          typeof m === 'object' &&
+          'role' in (m as object) &&
+          'content' in (m as object) &&
+          ((m as ChatMessage).role === 'user' || (m as ChatMessage).role === 'assistant') &&
+          typeof (m as ChatMessage).content === 'string',
+      )
+      .map((m) => ({
+        role: m.role,
+        content: String(m.content).slice(0, MAX_MSG_CHARS),
+      }));
+
+    if (safeMsgs.length === 0) {
+      return NextResponse.json({ error: 'No valid messages' }, { status: 400 });
+    }
+
+    // Validate day is a safe integer 1-122 to prevent prompt injection
+    const safeDay: number | null =
+      typeof day === 'number' && Number.isInteger(day) && day >= 1 && day <= 122 ? day : null;
+
+    // Strip non-printable chars and limit length from topic strings
+    function safeTopic(t: unknown): string {
+      if (typeof t !== 'string') return '';
+      return t.replace(/[^\x20-\x7E -￿]/g, '').slice(0, 200);
+    }
+
+    const safeTopics =
+      topics && typeof topics === 'object'
+        ? {
+            law: safeTopic((topics as Record<string, unknown>).law),
+            economics: safeTopic((topics as Record<string, unknown>).economics),
+            finance: safeTopic((topics as Record<string, unknown>).finance),
+          }
+        : null;
+
+    // Format chat history for Gemini contents array
     // Gemini roles: "user" or "model"
-    const contents = messages.map((m: any) => ({
+    const contents = safeMsgs.map((m) => ({
       role: m.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: m.content }],
     }));
 
-    const topicsContext = topics
-      ? `Law: "${topics.law || 'Review buffer'}", Economics: "${topics.economics || 'Review buffer'}", Finance: "${topics.finance || 'Review buffer'}"`
+    const topicsContext = safeTopics
+      ? `Law: "${safeTopics.law || 'Review buffer'}", Economics: "${safeTopics.economics || 'Review buffer'}", Finance: "${safeTopics.finance || 'Review buffer'}"`
       : 'Review day topics';
 
     const systemInstruction = `You are "LEF Counsel", an elite academic advisor, tutor, and accountability partner for the Law · Economics · Finance (LEF) 4-month curriculum.
 Your goal is to help the student understand and apply concepts in Nigerian and global Law, Economics, and Finance.
 
 Context:
-- The student is currently studying Day ${day || 'unknown'} topics.
+- The student is currently studying Day ${safeDay ?? 'unknown'} topics.
 - Active Day topics: ${topicsContext}.
 
 Instructions:

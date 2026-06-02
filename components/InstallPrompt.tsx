@@ -24,13 +24,15 @@ export function InstallPrompt() {
     // Check if already running in standalone mode
     const standalone =
       window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone === true;
+      (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
 
     setIsStandaloneState(standalone);
     if (standalone) return;
 
-    // Detect iOS
-    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    // Detect iOS (MSStream is an IE-only property used to exclude IE11)
+    const ios =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+      !(window as Window & { MSStream?: unknown }).MSStream;
     setIsIOS(ios);
 
     // Event listener for Android/Chrome/Desktop
