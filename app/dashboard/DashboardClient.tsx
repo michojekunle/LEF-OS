@@ -31,6 +31,7 @@ type Props = {
 };
 
 export function DashboardClient({ userId, email, displayName, initialEntries }: Props) {
+  const [selectedDayOffset, setSelectedDayOffset] = useState<0 | -1>(0);
   const [entries, setEntries] = useState<DailyEntry[]>(initialEntries);
   const today = new Date();
   const before = isBeforeCourse(today);
@@ -38,16 +39,23 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
   const rawDay = getDayNumber(today);
   const day = clampDay(rawDay);
 
-  const topics = useMemo(() => getTodayTopics(day), [day]);
-  const monthData = getMonthByCurriculumDay(day);
+  const activeDay = clampDay(rawDay + selectedDayOffset);
+  const activeDate = useMemo(() => {
+    const d = new Date(today);
+    d.setDate(today.getDate() + selectedDayOffset);
+    return d;
+  }, [selectedDayOffset]);
+
+  const topics = useMemo(() => getTodayTopics(activeDay), [activeDay]);
+  const monthData = getMonthByCurriculumDay(activeDay);
   const streak = useMemo(() => getCurrentStreak(entries, today), [entries, today]);
   const completedDays = useMemo(() => getOverallProgress(entries), [entries]);
   const lawDone = useMemo(() => getDomainProgress(entries, 'law'), [entries]);
   const econDone = useMemo(() => getDomainProgress(entries, 'economics'), [entries]);
   const finDone = useMemo(() => getDomainProgress(entries, 'finance'), [entries]);
 
-  const today_iso = isoDate(today);
-  const existing = entries.find((e) => e.entry_date === today_iso) ?? null;
+  const activeIso = isoDate(activeDate);
+  const existing = entries.find((e) => e.entry_date === activeIso) ?? null;
 
   function onSaved(saved: DailyEntry) {
     setEntries((prev) => {
@@ -87,9 +95,27 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
           <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary mb-1">
             Hi {displayName ?? email.split('@')[0]}
           </p>
-          <h1 className="font-display text-3xl md:text-4xl tracking-tight">
-            Day {day} <span className="text-text-muted text-lg">of {TOTAL_CALENDAR_DAYS}</span>
-          </h1>
+          <div className="flex items-center gap-4 flex-wrap mt-1">
+            <h1 className="font-display text-3xl md:text-4xl tracking-tight">
+              Day {activeDay} <span className="text-text-muted text-lg">of {TOTAL_CALENDAR_DAYS}</span>
+            </h1>
+            
+            {/* Today/Yesterday Toggle */}
+            <div className="flex gap-0.5 p-0.5 bg-surface-2 border border-border rounded-lg max-w-[200px]">
+              <button 
+                onClick={() => setSelectedDayOffset(0)}
+                className={`px-3 py-1 text-[11px] font-medium rounded-md transition-all duration-150 ${selectedDayOffset === 0 ? 'bg-surface text-gold shadow-sm border border-border/40' : 'text-text-secondary hover:text-text-primary'}`}
+              >
+                Today
+              </button>
+              <button 
+                onClick={() => setSelectedDayOffset(-1)}
+                className={`px-3 py-1 text-[11px] font-medium rounded-md transition-all duration-150 ${selectedDayOffset === -1 ? 'bg-surface text-gold shadow-sm border border-border/40' : 'text-text-secondary hover:text-text-primary'}`}
+              >
+                Yesterday
+              </button>
+            </div>
+          </div>
           {monthData && (
             <p className="text-sm text-text-secondary mt-1">
               {monthData.monthName} · {monthData.theme}
@@ -102,16 +128,16 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
       {/* TODAY TOPICS */}
       <section className="space-y-3">
         <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
-          Today's study
+          {selectedDayOffset === 0 ? "Today's study" : "Yesterday's study"}
         </h2>
         <div className="grid gap-3 md:grid-cols-3">
-          <DayCard domain="law" day={day} />
-          <DayCard domain="economics" day={day} />
-          <DayCard domain="finance" day={day} />
+          <DayCard domain="law" day={activeDay} />
+          <DayCard domain="economics" day={activeDay} />
+          <DayCard domain="finance" day={activeDay} />
         </div>
         {!topics.law && !topics.economics && !topics.finance && (
           <p className="text-xs text-text-muted italic">
-            Day {day} is in the integration & sharing buffer. Review, write, ship.
+            Day {activeDay} is in the integration & sharing buffer. Review, write, ship.
           </p>
         )}
       </section>
@@ -119,12 +145,14 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
       {/* LOG FORM */}
       <section className="space-y-3">
         <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
-          {existing ? 'Edit today\'s log' : `Day ${day} is waiting. What did you study today?`}
+          {existing 
+            ? `Edit ${selectedDayOffset === 0 ? "today's" : "yesterday's"} log` 
+            : `Day ${activeDay} is waiting. What did you study?`}
         </h2>
         <DailyLogForm
           userId={userId}
-          day={day}
-          date={today}
+          day={activeDay}
+          date={activeDate}
           existing={existing}
           onSaved={onSaved}
         />

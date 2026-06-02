@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Star, Send, Loader2 } from 'lucide-react';
-import { supabaseBrowser } from '@/lib/supabase';
+import { useEffect, useState, useTransition } from 'react';
+import { Star, Send, Loader2, CheckCheck } from 'lucide-react';
 import type { DailyEntry } from '@/lib/utils';
 import { isoDate } from '@/lib/utils';
+import { upsertEntryAction } from '@/app/actions/entries';
+import { useToast } from './Toast';
 
 type Props = {
   userId: string;
@@ -14,12 +15,15 @@ type Props = {
   onSaved: (entry: DailyEntry) => void;
 };
 
-const MAX_JOURNAL = 500;
+const MAX_JOURNAL = 4000;
 const MAX_INSIGHT = 280;
 
-export function DailyLogForm({ userId, day, date, existing, onSaved }: Props) {
+export function DailyLogForm({ day, date, existing, onSaved }: Props) {
   const [studied, setStudied] = useState(
-    Boolean(existing && (existing.law_completed || existing.economics_completed || existing.finance_completed)),
+    Boolean(
+      existing &&
+        (existing.law_completed || existing.economics_completed || existing.finance_completed),
+    ),
   );
   const [law, setLaw] = useState(existing?.law_completed ?? false);
   const [econ, setEcon] = useState(existing?.economics_completed ?? false);
@@ -28,9 +32,10 @@ export function DailyLogForm({ userId, day, date, existing, onSaved }: Props) {
   const [journal, setJournal] = useState(existing?.journal_text ?? '');
   const [insight, setInsight] = useState(existing?.share_insight ?? '');
   const [isPublic, setIsPublic] = useState(existing?.is_public ?? false);
-  const [saving, setSaving] = useState(false);
+  const [pending, start] = useTransition();
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     if (!saved) return;
@@ -38,14 +43,18 @@ export function DailyLogForm({ userId, day, date, existing, onSaved }: Props) {
     return () => clearTimeout(t);
   }, [saved]);
 
-  async function handleSubmit(e: React.FormEvent) {
+  function markAll() {
+    setStudied(true);
+    setLaw(true);
+    setEcon(true);
+    setFin(true);
+  }
+
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSaving(true);
     setError(null);
-    try {
-      const sb = supabaseBrowser();
-      const payload = {
-        user_id: userId,
+    start(async () => {
+      const res = await upsertEntryAction({
         entry_date: isoDate(date),
         day_number: day,
         law_completed: studied && law,
@@ -55,22 +64,16 @@ export function DailyLogForm({ userId, day, date, existing, onSaved }: Props) {
         journal_text: journal.trim() || null,
         share_insight: insight.trim() || null,
         is_public: isPublic && insight.trim().length > 0,
-        updated_at: new Date().toISOString(),
-      };
-      const { data, error } = await sb
-        .from('daily_entries')
-        .upsert(payload, { onConflict: 'user_id,entry_date' })
-        .select()
-        .single();
-      if (error) throw error;
-      onSaved(data as DailyEntry);
+      });
+      if (!res.ok) {
+        setError(res.error);
+        toast.error(res.error);
+        return;
+      }
+      onSaved(res.data);
       setSaved(true);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to save entry';
-      setError(msg);
-    } finally {
-      setSaving(false);
-    }
+      toast.success(`Day ${day} logged`);
+    });
   }
 
   return (
@@ -179,8 +182,8 @@ export function DailyLogForm({ userId, day, date, existing, onSaved }: Props) {
         >
           ✓ Saved
         </span>
-        <button type="submit" disabled={saving} className="btn btn-primary">
-          {saving ? (
+        <button type="submit" disabled={pending} className="btn btn-primary">
+          {pending ? (
             <>
               <Loader2 size={14} className="animate-spin" /> Saving
             </>
