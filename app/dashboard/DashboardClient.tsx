@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Flame, CheckCircle2, Calendar } from 'lucide-react';
+import { useMemo, useState, useEffect } from 'react';
+import { Flame, CheckCircle2, Calendar, Bell, X } from 'lucide-react';
+import Link from 'next/link';
 import {
   getDayNumber,
   getTodayTopics,
@@ -33,6 +34,19 @@ type Props = {
 export function DashboardClient({ userId, email, displayName, initialEntries }: Props) {
   const [selectedDayOffset, setSelectedDayOffset] = useState<0 | -1>(0);
   const [entries, setEntries] = useState<DailyEntry[]>(initialEntries);
+  const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      if (Notification.permission === 'default') {
+        const dismissed = localStorage.getItem('dismissed-push-prompt');
+        if (!dismissed) {
+          setShowNotificationPrompt(true);
+        }
+      }
+    }
+  }, []);
+
   const today = new Date();
   const before = isBeforeCourse(today);
   const after = isAfterCourse(today);
@@ -89,6 +103,29 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
 
   return (
     <div className="mx-auto max-w-content px-5 md:px-6 py-8 space-y-8">
+      {showNotificationPrompt && (
+        <div className="card-2 px-4 py-3 bg-gold/5 border-gold/20 text-xs flex items-center justify-between gap-4 animate-fade-in reveal">
+          <div className="flex items-center gap-2 text-text-primary">
+            <Bell size={14} className="text-gold shrink-0 animate-bounce" />
+            <span>Stay on track: Enable device push notifications to receive study reminders.</span>
+          </div>
+          <div className="flex items-center gap-4 shrink-0">
+            <Link href="/settings" className="text-gold font-semibold hover:underline">
+              Configure Alerts
+            </Link>
+            <button
+              onClick={() => {
+                localStorage.setItem('dismissed-push-prompt', 'true');
+                setShowNotificationPrompt(false);
+              }}
+              className="text-text-muted hover:text-text-primary p-0.5"
+              aria-label="Dismiss notification prompt"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+      )}
       {/* HEADER */}
       <header className="flex items-start justify-between gap-4 flex-wrap">
         <div>
