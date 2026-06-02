@@ -213,7 +213,7 @@ export function ChatInput({ input, loading, onChange, onSubmit }: InputProps) {
       <button
         onClick={onSubmit}
         disabled={loading || !input.trim()}
-        className="btn btn-primary text-xs p-1.5 w-8 h-8 flex items-center justify-center shrink-0"
+        className="w-8 h-8 rounded-md bg-text-primary text-bg hover:bg-gold hover:text-bg flex items-center justify-center transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
         aria-label="Send message"
       >
         <Send size={12} />
