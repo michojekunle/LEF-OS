@@ -40,7 +40,7 @@ export function RoadmapView() {
       <div
         role="tablist"
         aria-label="Syllabus months"
-        className="card p-1.5 flex gap-1 overflow-x-auto"
+        className="card p-1.5 flex gap-1 overflow-x-auto md:grid md:grid-cols-4 md:overflow-x-visible"
       >
         {CURRICULUM.map((m) => (
           <button
@@ -53,7 +53,7 @@ export function RoadmapView() {
               setMonth(m.month);
               update({ month: m.month });
             }}
-            className={`shrink-0 px-3 py-2 rounded-md text-xs md:text-sm transition-all ${
+            className={`shrink-0 md:shrink px-3 py-2 rounded-md text-xs md:text-sm text-center transition-all ${
               month === m.month
                 ? 'bg-surface-2 text-text-primary'
                 : 'text-text-secondary hover:text-text-primary'
