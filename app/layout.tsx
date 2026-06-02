@@ -26,6 +26,15 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL
+      ? process.env.NEXT_PUBLIC_SITE_URL.startsWith('http')
+        ? process.env.NEXT_PUBLIC_SITE_URL
+        : `https://${process.env.NEXT_PUBLIC_SITE_URL}`
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000',
+  ),
   title: "Law · Economics · Finance — A Founder's 4-Month Curriculum",
   description:
     'A 4-month personal learning OS for studying Nigerian and global Law, Economics, and Finance. Learned in public.',
@@ -60,6 +69,7 @@ export const metadata: Metadata = {
     description: "A Founder's 4-Month Curriculum. Learned in public.",
     images: ['/og-image.png'],
   },
+  
 };
 
 export const viewport: Viewport = {
