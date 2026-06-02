@@ -198,7 +198,7 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
+  disable: false, // Temporarily set to false so you can test Web Push locally
   importScripts: ['/sw-push.js'],
   fallbacks: {
     // Served when both network and cache fail for a navigation request
