@@ -206,12 +206,18 @@ export function SettingsClient({
           throw new Error('Web Push is currently missing environment keys on this server.');
         }
 
-        // 3. Register push subscription via service worker
-        const existingRegistration = await navigator.serviceWorker.getRegistration();
+        // 3. Ensure a Service Worker is registered
+        let existingRegistration = await navigator.serviceWorker.getRegistration();
         if (!existingRegistration) {
-          throw new Error(
-            'No active Service Worker found. Push notifications may not work in local development mode without a valid PWA setup. Try refreshing.',
-          );
+          try {
+            // next-pwa sometimes fails to auto-inject in Next.js 14+ App Router.
+            // We manually register the generated sw.js here if it's missing.
+            await navigator.serviceWorker.register('/sw.js');
+          } catch (e) {
+            throw new Error(
+              'Failed to register Service Worker. If you are on localhost, ensure your next.config.js PWA settings allow development mode.',
+            );
+          }
         }
 
         const registration = await navigator.serviceWorker.ready;
