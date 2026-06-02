@@ -7,6 +7,7 @@ import { MobileTabBar } from '@/components/MobileTabBar';
 import { ToastProvider } from '@/components/Toast';
 import { CommandPaletteProvider } from '@/components/CommandPalette';
 import { InstallPrompt } from '@/components/InstallPrompt';
+import { ThemeProvider } from '@/components/ThemeProvider';
 import { hasSupabaseConfig } from '@/lib/supabase';
 import { supabaseServer } from '@/lib/supabase-server';
 import { getDayNumber, clampDay } from '@/lib/utils';
@@ -25,7 +26,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Law · Economics · Finance — A Founder\'s 4-Month Curriculum',
+  title: "Law · Economics · Finance — A Founder's 4-Month Curriculum",
   description:
     'A 4-month personal learning OS for studying Nigerian and global Law, Economics, and Finance. Learned in public.',
   manifest: '/manifest.json',
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Law · Economics · Finance',
-    description: 'A Founder\'s 4-Month Curriculum. Learned in public.',
+    description: "A Founder's 4-Month Curriculum. Learned in public.",
     type: 'website',
     images: [
       {
@@ -56,18 +57,24 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Law · Economics · Finance',
-    description: 'A Founder\'s 4-Month Curriculum. Learned in public.',
+    description: "A Founder's 4-Month Curriculum. Learned in public.",
     images: ['/og-image.png'],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0D0D0D',
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#0D0D0D' },
+    { media: '(prefers-color-scheme: light)', color: '#FFFFFF' },
+  ],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
   viewportFit: 'cover',
 };
+
+// Inline script: sets data-theme on <html> before first paint to avoid flash
+const themeScript = `(function(){try{var t=localStorage.getItem('lef-theme');var resolved=t==='light'?'light':t==='dark'?'dark':window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',resolved);}catch(e){}})();`;
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   let activeDay = 1;
@@ -82,41 +89,46 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         activeDay = clampDay(getDayNumber(new Date()));
       }
     } catch {
-      // Ignored
+      // Ignored — Supabase may not be configured in dev
     }
   }
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Course',
-    'name': 'Law · Economics · Finance',
-    'description': "A 4-month personal learning OS for studying Nigerian and global Law, Economics, and Finance. Learned in public.",
-    'provider': {
+    name: 'Law · Economics · Finance',
+    description:
+      'A 4-month personal learning OS for studying Nigerian and global Law, Economics, and Finance. Learned in public.',
+    provider: {
       '@type': 'Organization',
-      'name': 'LEF OS',
-      'sameAs': 'https://github.com/michojekunle/lef-os'
-    }
+      name: 'LEF OS',
+      sameAs: 'https://github.com/michojekunle/lef-os',
+    },
   };
 
   return (
-    <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${dmSans.variable}`} suppressHydrationWarning>
       <head>
+        {/* Prevent flash of wrong theme — must run synchronously before paint */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body>
-        <ToastProvider>
-          <CommandPaletteProvider>
-            <Nav />
-            <main className="min-h-[calc(100dvh-120px)] pb-24 md:pb-12">{children}</main>
-            <Footer />
-            <MobileTabBar />
-            <InstallPrompt />
-            <LEFCounselPanel day={activeDay} isFloating={true} userId={userId} />
-          </CommandPaletteProvider>
-        </ToastProvider>
+        <ThemeProvider>
+          <ToastProvider>
+            <CommandPaletteProvider>
+              <Nav />
+              <main className="min-h-[calc(100dvh-120px)] pb-24 md:pb-12">{children}</main>
+              <Footer />
+              <MobileTabBar />
+              <InstallPrompt />
+              <LEFCounselPanel day={activeDay} isFloating={true} userId={userId} />
+            </CommandPaletteProvider>
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
