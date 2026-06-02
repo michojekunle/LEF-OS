@@ -5,7 +5,12 @@ import React from 'react';
 // Shimmer card skeleton matching Dashboard today's grid
 export function CardGridSkeleton() {
   return (
-    <div className="grid gap-3 md:grid-cols-3 w-full">
+    <div
+      role="status"
+      aria-label="Loading curriculum days"
+      aria-busy="true"
+      className="grid gap-3 md:grid-cols-3 w-full"
+    >
       {[1, 2, 3].map((i) => (
         <div key={i} className="card p-5 flex flex-col gap-3 min-h-[160px] animate-pulse">
           {/* Badge skeleton */}
@@ -26,7 +31,12 @@ export function CardGridSkeleton() {
 // Shimmer list skeleton matching Journal entries
 export function ListSkeleton() {
   return (
-    <div className="space-y-3 w-full">
+    <div
+      role="status"
+      aria-label="Loading journal entries"
+      aria-busy="true"
+      className="space-y-3 w-full"
+    >
       {[1, 2, 3].map((i) => (
         <div key={i} className="card p-5 flex flex-col gap-3.5 animate-pulse">
           {/* Header row skeleton */}
@@ -57,7 +67,12 @@ export function ListSkeleton() {
 // Shimmer skeleton matching Stats views
 export function StatsSkeleton() {
   return (
-    <div className="space-y-6 w-full animate-pulse">
+    <div
+      role="status"
+      aria-label="Loading statistics details"
+      aria-busy="true"
+      className="space-y-6 w-full animate-pulse"
+    >
       {/* Upper grid */}
       <div className="grid gap-3 sm:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (

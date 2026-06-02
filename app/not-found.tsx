@@ -5,7 +5,7 @@ import { Home, ArrowRight, HelpCircle } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-[75dvh] flex flex-col items-center justify-center px-6 py-12 text-center select-none">
+    <div className="min-h-[75dvh] flex flex-col items-center justify-center px-6 py-12 text-center">
       <div className="space-y-6 max-w-md">
         {/* Error code badge */}
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-gold/30 bg-gold/5 text-gold text-[10px] uppercase tracking-wider font-semibold">
