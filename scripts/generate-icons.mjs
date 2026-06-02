@@ -11,33 +11,9 @@ const FG = [0xc8, 0xa9, 0x6e];
 
 // Tiny 5x7 bitmap font for LEF.
 const FONT = {
-  L: [
-    '#....',
-    '#....',
-    '#....',
-    '#....',
-    '#....',
-    '#....',
-    '#####',
-  ],
-  E: [
-    '#####',
-    '#....',
-    '#....',
-    '####.',
-    '#....',
-    '#....',
-    '#####',
-  ],
-  F: [
-    '#####',
-    '#....',
-    '#....',
-    '####.',
-    '#....',
-    '#....',
-    '#....',
-  ],
+  L: ['#....', '#....', '#....', '#....', '#....', '#....', '#####'],
+  E: ['#####', '#....', '#....', '####.', '#....', '#....', '#####'],
+  F: ['#####', '#....', '#....', '####.', '#....', '#....', '#....'],
 };
 
 function makeIconPixels(size) {
@@ -131,8 +107,8 @@ function encodePNG(size, pixels) {
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(size, 0);
   ihdr.writeUInt32BE(size, 4);
-  ihdr[8] = 8;  // bit depth
-  ihdr[9] = 2;  // RGB
+  ihdr[8] = 8; // bit depth
+  ihdr[9] = 2; // RGB
   ihdr[10] = 0; // compression
   ihdr[11] = 0; // filter
   ihdr[12] = 0; // interlace

@@ -8,6 +8,8 @@ import { ToastProvider } from '@/components/Toast';
 import { CommandPaletteProvider } from '@/components/CommandPalette';
 import { InstallPrompt } from '@/components/InstallPrompt';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { TourShell } from '@/components/TourShell';
+import { OfflineBanner } from '@/components/OfflineBanner';
 import { hasSupabaseConfig } from '@/lib/supabase';
 import { supabaseServer } from '@/lib/supabase-server';
 import { getDayNumber, clampDay } from '@/lib/utils';
@@ -127,16 +129,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <ThemeProvider>
-          <ToastProvider>
-            <CommandPaletteProvider>
-              <Nav />
-              <main className="min-h-[calc(100dvh-120px)] pb-24 md:pb-12">{children}</main>
-              <Footer />
-              <MobileTabBar />
-              <InstallPrompt />
-              <LEFCounselPanel day={activeDay} isFloating={true} userId={userId} />
-            </CommandPaletteProvider>
-          </ToastProvider>
+          <TourShell>
+            <ToastProvider>
+              <CommandPaletteProvider>
+                <OfflineBanner />
+                <Nav />
+                <main className="min-h-[calc(100dvh-120px)] pb-24 md:pb-12">{children}</main>
+                <Footer />
+                <MobileTabBar />
+                <InstallPrompt />
+                <LEFCounselPanel day={activeDay} isFloating={true} userId={userId} />
+              </CommandPaletteProvider>
+            </ToastProvider>
+          </TourShell>
         </ThemeProvider>
       </body>
     </html>
