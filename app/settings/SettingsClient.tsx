@@ -207,13 +207,13 @@ export function SettingsClient({
         }
 
         // 3. Ensure a Service Worker is registered
-        let existingRegistration = await navigator.serviceWorker.getRegistration();
+        const existingRegistration = await navigator.serviceWorker.getRegistration();
         if (!existingRegistration) {
           try {
             // next-pwa sometimes fails to auto-inject in Next.js 14+ App Router.
             // We manually register the generated sw.js here if it's missing.
             await navigator.serviceWorker.register('/sw.js');
-          } catch (e) {
+          } catch {
             throw new Error(
               'Failed to register Service Worker. If you are on localhost, ensure your next.config.js PWA settings allow development mode.',
             );
