@@ -89,8 +89,26 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
   const next = day < TOTAL_CALENDAR_DAYS ? day + 1 : null;
   const isThu = isThursday(date);
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CourseInstance',
+    'name': `Day ${day} Curriculum Study Log`,
+    'description': `Study details for Day ${day} curriculum covering: Law (${
+      metas.law?.topic || 'Review'
+    }), Economics (${metas.economics?.topic || 'Review'}), Finance (${metas.finance?.topic || 'Review'}).`,
+    'courseMode': 'Online/Self-paced',
+    'instructor': {
+      '@type': 'Organization',
+      'name': 'LEF OS'
+    }
+  };
+
   return (
     <div className="mx-auto max-w-content px-5 md:px-6 py-8 space-y-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className="space-y-3">
         <Link
           href="/roadmap"
@@ -202,27 +220,27 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
       )}
 
       {userId ? (
-        <div className="space-y-8">
-          <DayLogPanel
-            userId={userId}
-            day={day}
-            date={date}
-            existing={existing}
-            initialNotes={notes}
-            initialQuestions={questions}
-          />
-          <LEFCounselPanel
-            day={day}
-            topics={{
-              law: metas.law?.topic,
-              economics: metas.economics?.topic,
-              finance: metas.finance?.topic,
-            }}
-          />
-        </div>
+        <DayLogPanel
+          userId={userId}
+          day={day}
+          date={date}
+          existing={existing}
+          initialNotes={notes}
+          initialQuestions={questions}
+        />
       ) : (
         <SignInPrompt day={day} />
       )}
+
+      <LEFCounselPanel
+        day={day}
+        userId={userId || undefined}
+        topics={{
+          law: metas.law?.topic,
+          economics: metas.economics?.topic,
+          finance: metas.finance?.topic,
+        }}
+      />
 
       <nav className="flex items-center justify-between border-t border-border/60 pt-6">
         {prev ? (

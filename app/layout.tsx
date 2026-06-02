@@ -44,11 +44,20 @@ export const metadata: Metadata = {
     title: 'Law · Economics · Finance',
     description: 'A Founder\'s 4-Month Curriculum. Learned in public.',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 1200,
+        alt: 'Law Economics Finance Curriculum',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Law · Economics · Finance',
     description: 'A Founder\'s 4-Month Curriculum. Learned in public.',
+    images: ['/og-image.png'],
   },
 };
 
@@ -61,24 +70,42 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  let isAuthed = false;
   let activeDay = 1;
+  let userId: string | undefined = undefined;
 
   if (hasSupabaseConfig()) {
     try {
       const sb = await supabaseServer();
       const { data } = await sb.auth.getUser();
-      isAuthed = Boolean(data.user);
       if (data.user) {
+        userId = data.user.id;
         activeDay = clampDay(getDayNumber(new Date()));
       }
     } catch {
-      isAuthed = false;
+      // Ignored
     }
   }
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    'name': 'Law · Economics · Finance',
+    'description': "A 4-month personal learning OS for studying Nigerian and global Law, Economics, and Finance. Learned in public.",
+    'provider': {
+      '@type': 'Organization',
+      'name': 'LEF OS',
+      'sameAs': 'https://github.com/michojekunle/LEF'
+    }
+  };
+
   return (
     <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body>
         <ToastProvider>
           <CommandPaletteProvider>
@@ -87,9 +114,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Footer />
             <MobileTabBar />
             <InstallPrompt />
-            {isAuthed && (
-              <LEFCounselPanel day={activeDay} isFloating={true} />
-            )}
+            <LEFCounselPanel day={activeDay} isFloating={true} userId={userId} />
           </CommandPaletteProvider>
         </ToastProvider>
       </body>

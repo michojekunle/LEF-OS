@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, X, ChevronDown, ChevronUp, RefreshCw, MessageSquare } from 'lucide-react';
+import Link from 'next/link';
+import { MarkdownText } from './MarkdownText';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -16,9 +18,10 @@ type Props = {
     finance?: string;
   };
   isFloating?: boolean;
+  userId?: string;
 };
 
-export function LEFCounselPanel({ day, topics, isFloating = false }: Props) {
+export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,9 +30,13 @@ export function LEFCounselPanel({ day, topics, isFloating = false }: Props) {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom when messages list changes
-  useEffect(() => {
+  // Scroll to bottom helper
+  const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
   }, [messages, loading]);
 
   const starterPills = [
@@ -39,7 +46,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false }: Props) {
   ];
 
   async function handleSend(textToSend: string) {
-    if (!textToSend.trim() || loading) return;
+    if (!textToSend.trim() || loading || !userId) return;
 
     setError(null);
     const userMessage: Message = { role: 'user', content: textToSend };
@@ -80,7 +87,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false }: Props) {
   // --- FLOATING WIDGET TRIGGER ---
   if (isFloating) {
     return (
-      <div className="fixed bottom-20 md:bottom-6 right-4 z-40 select-none">
+      <div className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-40 select-none">
         {isOpen ? (
           <div className="w-80 md:w-96 h-[460px] max-h-[75vh] card-2 bg-surface/95 border-border shadow-2xl rounded-xl flex flex-col overflow-hidden reveal">
             {/* Header */}
@@ -90,13 +97,15 @@ export function LEFCounselPanel({ day, topics, isFloating = false }: Props) {
                 <span className="text-xs font-semibold text-text-primary uppercase tracking-wider">LEF Counsel</span>
               </div>
               <div className="flex items-center gap-3">
-                <button
-                  onClick={handleReset}
-                  className="text-text-muted hover:text-text-secondary transition-colors"
-                  title="Reset conversation"
-                >
-                  <RefreshCw size={11} />
-                </button>
+                {userId && (
+                  <button
+                    onClick={handleReset}
+                    className="text-text-muted hover:text-text-secondary transition-colors"
+                    title="Reset conversation"
+                  >
+                    <RefreshCw size={11} />
+                  </button>
+                )}
                 <button
                   onClick={() => setIsOpen(false)}
                   className="text-text-muted hover:text-text-primary p-0.5"
@@ -114,24 +123,39 @@ export function LEFCounselPanel({ day, topics, isFloating = false }: Props) {
               error={error}
               onPillClick={handleSend}
               messagesEndRef={messagesEndRef}
+              userId={userId}
+              onWordAdded={scrollToBottom}
             />
 
             {/* Input Bar */}
-            <ChatInput
-              input={input}
-              loading={loading}
-              onChange={setInput}
-              onSubmit={() => handleSend(input)}
-            />
+            {userId && (
+              <ChatInput
+                input={input}
+                loading={loading}
+                onChange={setInput}
+                onSubmit={() => handleSend(input)}
+              />
+            )}
           </div>
         ) : (
-          <button
-            onClick={() => setIsOpen(true)}
-            className="w-11 h-11 md:w-12 md:h-12 bg-text-primary text-bg hover:bg-gold hover:text-bg font-semibold rounded-full shadow-2xl flex items-center justify-center transition-all duration-200"
-            title="Chat with LEF Counsel"
-          >
-            <Sparkles size={18} className="animate-pulse" />
-          </button>
+          <div className="relative group">
+            {/* Tooltip */}
+            <div className="absolute bottom-full right-0 mb-2 hidden group-hover:block pointer-events-none whitespace-nowrap bg-surface-2 border border-border text-gold text-[10px] uppercase tracking-wider px-2.5 py-1 rounded shadow-lg">
+              Ask LEF Counsel
+            </div>
+
+            {/* Pulsing glow */}
+            <div className="absolute inset-0 rounded-full bg-gold/25 animate-ping pointer-events-none" />
+
+            <button
+              onClick={() => setIsOpen(true)}
+              className="relative w-11 h-11 md:w-12 md:h-12 bg-surface border border-gold text-gold hover:bg-gold hover:text-bg font-semibold rounded-full shadow-2xl flex items-center justify-center transition-all duration-200"
+              title="Chat with LEF Counsel"
+              aria-label="Open LEF Counsel chat"
+            >
+              <Sparkles size={18} className="animate-pulse" />
+            </button>
+          </div>
         )}
       </div>
     );
@@ -167,13 +191,17 @@ export function LEFCounselPanel({ day, topics, isFloating = false }: Props) {
             error={error}
             onPillClick={handleSend}
             messagesEndRef={messagesEndRef}
+            userId={userId}
+            onWordAdded={scrollToBottom}
           />
-          <ChatInput
-            input={input}
-            loading={loading}
-            onChange={setInput}
-            onSubmit={() => handleSend(input)}
-          />
+          {userId && (
+            <ChatInput
+              input={input}
+              loading={loading}
+              onChange={setInput}
+              onSubmit={() => handleSend(input)}
+            />
+          )}
         </div>
       )}
     </section>
@@ -182,6 +210,48 @@ export function LEFCounselPanel({ day, topics, isFloating = false }: Props) {
 
 // ── Shared Subcomponents ───────────────────────────────────────────────────
 
+type AssistantMessageProps = {
+  content: string;
+  isLatest: boolean;
+  onWordAdded?: () => void;
+};
+
+function AssistantMessage({ content, isLatest, onWordAdded }: AssistantMessageProps) {
+  const [displayedText, setDisplayedText] = useState(isLatest ? '' : content);
+
+  useEffect(() => {
+    if (!isLatest) {
+      setDisplayedText(content);
+      return;
+    }
+
+    const words = content.split(' ');
+    let currentWordIndex = 0;
+    setDisplayedText('');
+
+    const interval = setInterval(() => {
+      if (currentWordIndex >= words.length) {
+        clearInterval(interval);
+        return;
+      }
+
+      setDisplayedText(() => {
+        const nextWords = words.slice(0, currentWordIndex + 1).join(' ');
+        currentWordIndex++;
+        return nextWords;
+      });
+
+      if (onWordAdded) {
+        onWordAdded();
+      }
+    }, 20); // 20ms reveal speed
+
+    return () => clearInterval(interval);
+  }, [content, isLatest, onWordAdded]);
+
+  return <MarkdownText text={displayedText} />;
+}
+
 type BodyProps = {
   messages: Message[];
   starterPills: { label: string; query: string }[];
@@ -189,7 +259,31 @@ type BodyProps = {
   error: string | null;
   onPillClick: (q: string) => void;
   messagesEndRef: React.RefObject<HTMLDivElement>;
+  userId?: string;
+  onWordAdded?: () => void;
 };
+
+function GuestOnboarding() {
+  return (
+    <div className="h-full flex flex-col justify-center items-center text-center p-6 space-y-4 my-auto">
+      <div className="w-12 h-12 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center">
+        <Sparkles size={20} className="text-gold" />
+      </div>
+      <div>
+        <h3 className="text-xs font-semibold text-text-primary uppercase tracking-wider">Consult LEF Counsel</h3>
+        <p className="text-[11px] text-text-secondary mt-2 max-w-[220px] leading-relaxed">
+          Sign in to consult LEF Counsel, get personalized study help, practice with interactive quizzes, and save your academic notes.
+        </p>
+      </div>
+      <Link
+        href="/login"
+        className="w-full btn btn-primary text-xs py-2 mt-4 font-semibold text-center"
+      >
+        Sign In to Start
+      </Link>
+    </div>
+  );
+}
 
 function ChatBody({
   messages,
@@ -198,7 +292,13 @@ function ChatBody({
   error,
   onPillClick,
   messagesEndRef,
+  userId,
+  onWordAdded,
 }: BodyProps) {
+  if (!userId) {
+    return <GuestOnboarding />;
+  }
+
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4">
       {messages.length === 0 ? (
@@ -212,7 +312,7 @@ function ChatBody({
               Ask questions, request examples, or take a quick quiz based on your curriculum.
             </p>
           </div>
-          
+
           <div className="flex flex-col gap-2 w-full pt-2">
             {starterPills.map((pill) => (
               <button
@@ -237,13 +337,21 @@ function ChatBody({
               {m.role === 'user' ? 'You' : 'LEF Counsel'}
             </span>
             <div
-              className={`max-w-[85%] rounded-lg p-3 text-xs leading-relaxed whitespace-pre-wrap ${
+              className={`max-w-[85%] rounded-lg p-3 text-xs leading-relaxed ${
                 m.role === 'user'
-                  ? 'bg-gold/10 border border-gold/20 text-text-primary'
+                  ? 'bg-gold/10 border border-gold/20 text-text-primary whitespace-pre-wrap'
                   : 'bg-surface-2 border border-border text-text-primary'
               }`}
             >
-              {m.content}
+              {m.role === 'user' ? (
+                m.content
+              ) : (
+                <AssistantMessage
+                  content={m.content}
+                  isLatest={idx === messages.length - 1}
+                  onWordAdded={onWordAdded}
+                />
+              )}
             </div>
           </div>
         ))
