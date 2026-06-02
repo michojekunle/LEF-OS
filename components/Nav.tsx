@@ -3,14 +3,19 @@ import { hasSupabaseConfig } from '@/lib/supabase';
 import { supabaseServer } from '@/lib/supabase-server';
 import { SignOutButton } from './SignOutButton';
 import { NavLinks, NavTrigger } from './NavLinks';
+import { NotificationCenter } from './NotificationCenter';
 
 export async function Nav() {
   let isAuthed = false;
+  let userId = '';
   if (hasSupabaseConfig()) {
     try {
       const sb = await supabaseServer();
       const { data } = await sb.auth.getUser();
       isAuthed = Boolean(data.user);
+      if (data.user) {
+        userId = data.user.id;
+      }
     } catch {
       isAuthed = false;
     }
@@ -28,6 +33,7 @@ export async function Nav() {
         <NavLinks />
         <div className="flex items-center gap-1.5 md:gap-2">
           <NavTrigger />
+          {isAuthed && <NotificationCenter userId={userId} />}
           {isAuthed ? (
             <SignOutButton />
           ) : (
