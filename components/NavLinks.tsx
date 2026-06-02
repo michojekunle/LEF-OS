@@ -15,7 +15,7 @@ const LINKS = [
 export function NavLinks() {
   const pathname = usePathname();
   return (
-    <ul className="hidden md:flex items-center gap-0.5 lg:gap-1 text-xs lg:text-sm">
+    <ul className="hidden items-center gap-0.5 text-xs md:flex lg:gap-1 lg:text-sm">
       {LINKS.map((l) => {
         const active = pathname === l.href || pathname.startsWith(`${l.href}/`);
         return (
@@ -23,10 +23,10 @@ export function NavLinks() {
             <Link
               href={l.href}
               aria-current={active ? 'page' : undefined}
-              className={`px-2 lg:px-3 py-1 lg:py-1.5 rounded-md transition-colors ${
+              className={`rounded-md px-2 py-1 transition-colors lg:px-3 lg:py-1.5 ${
                 active
-                  ? 'text-gold bg-surface-2/60'
-                  : 'text-text-secondary hover:text-text-primary hover:bg-surface-2/60'
+                  ? 'bg-surface-2/60 text-gold'
+                  : 'hover:bg-surface-2/60 text-text-secondary hover:text-text-primary'
               }`}
             >
               {l.label}

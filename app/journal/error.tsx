@@ -7,6 +7,10 @@ export default function JournalError(props: {
   reset: () => void;
 }) {
   return (
-    <ErrorFallback {...props} title="Couldn't load the journal." back={{ href: '/', label: 'Home' }} />
+    <ErrorFallback
+      {...props}
+      title="Couldn't load the journal."
+      back={{ href: '/', label: 'Home' }}
+    />
   );
 }

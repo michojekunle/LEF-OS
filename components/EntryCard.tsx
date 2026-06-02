@@ -54,31 +54,25 @@ export function EntryCard({
     }
   }
 
-  const author =
-    authorUsername ? (
-      <Link
-        href={`/u/${authorUsername}`}
-        className="hover:text-text-primary transition-colors"
-      >
-        {authorName ?? `@${authorUsername}`}
-      </Link>
-    ) : (
-      <span>{authorName ?? 'Anonymous'}</span>
-    );
+  const author = authorUsername ? (
+    <Link href={`/u/${authorUsername}`} className="transition-colors hover:text-text-primary">
+      {authorName ?? `@${authorUsername}`}
+    </Link>
+  ) : (
+    <span>{authorName ?? 'Anonymous'}</span>
+  );
 
   return (
-    <article id={`day-${entry.day_number}`} className="card p-5 reveal">
-      <header className="flex items-center justify-between gap-2 mb-3">
+    <article id={`day-${entry.day_number}`} className="card reveal p-5">
+      <header className="mb-3 flex items-center justify-between gap-2">
         <div className="flex items-baseline gap-3">
           <Link
             href={`/day/${entry.day_number}`}
-            className="font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted hover:text-gold transition-colors"
+            className="font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted transition-colors hover:text-gold"
           >
             Day {entry.day_number}
           </Link>
-          <span className="text-xs text-text-secondary">
-            {formatDate(entry.entry_date)}
-          </span>
+          <span className="text-xs text-text-secondary">{formatDate(entry.entry_date)}</span>
         </div>
         <div className="flex items-center gap-1.5">
           {[1, 2, 3, 4, 5].map((n) => (
@@ -95,32 +89,32 @@ export function EntryCard({
         </div>
       </header>
 
-      <div className="flex flex-wrap gap-2 mb-3">
+      <div className="mb-3 flex flex-wrap gap-2">
         {entry.law_completed && <DomainBadge domain="law" size="sm" />}
         {entry.economics_completed && <DomainBadge domain="economics" size="sm" />}
         {entry.finance_completed && <DomainBadge domain="finance" size="sm" />}
       </div>
 
       {entry.share_insight && (
-        <p className="font-display text-[17px] leading-snug text-text-primary mb-3">
+        <p className="mb-3 font-display text-[17px] leading-snug text-text-primary">
           “{entry.share_insight}”
         </p>
       )}
 
       {showJournal && entry.journal_text && (
-        <p className="text-sm text-text-secondary border-l-2 border-border pl-3 mb-3 whitespace-pre-wrap">
+        <p className="mb-3 whitespace-pre-wrap border-l-2 border-border pl-3 text-sm text-text-secondary">
           {entry.journal_text}
         </p>
       )}
 
-      <footer className="flex flex-col gap-3 mt-3 pt-3 border-t border-[var(--border-subtle)]">
+      <footer className="mt-3 flex flex-col gap-3 border-t border-[var(--border-subtle)] pt-3">
         <div className="flex items-center justify-between text-xs text-text-secondary">
           {author}
           {entry.share_insight && (
             <button
               type="button"
               onClick={share}
-              className="inline-flex items-center gap-1.5 text-text-secondary hover:text-gold transition-colors"
+              className="inline-flex items-center gap-1.5 text-text-secondary transition-colors hover:text-gold"
             >
               <Share2 size={12} />
               {copied ? 'Copied' : 'Share'}

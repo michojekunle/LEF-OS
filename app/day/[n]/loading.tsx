@@ -2,11 +2,11 @@ import { CardGridSkeleton } from '@/components/SkeletonLoader';
 
 export default function Loading() {
   return (
-    <div className="mx-auto max-w-content px-5 md:px-6 py-8 space-y-8 animate-pulse">
+    <div className="mx-auto max-w-content animate-pulse space-y-8 px-5 py-8 md:px-6">
       <header className="space-y-3">
-        <div className="w-16 h-3 bg-surface-2 rounded skeleton" />
-        <div className="w-48 h-10 bg-surface-2 rounded skeleton" />
-        <div className="w-32 h-4 bg-surface-2 rounded skeleton" />
+        <div className="skeleton h-3 w-16 rounded bg-surface-2" />
+        <div className="skeleton h-10 w-48 rounded bg-surface-2" />
+        <div className="skeleton h-4 w-32 rounded bg-surface-2" />
       </header>
       <CardGridSkeleton />
     </div>

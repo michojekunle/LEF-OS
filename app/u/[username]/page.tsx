@@ -24,11 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }) 
   };
 }
 
-export default async function PublicProfilePage({
-  params,
-}: {
-  params: Promise<Params>;
-}) {
+export default async function PublicProfilePage({ params }: { params: Promise<Params> }) {
   const { username } = await params;
   if (!hasSupabaseConfig()) notFound();
 
@@ -89,7 +85,7 @@ export default async function PublicProfilePage({
   }
 
   return (
-    <div className="mx-auto max-w-content px-5 md:px-6 py-10 space-y-8">
+    <div className="mx-auto max-w-content space-y-8 px-5 py-10 md:px-6">
       <Link
         href="/journal"
         className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-text-secondary hover:text-text-primary"
@@ -101,19 +97,15 @@ export default async function PublicProfilePage({
         <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary">
           Public profile
         </p>
-        <h1 className="font-display text-4xl md:text-5xl tracking-tight">
+        <h1 className="font-display text-4xl tracking-tight md:text-5xl">
           {p.display_name ?? `@${p.username}`}
         </h1>
-        {p.username && (
-          <p className="text-sm text-text-secondary font-mono">@{p.username}</p>
-        )}
-        {p.bio && (
-          <p className="text-text-secondary max-w-2xl leading-relaxed">{p.bio}</p>
-        )}
+        {p.username && <p className="font-mono text-sm text-text-secondary">@{p.username}</p>}
+        {p.bio && <p className="max-w-2xl leading-relaxed text-text-secondary">{p.bio}</p>}
       </header>
 
       {stats && (
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <StatTile label="Days logged" value={stats.days_logged} />
           <StatTile
             label="Longest streak"
@@ -173,7 +165,7 @@ function StatTile({
       </div>
       <p className="mt-2 font-display text-2xl">
         {value}
-        {hint && <span className="text-text-muted text-xs ml-1">{hint}</span>}
+        {hint && <span className="ml-1 text-xs text-text-muted">{hint}</span>}
       </p>
     </div>
   );

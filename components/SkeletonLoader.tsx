@@ -9,19 +9,19 @@ export function CardGridSkeleton() {
       role="status"
       aria-label="Loading curriculum days"
       aria-busy="true"
-      className="grid gap-3 md:grid-cols-3 w-full"
+      className="grid w-full gap-3 md:grid-cols-3"
     >
       {[1, 2, 3].map((i) => (
-        <div key={i} className="card p-5 flex flex-col gap-3 min-h-[160px] animate-pulse">
+        <div key={i} className="card flex min-h-[160px] animate-pulse flex-col gap-3 p-5">
           {/* Badge skeleton */}
-          <div className="w-16 h-4 bg-surface-2 border border-border rounded skeleton" />
+          <div className="skeleton h-4 w-16 rounded border border-border bg-surface-2" />
           {/* Headline skeleton */}
-          <div className="space-y-2 mt-2">
-            <div className="w-full h-4 bg-surface-2 rounded skeleton" />
-            <div className="w-5/6 h-4 bg-surface-2 rounded skeleton" />
+          <div className="mt-2 space-y-2">
+            <div className="skeleton h-4 w-full rounded bg-surface-2" />
+            <div className="skeleton h-4 w-5/6 rounded bg-surface-2" />
           </div>
           {/* Week metadata skeleton */}
-          <div className="w-24 h-3 mt-auto bg-surface-2 rounded skeleton" />
+          <div className="skeleton mt-auto h-3 w-24 rounded bg-surface-2" />
         </div>
       ))}
     </div>
@@ -35,28 +35,28 @@ export function ListSkeleton() {
       role="status"
       aria-label="Loading journal entries"
       aria-busy="true"
-      className="space-y-3 w-full"
+      className="w-full space-y-3"
     >
       {[1, 2, 3].map((i) => (
-        <div key={i} className="card p-5 flex flex-col gap-3.5 animate-pulse">
+        <div key={i} className="card flex animate-pulse flex-col gap-3.5 p-5">
           {/* Header row skeleton */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-20 h-4 bg-surface-2 rounded skeleton" />
-              <div className="w-12 h-4 bg-surface-2 rounded skeleton" />
+              <div className="skeleton h-4 w-20 rounded bg-surface-2" />
+              <div className="skeleton h-4 w-12 rounded bg-surface-2" />
             </div>
-            <div className="w-24 h-3 bg-surface-2 rounded skeleton" />
+            <div className="skeleton h-3 w-24 rounded bg-surface-2" />
           </div>
-          
+
           {/* Title skeleton */}
           <div className="space-y-1.5">
-            <div className="w-3/4 h-5 bg-surface-2 rounded skeleton" />
+            <div className="skeleton h-5 w-3/4 rounded bg-surface-2" />
           </div>
-          
+
           {/* Text snippets skeleton */}
           <div className="space-y-2">
-            <div className="w-full h-3.5 bg-surface-2 rounded skeleton" />
-            <div className="w-5/6 h-3.5 bg-surface-2 rounded skeleton" />
+            <div className="skeleton h-3.5 w-full rounded bg-surface-2" />
+            <div className="skeleton h-3.5 w-5/6 rounded bg-surface-2" />
           </div>
         </div>
       ))}
@@ -71,24 +71,24 @@ export function StatsSkeleton() {
       role="status"
       aria-label="Loading statistics details"
       aria-busy="true"
-      className="space-y-6 w-full animate-pulse"
+      className="w-full animate-pulse space-y-6"
     >
       {/* Upper grid */}
       <div className="grid gap-3 sm:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="card p-4 flex flex-col gap-2 min-h-[90px]">
-            <div className="w-16 h-3 bg-surface-2 rounded skeleton" />
-            <div className="w-10 h-7 bg-surface-2 rounded skeleton mt-1" />
+          <div key={i} className="card flex min-h-[90px] flex-col gap-2 p-4">
+            <div className="skeleton h-3 w-16 rounded bg-surface-2" />
+            <div className="skeleton mt-1 h-7 w-10 rounded bg-surface-2" />
           </div>
         ))}
       </div>
-      
+
       {/* Lower graph panels */}
       <div className="grid gap-4 md:grid-cols-2">
         {[1, 2].map((i) => (
-          <div key={i} className="card p-5 space-y-4 min-h-[220px]">
-            <div className="w-32 h-4 bg-surface-2 rounded skeleton" />
-            <div className="w-full h-32 bg-surface-2/40 rounded skeleton" />
+          <div key={i} className="card min-h-[220px] space-y-4 p-5">
+            <div className="skeleton h-4 w-32 rounded bg-surface-2" />
+            <div className="bg-surface-2/40 skeleton h-32 w-full rounded" />
           </div>
         ))}
       </div>

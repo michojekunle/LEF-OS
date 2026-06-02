@@ -2,10 +2,7 @@
 
 import { ErrorFallback } from '@/components/ErrorFallback';
 
-export default function DayError(props: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
+export default function DayError(props: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <ErrorFallback
       {...props}

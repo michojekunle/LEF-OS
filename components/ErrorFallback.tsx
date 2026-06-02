@@ -20,17 +20,15 @@ export function ErrorFallback({ error, reset, title, back }: Props) {
   }, [error]);
 
   return (
-    <div className="mx-auto max-w-content px-5 md:px-6 py-16">
-      <div className="card p-8 space-y-4 max-w-lg mx-auto text-center">
+    <div className="mx-auto max-w-content px-5 py-16 md:px-6">
+      <div className="card mx-auto max-w-lg space-y-4 p-8 text-center">
         <AlertTriangle size={24} className="accent-synthesis mx-auto" />
-        <h1 className="font-display text-2xl">
-          {title ?? 'Something cracked.'}
-        </h1>
-        <p className="text-sm text-text-secondary leading-relaxed">
+        <h1 className="font-display text-2xl">{title ?? 'Something cracked.'}</h1>
+        <p className="text-sm leading-relaxed text-text-secondary">
           {error.message || 'An unexpected error occurred while rendering this page.'}
         </p>
         {error.digest && (
-          <p className="text-[10px] font-mono text-text-muted">ref: {error.digest}</p>
+          <p className="font-mono text-[10px] text-text-muted">ref: {error.digest}</p>
         )}
         <div className="flex items-center justify-center gap-3 pt-2">
           <button type="button" onClick={reset} className="btn btn-primary text-sm">

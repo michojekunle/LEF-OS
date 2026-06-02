@@ -43,9 +43,7 @@ export async function addBookmarkAction(input: {
   return { ok: true, data: data as Bookmark };
 }
 
-export async function toggleBookmarkDoneAction(
-  id: string,
-): Promise<ActionResult<Bookmark>> {
+export async function toggleBookmarkDoneAction(id: string): Promise<ActionResult<Bookmark>> {
   const sb = await supabaseServer();
   const { data: u } = await sb.auth.getUser();
   if (!u.user) return { ok: false, error: 'Not signed in' };
@@ -68,17 +66,11 @@ export async function toggleBookmarkDoneAction(
   return { ok: true, data: data as Bookmark };
 }
 
-export async function deleteBookmarkAction(
-  id: string,
-): Promise<ActionResult<true>> {
+export async function deleteBookmarkAction(id: string): Promise<ActionResult<true>> {
   const sb = await supabaseServer();
   const { data: u } = await sb.auth.getUser();
   if (!u.user) return { ok: false, error: 'Not signed in' };
-  const { error } = await sb
-    .from('bookmarks')
-    .delete()
-    .eq('id', id)
-    .eq('user_id', u.user.id);
+  const { error } = await sb.from('bookmarks').delete().eq('id', id).eq('user_id', u.user.id);
   if (error) return { ok: false, error: error.message };
   revalidatePath('/dashboard');
   return { ok: true, data: true };

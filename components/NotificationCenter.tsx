@@ -62,10 +62,10 @@ export function NotificationCenter({ userId }: Props) {
           const newNotif = payload.new as Notification;
           // Trigger a clean in-app toast alert!
           toast.info(`${newNotif.title}: ${newNotif.message}`, 4500);
-          
+
           // Prepend to state
           setNotifications((prev) => [newNotif, ...prev]);
-        }
+        },
       )
       .subscribe();
 
@@ -91,15 +91,10 @@ export function NotificationCenter({ userId }: Props) {
   async function handleMarkAsRead(id: string) {
     try {
       const sb = supabaseBrowser();
-      const { error } = await sb
-        .from('in_app_notifications')
-        .update({ read: true })
-        .eq('id', id);
+      const { error } = await sb.from('in_app_notifications').update({ read: true }).eq('id', id);
 
       if (error) throw error;
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-      );
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
     } catch (err) {
       console.error(err);
     }
@@ -129,10 +124,7 @@ export function NotificationCenter({ userId }: Props) {
     if (notifications.length === 0) return;
     try {
       const sb = supabaseBrowser();
-      const { error } = await sb
-        .from('in_app_notifications')
-        .delete()
-        .eq('user_id', userId);
+      const { error } = await sb.from('in_app_notifications').delete().eq('user_id', userId);
 
       if (error) throw error;
       setNotifications([]);
@@ -149,11 +141,11 @@ export function NotificationCenter({ userId }: Props) {
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label="View notifications"
-        className="btn btn-secondary text-xs p-1.5 md:p-2 hover:border-gold rounded-md relative flex items-center justify-center"
+        className="btn btn-secondary relative flex items-center justify-center rounded-md p-1.5 text-xs hover:border-gold md:p-2"
       >
-        <Bell size={14} className={unreadCount > 0 ? 'text-gold animate-wiggle' : ''} />
+        <Bell size={14} className={unreadCount > 0 ? 'animate-wiggle text-gold' : ''} />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent-synthesis border border-border text-[9px] font-bold rounded-full flex items-center justify-center text-red">
+          <span className="bg-accent-synthesis absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full border border-border text-[9px] font-bold text-red">
             {unreadCount}
           </span>
         )}
@@ -161,12 +153,14 @@ export function NotificationCenter({ userId }: Props) {
 
       {/* FLOATING DRAWER */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 md:w-96 card-2 bg-surface border-border shadow-2xl rounded-xl z-50 overflow-hidden reveal">
-          <header className="px-4 py-3 border-b border-[var(--border-subtle)] flex items-center justify-between">
+        <div className="card-2 reveal absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border-border bg-surface shadow-2xl md:w-96">
+          <header className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-text-primary uppercase tracking-wider">Notifications</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-primary">
+                Notifications
+              </span>
               {unreadCount > 0 && (
-                <span className="text-[10px] text-text-muted bg-surface-2 px-1.5 py-0.5 rounded border border-border">
+                <span className="rounded border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] text-text-muted">
                   {unreadCount} new
                 </span>
               )}
@@ -175,7 +169,7 @@ export function NotificationCenter({ userId }: Props) {
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllRead}
-                  className="text-[10px] text-text-secondary hover:text-gold flex items-center gap-1 transition-colors"
+                  className="flex items-center gap-1 text-[10px] text-text-secondary transition-colors hover:text-gold"
                   title="Mark all as read"
                 >
                   <CheckCheck size={12} />
@@ -185,47 +179,49 @@ export function NotificationCenter({ userId }: Props) {
               {notifications.length > 0 && (
                 <button
                   onClick={handleClearAll}
-                  className="text-[10px] text-text-muted hover:text-red transition-colors"
+                  className="text-[10px] text-text-muted transition-colors hover:text-red"
                 >
                   Clear all
                 </button>
               )}
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-text-muted hover:text-text-primary p-0.5"
+                className="p-0.5 text-text-muted hover:text-text-primary"
               >
                 <X size={12} />
               </button>
             </div>
           </header>
 
-          <ul className="max-h-[60vh] overflow-y-auto divide-y divide-border/40 py-1">
+          <ul className="divide-border/40 max-h-[60vh] divide-y overflow-y-auto py-1">
             {notifications.length === 0 ? (
-              <li className="px-4 py-8 text-center text-xs text-text-muted italic">
+              <li className="px-4 py-8 text-center text-xs italic text-text-muted">
                 All clear. No notifications.
               </li>
             ) : (
               notifications.map((n) => {
                 const date = new Date(n.created_at);
                 const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
+
                 return (
                   <li
                     key={n.id}
                     onClick={() => !n.read && handleMarkAsRead(n.id)}
-                    className={`px-4 py-3 text-left transition-colors flex items-start gap-3 cursor-pointer ${
-                      n.read ? 'hover:bg-surface-2/20 bg-transparent' : 'bg-surface-2/40 hover:bg-surface-2/60'
+                    className={`flex cursor-pointer items-start gap-3 px-4 py-3 text-left transition-colors ${
+                      n.read
+                        ? 'hover:bg-surface-2/20 bg-transparent'
+                        : 'bg-surface-2/40 hover:bg-surface-2/60'
                     }`}
                   >
                     {!n.read && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-gold mt-1.5 shrink-0" />
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
                     )}
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-xs font-semibold text-text-primary">{n.title}</span>
-                        <span className="text-[9px] text-text-muted font-mono">{timeStr}</span>
+                        <span className="font-mono text-[9px] text-text-muted">{timeStr}</span>
                       </div>
-                      <p className="text-[11px] text-text-secondary leading-relaxed">{n.message}</p>
+                      <p className="text-[11px] leading-relaxed text-text-secondary">{n.message}</p>
                     </div>
                   </li>
                 );

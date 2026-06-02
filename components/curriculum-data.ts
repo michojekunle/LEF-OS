@@ -53,8 +53,7 @@ const month1Law: DomainTrack = {
   domain: 'law',
   level: 'Beginner',
   theme: 'The Architecture of Law',
-  focus:
-    'What law is, where it comes from, and how it governs you as a person and founder.',
+  focus: 'What law is, where it comes from, and how it governs you as a person and founder.',
   weeks: [
     {
       weekNumber: 1,
@@ -128,8 +127,7 @@ const month1Econ: DomainTrack = {
   domain: 'economics',
   level: 'Beginner',
   theme: 'Economic Thinking 101',
-  focus:
-    'Core economic principles and how they explain the world around you.',
+  focus: 'Core economic principles and how they explain the world around you.',
   weeks: [
     {
       weekNumber: 1,
@@ -203,8 +201,7 @@ const month1Finance: DomainTrack = {
   domain: 'finance',
   level: 'Beginner',
   theme: 'Personal Finance & Money Foundations',
-  focus:
-    'Understanding money — how it works, how to manage it, how to grow it.',
+  focus: 'Understanding money — how it works, how to manage it, how to grow it.',
   weeks: [
     {
       weekNumber: 1,
@@ -282,8 +279,7 @@ const month2Law: DomainTrack = {
   domain: 'law',
   level: 'Intermediate',
   theme: 'Law in Action',
-  focus:
-    'Tort, dispute resolution, international business law, and emerging tech law.',
+  focus: 'Tort, dispute resolution, international business law, and emerging tech law.',
   weeks: [
     {
       weekNumber: 5,
@@ -318,7 +314,7 @@ const month2Law: DomainTrack = {
         d(43, 'What is international law? Public vs. private international law'),
         d(44, 'WTO rules and how they affect Nigerian trade'),
         d(45, 'International contracts — INCOTERMS, jurisdiction clauses, governing law'),
-        d(46, "Foreign investment laws in Nigeria (NIPC Act, NOTAP)"),
+        d(46, 'Foreign investment laws in Nigeria (NIPC Act, NOTAP)'),
         d(47, "Bilateral Investment Treaties (BITs) — Nigeria's agreements"),
         d(48, 'Cross-border dispute resolution — ICSID, ICC arbitration'),
         r(49, "WEEKLY REVIEW — 'If I sell to customers in the UK, which law governs?'"),
@@ -355,8 +351,7 @@ const month2Econ: DomainTrack = {
   domain: 'economics',
   level: 'Intermediate',
   theme: 'Economic Forces That Shape Business',
-  focus:
-    'Development, trade systems, global economies, and behavioral lenses.',
+  focus: 'Development, trade systems, global economies, and behavioral lenses.',
   weeks: [
     {
       weekNumber: 5,
@@ -413,7 +408,7 @@ const month2Econ: DomainTrack = {
   ],
   resources: [
     'Why Nations Fail — Acemoglu & Robinson',
-    "Thinking, Fast and Slow — Kahneman",
+    'Thinking, Fast and Slow — Kahneman',
     'IMF Article IV consultations (Nigeria)',
     'WTO trade policy reviews',
   ],
@@ -428,8 +423,7 @@ const month2Finance: DomainTrack = {
   domain: 'finance',
   level: 'Intermediate',
   theme: 'Corporate Finance & Capital Markets',
-  focus:
-    'How money, capital, and businesses actually structure themselves.',
+  focus: 'How money, capital, and businesses actually structure themselves.',
   weeks: [
     {
       weekNumber: 5,
@@ -505,7 +499,8 @@ const month3Law: DomainTrack = {
   domain: 'law',
   level: 'Advanced',
   theme: 'Law as Power',
-  focus: 'International human rights, constitutional law, global regulation, and the law of the future.',
+  focus:
+    'International human rights, constitutional law, global regulation, and the law of the future.',
   weeks: [
     {
       weekNumber: 9,
@@ -636,7 +631,7 @@ const month3Econ: DomainTrack = {
   resources: [
     'This Time Is Different — Reinhart & Rogoff',
     'Doughnut Economics — Kate Raworth',
-    "How Asia Works — Joe Studwell",
+    'How Asia Works — Joe Studwell',
     'IMF & World Bank crisis reports',
   ],
   contentIdeas: [
@@ -921,11 +916,7 @@ const month4Finance: DomainTrack = {
       ],
     },
   ],
-  resources: [
-    'Venture Deals — Brad Feld',
-    'Y Combinator SAFE docs',
-    'AfDB & IFC reports',
-  ],
+  resources: ['Venture Deals — Brad Feld', 'Y Combinator SAFE docs', 'AfDB & IFC reports'],
   contentIdeas: [
     'Public PDF: financial literacy for young Nigerian professionals',
     'Thread: Delaware flip in 10 tweets',
@@ -980,7 +971,10 @@ export const CURRICULUM: MonthCurriculum[] = [
 export const TOTAL_CALENDAR_DAYS = 122;
 export const TOTAL_CURRICULUM_DAYS = 111;
 
-export const DOMAIN_META: Record<Domain, { label: string; icon: string; accent: string; description: string }> = {
+export const DOMAIN_META: Record<
+  Domain,
+  { label: string; icon: string; accent: string; description: string }
+> = {
   law: {
     label: 'Law',
     icon: '⚖️',
@@ -1049,20 +1043,27 @@ export const RESOURCE_URLS: Record<string, string> = {
   '1999 Constitution of Nigeria': 'https://www.constituteproject.org/constitution/Nigeria_1999.pdf',
   'CAMA 2020 (CAC website)': 'https://www.cac.gov.ng/wp-content/uploads/2020/12/CAMA-2020-ACT.pdf',
   'Nigeria Data Protection Act 2023': 'https://ndpc.gov.ng/Files/ndpact.pdf',
-  "Afe Babalola's Nigerian Law of Contract": 'https://www.lawyard.ng/wp-content/uploads/2016/01/THE-NIGERIAN-LAW-OF-CONTRACT.pdf',
+  "Afe Babalola's Nigerian Law of Contract":
+    'https://www.lawyard.ng/wp-content/uploads/2016/01/THE-NIGERIAN-LAW-OF-CONTRACT.pdf',
   'Lawyard.ng': 'https://www.lawyard.ng/',
   'SPA Ajibade & Co legal insights': 'https://www.spaajibade.com/resources/',
-  'Cybercrimes (Prohibition, Prevention etc.) Act 2015': 'https://cert.gov.ng/storage/library/Cybercrimes__Prohibition,_Prevention,_etc__Act,_2015.pdf',
+  'Cybercrimes (Prohibition, Prevention etc.) Act 2015':
+    'https://cert.gov.ng/storage/library/Cybercrimes__Prohibition,_Prevention,_etc__Act,_2015.pdf',
   'NIPC Act': 'https://www.nipc.gov.ng/wp-content/uploads/2019/02/NIPC-Act.pdf',
   'Lagos Court of Arbitration rules': 'https://www.lca.org.ng/',
   'EU AI Act primer': 'https://artificialintelligenceact.eu/',
-  'UDHR & ICCPR full texts (OHCHR)': 'https://www.ohchr.org/en/instruments-mechanisms/instruments/universal-declaration-human-rights',
-  "African Charter on Human and Peoples' Rights": 'https://www.achpr.org/legalinstruments/detail?id=49',
+  'UDHR & ICCPR full texts (OHCHR)':
+    'https://www.ohchr.org/en/instruments-mechanisms/instruments/universal-declaration-human-rights',
+  "African Charter on Human and Peoples' Rights":
+    'https://www.achpr.org/legalinstruments/detail?id=49',
   'GDPR text (EUR-Lex)': 'https://gdpr-info.eu/',
-  'FATF Mutual Evaluation reports (Nigeria)': 'https://www.fatf-gafi.org/en/publications/Mutualevaluations/Mutualevaluationofnigeria.html',
-  'MiCA Regulation (EU)': 'https://www.esma.europa.eu/rules-regulation/mifid-ii-and-mica/markets-crypto-assets-regulation-mica',
+  'FATF Mutual Evaluation reports (Nigeria)':
+    'https://www.fatf-gafi.org/en/publications/Mutualevaluations/Mutualevaluationofnigeria.html',
+  'MiCA Regulation (EU)':
+    'https://www.esma.europa.eu/rules-regulation/mifid-ii-and-mica/markets-crypto-assets-regulation-mica',
   'Nigeria Startup Act 2022': 'https://www.startupbill.ng/',
-  'EU Digital Services Act (DSA)': 'https://commission.europa.eu/strategy-and-policy/priorities-2019-2024/europe-fit-digital-age/digital-services-act_en',
+  'EU Digital Services Act (DSA)':
+    'https://commission.europa.eu/strategy-and-policy/priorities-2019-2024/europe-fit-digital-age/digital-services-act_en',
   'YC SAFE & post-money templates': 'https://www.ycombinator.com/documents/',
 
   // Economics
@@ -1076,21 +1077,24 @@ export const RESOURCE_URLS: Record<string, string> = {
   'Thinking, Fast and Slow — Kahneman': 'https://archive.org/details/thinkingfastslow0000kahn',
   'IMF Article IV consultations (Nigeria)': 'https://www.imf.org/en/Countries/NGA#country-data',
   'WTO trade policy reviews': 'https://www.wto.org/english/tratop_e/tpr_e/tpr_e.htm',
-  'This Time Is Different — Reinhart & Rogoff': 'https://archive.org/details/thistimeisdiffer00reinhart',
+  'This Time Is Different — Reinhart & Rogoff':
+    'https://archive.org/details/thistimeisdiffer00reinhart',
   'Doughnut Economics — Kate Raworth': 'https://www.kateraworth.com/doughnut/',
   'How Asia Works — Joe Studwell': 'https://archive.org/details/howasiaworks0000stud',
 
   // Finance
   'Rich Dad Poor Dad — Robert Kiyosaki': 'https://archive.org/details/RichDadPoorDadRobertKiyosaki',
   'The Psychology of Money — Morgan Housel': 'https://archive.org/details/the-psychology-of-money',
-  'Investopedia': 'https://www.investopedia.com/',
-  'Nairametrics': 'https://nairametrics.com/',
+  Investopedia: 'https://www.investopedia.com/',
+  Nairametrics: 'https://nairametrics.com/',
   'SEC Nigeria': 'https://sec.gov.ng/',
   'CBN consumer finance guides': 'https://www.cbn.gov.ng/documents/consumerprotection.asp',
   'Corporate Finance — Berk & DeMarzo': 'https://archive.org/details/corporatefinance0000berk',
-  'Financial Statement Analysis — Subramanyam': 'https://archive.org/details/financialstateme0000subr',
+  'Financial Statement Analysis — Subramanyam':
+    'https://archive.org/details/financialstateme0000subr',
   'NGX annual reports': 'https://ngxgroup.com/',
   'Dangote Cement & MTN Nigeria annual reports': 'https://ngxgroup.com/',
-  'A Random Walk Down Wall Street — Burton Malkiel': 'https://archive.org/details/randomwalkdownwa00malk_0',
+  'A Random Walk Down Wall Street — Burton Malkiel':
+    'https://archive.org/details/randomwalkdownwa00malk_0',
   'Principles — Ray Dalio': 'https://www.principles.com/',
 };

@@ -4,7 +4,9 @@ import { supabaseServer } from '@/lib/supabase-server';
 export async function POST(request: Request) {
   try {
     const sb = await supabaseServer();
-    const { data: { user } } = await sb.auth.getUser();
+    const {
+      data: { user },
+    } = await sb.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -12,9 +14,13 @@ export async function POST(request: Request) {
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({
-        error: 'LEF Counsel: GEMINI_API_KEY environment variable is not configured on this server.'
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          error:
+            'LEF Counsel: GEMINI_API_KEY environment variable is not configured on this server.',
+        },
+        { status: 500 },
+      );
     }
 
     const { messages, day, topics } = await request.json();
@@ -79,13 +85,16 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
             maxOutputTokens: 4096,
           },
         }),
-      }
+      },
     );
 
     if (!response.ok) {
       const errText = await response.text();
       console.error('Gemini API request failed:', errText);
-      return NextResponse.json({ error: 'Gemini service returned an error.' }, { status: response.status });
+      return NextResponse.json(
+        { error: 'Gemini service returned an error.' },
+        { status: response.status },
+      );
     }
 
     const resJson = await response.json();

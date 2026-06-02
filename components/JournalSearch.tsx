@@ -27,13 +27,13 @@ export function JournalSearch() {
   }, [q]);
 
   return (
-    <div className="card-2 border border-border rounded-md flex items-center gap-2 px-3 py-2">
+    <div className="card-2 flex items-center gap-2 rounded-md border border-border px-3 py-2">
       <Search size={14} className="text-text-secondary" />
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search public insights…"
-        className="flex-1 bg-transparent outline-none text-sm placeholder:text-text-muted"
+        className="flex-1 bg-transparent text-sm outline-none placeholder:text-text-muted"
         aria-label="Search journal"
       />
       {q && (
@@ -46,9 +46,7 @@ export function JournalSearch() {
           <X size={14} />
         </button>
       )}
-      {pending && (
-        <span className="text-[10px] text-text-muted font-mono tracking-wider">…</span>
-      )}
+      {pending && <span className="font-mono text-[10px] tracking-wider text-text-muted">…</span>}
     </div>
   );
 }

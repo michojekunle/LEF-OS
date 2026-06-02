@@ -37,22 +37,22 @@ Open <http://localhost:3000>.
 
 Required:
 
-| Var | Purpose |
-| --- | --- |
+| Var                             | Purpose              |
+| ------------------------------- | -------------------- |
 | `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key    |
 
 Optional (server-side features):
 
-| Var | Powers |
-| --- | --- |
-| `SUPABASE_SERVICE_ROLE_KEY`     | Cron job daily reminder (server-only) |
-| `RESEND_API_KEY`                | Email reminders |
-| `CRON_SECRET`                   | Auth header for `/api/cron/*` endpoints |
-| `NEXT_PUBLIC_SITE_URL`          | Override origin (e.g. for non-default ports) |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY`  | Web push subscription |
-| `VAPID_PRIVATE_KEY`             | Web push signing |
-| `GEMINI_API_KEY`                | LEF Counsel AI companion |
+| Var                            | Powers                                       |
+| ------------------------------ | -------------------------------------------- |
+| `SUPABASE_SERVICE_ROLE_KEY`    | Cron job daily reminder (server-only)        |
+| `RESEND_API_KEY`               | Email reminders                              |
+| `CRON_SECRET`                  | Auth header for `/api/cron/*` endpoints      |
+| `NEXT_PUBLIC_SITE_URL`         | Override origin (e.g. for non-default ports) |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Web push subscription                        |
+| `VAPID_PRIVATE_KEY`            | Web push signing                             |
+| `GEMINI_API_KEY`               | LEF Counsel AI companion                     |
 
 ## Supabase
 
@@ -86,20 +86,20 @@ npm run db:push      # supabase db push (requires `supabase link`)
 
 ## Routes
 
-| Path | Auth | What |
-| --- | --- | --- |
-| `/`                  | public | Landing |
-| `/roadmap`           | public | 4-month / 3-domain curriculum browser |
-| `/day/[n]`           | mixed  | Any day's topics, your notes, log form, prev/next |
-| `/today`             | mixed  | Redirects to `/day/<current>` |
-| `/journal`           | public | Public insights · search · reactions · pagination |
-| `/u/[username]`      | public | Public profile + stats + public stream |
-| `/dashboard`         | auth   | Today's log, streak, heatmap, recent entries |
-| `/stats`             | auth   | Full stats snapshot (server RPC) |
-| `/settings`          | auth   | Display name, username, bio, reminders, push |
-| `/export`            | auth   | Download Markdown or CSV bundle |
-| `/login`, `/signup`  | public | Email/password (`?next=` supported) |
-| `/auth/callback`     | —      | OAuth / email-confirm handoff |
+| Path                | Auth   | What                                              |
+| ------------------- | ------ | ------------------------------------------------- |
+| `/`                 | public | Landing                                           |
+| `/roadmap`          | public | 4-month / 3-domain curriculum browser             |
+| `/day/[n]`          | mixed  | Any day's topics, your notes, log form, prev/next |
+| `/today`            | mixed  | Redirects to `/day/<current>`                     |
+| `/journal`          | public | Public insights · search · reactions · pagination |
+| `/u/[username]`     | public | Public profile + stats + public stream            |
+| `/dashboard`        | auth   | Today's log, streak, heatmap, recent entries      |
+| `/stats`            | auth   | Full stats snapshot (server RPC)                  |
+| `/settings`         | auth   | Display name, username, bio, reminders, push      |
+| `/export`           | auth   | Download Markdown or CSV bundle                   |
+| `/login`, `/signup` | public | Email/password (`?next=` supported)               |
+| `/auth/callback`    | —      | OAuth / email-confirm handoff                     |
 
 ## Architecture notes
 

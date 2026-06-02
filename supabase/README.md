@@ -5,13 +5,13 @@ order against any Supabase project.
 
 ## Files
 
-| #    | File                              | What it adds |
-| ---- | --------------------------------- | ------------ |
-| 0001 | `0001_initial.sql`                | `profiles`, `daily_entries`, RLS, auto-profile trigger on sign-up |
-| 0002 | `0002_notes_and_questions.sql`    | `day_notes` (per-domain), `questions` (research stack), `lef_domain` enum |
-| 0003 | `0003_bookmarks.sql`              | `bookmarks` table |
-| 0004 | `0004_reactions.sql`              | `journal_reactions` + `journal_reaction_counts` view |
-| 0005 | `0005_search_and_stats.sql`       | tsvector + GIN index, `search_journal()` + `user_stats()` RPCs |
+| #    | File                           | What it adds                                                              |
+| ---- | ------------------------------ | ------------------------------------------------------------------------- |
+| 0001 | `0001_initial.sql`             | `profiles`, `daily_entries`, RLS, auto-profile trigger on sign-up         |
+| 0002 | `0002_notes_and_questions.sql` | `day_notes` (per-domain), `questions` (research stack), `lef_domain` enum |
+| 0003 | `0003_bookmarks.sql`           | `bookmarks` table                                                         |
+| 0004 | `0004_reactions.sql`           | `journal_reactions` + `journal_reaction_counts` view                      |
+| 0005 | `0005_search_and_stats.sql`    | tsvector + GIN index, `search_journal()` + `user_stats()` RPCs            |
 
 ## Running them
 

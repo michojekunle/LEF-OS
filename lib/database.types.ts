@@ -157,7 +157,10 @@ export type Database = {
     Tables: {
       profiles: {
         Row: Profile;
-        Insert: Insertable<Profile, 'username' | 'display_name' | 'bio' | 'avatar_url' | 'default_public' | 'is_primary_user'>;
+        Insert: Insertable<
+          Profile,
+          'username' | 'display_name' | 'bio' | 'avatar_url' | 'default_public' | 'is_primary_user'
+        >;
         Update: Partial<Profile>;
         Relationships: [];
       };
@@ -169,7 +172,16 @@ export type Database = {
       };
       daily_entries: {
         Row: DailyEntry;
-        Insert: Insertable<DailyEntry, 'law_completed' | 'economics_completed' | 'finance_completed' | 'study_rating' | 'journal_text' | 'share_insight' | 'is_public'>;
+        Insert: Insertable<
+          DailyEntry,
+          | 'law_completed'
+          | 'economics_completed'
+          | 'finance_completed'
+          | 'study_rating'
+          | 'journal_text'
+          | 'share_insight'
+          | 'is_public'
+        >;
         Update: Partial<DailyEntry>;
         Relationships: [];
       };

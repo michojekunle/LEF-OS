@@ -7,6 +7,10 @@ export default function RoadmapError(props: {
   reset: () => void;
 }) {
   return (
-    <ErrorFallback {...props} title="Couldn't load the roadmap." back={{ href: '/', label: 'Home' }} />
+    <ErrorFallback
+      {...props}
+      title="Couldn't load the roadmap."
+      back={{ href: '/', label: 'Home' }}
+    />
   );
 }

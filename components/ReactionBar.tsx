@@ -67,10 +67,10 @@ export function ReactionBar({ entryId, initialCounts, initialMine, signedIn }: P
             disabled={pending}
             aria-pressed={active}
             title={label}
-            className={`inline-flex items-center gap-1 px-2 py-1 rounded-md border text-[11px] transition-colors ${
+            className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] transition-colors ${
               active
                 ? 'border-gold/50 bg-accent-law text-gold'
-                : 'border-border text-text-secondary hover:text-text-primary hover:border-text-muted'
+                : 'border-border text-text-secondary hover:border-text-muted hover:text-text-primary'
             }`}
           >
             <span aria-hidden>{emoji}</span>

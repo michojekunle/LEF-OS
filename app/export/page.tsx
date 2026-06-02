@@ -14,17 +14,15 @@ export default async function ExportPage() {
   if (!u.user) redirect('/login?next=/export');
 
   return (
-    <div className="mx-auto max-w-content px-5 md:px-6 py-10 space-y-8">
+    <div className="mx-auto max-w-content space-y-8 px-5 py-10 md:px-6">
       <header className="space-y-3">
-        <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary">
-          Your archive
-        </p>
-        <h1 className="font-display text-3xl md:text-4xl tracking-tight">
+        <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary">Your archive</p>
+        <h1 className="font-display text-3xl tracking-tight md:text-4xl">
           Export everything you've written.
         </h1>
-        <p className="text-text-secondary max-w-2xl text-sm md:text-base">
-          Download a portable copy of your daily entries, notes, and answered questions.
-          Use Markdown for a human-readable archive, or CSV for spreadsheets and analytics.
+        <p className="max-w-2xl text-sm text-text-secondary md:text-base">
+          Download a portable copy of your daily entries, notes, and answered questions. Use
+          Markdown for a human-readable archive, or CSV for spreadsheets and analytics.
         </p>
       </header>
 
@@ -43,19 +41,16 @@ export default async function ExportPage() {
         />
       </div>
 
-      <div className="card p-5 flex items-start gap-3 text-xs text-text-secondary">
-        <Lock size={14} className="text-text-muted mt-0.5 shrink-0" />
+      <div className="card flex items-start gap-3 p-5 text-xs text-text-secondary">
+        <Lock size={14} className="mt-0.5 shrink-0 text-text-muted" />
         <p>
-          Exports include private content (notes, journal text). They're generated on the
-          server using your session — never cached, never shared.
+          Exports include private content (notes, journal text). They're generated on the server
+          using your session — never cached, never shared.
         </p>
       </div>
 
       <div>
-        <Link
-          href="/dashboard"
-          className="text-xs text-text-secondary hover:text-text-primary"
-        >
+        <Link href="/dashboard" className="text-xs text-text-secondary hover:text-text-primary">
           ← Back to dashboard
         </Link>
       </div>
@@ -78,17 +73,17 @@ function ExportCard({
     <a
       href={href}
       download
-      className="card p-5 flex flex-col gap-3 hover:border-gold/40 transition-colors group"
+      className="card hover:border-gold/40 group flex flex-col gap-3 p-5 transition-colors"
     >
       <div className="flex items-center justify-between">
         <Icon size={18} className="text-gold" />
         <Download
           size={14}
-          className="text-text-muted group-hover:text-text-primary transition-colors"
+          className="text-text-muted transition-colors group-hover:text-text-primary"
         />
       </div>
       <h2 className="font-display text-lg">{title}</h2>
-      <p className="text-sm text-text-secondary leading-relaxed">{description}</p>
+      <p className="text-sm leading-relaxed text-text-secondary">{description}</p>
     </a>
   );
 }

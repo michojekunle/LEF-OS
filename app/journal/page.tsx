@@ -4,11 +4,7 @@ import { hasSupabaseConfig } from '@/lib/supabase';
 import { supabaseServer } from '@/lib/supabase-server';
 import { EntryCard } from '@/components/EntryCard';
 import { JournalSearch } from '@/components/JournalSearch';
-import type {
-  DailyEntry,
-  JournalReactionCount,
-  ReactionKind,
-} from '@/lib/database.types';
+import type { DailyEntry, JournalReactionCount, ReactionKind } from '@/lib/database.types';
 
 export const metadata = {
   title: 'Journal — LEF',
@@ -85,7 +81,7 @@ export default async function JournalPage({
           .not('share_insight', 'is', null)
           .order('entry_date', { ascending: false })
           .range(offset, offset + PAGE_SIZE - 1);
-        rows = ((data as DailyEntry[] | null) ?? []);
+        rows = (data as DailyEntry[] | null) ?? [];
         total = count ?? rows.length;
       }
 
@@ -148,26 +144,24 @@ export default async function JournalPage({
   const hasPrev = page > 0;
 
   return (
-    <div className="mx-auto max-w-content px-5 md:px-6 py-10">
+    <div className="mx-auto max-w-content px-5 py-10 md:px-6">
       <header className="mb-8 space-y-3">
-        <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary">
-          The Journal
-        </p>
-        <h1 className="font-display text-3xl md:text-4xl tracking-tight">
+        <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary">The Journal</p>
+        <h1 className="font-display text-3xl tracking-tight md:text-4xl">
           Public insights, one day at a time.
         </h1>
-        <p className="text-text-secondary max-w-2xl text-sm md:text-base">
-          Every entry below was logged by a learner who chose to share it. The full journal
-          stays private; only the daily insight is published.
+        <p className="max-w-2xl text-sm text-text-secondary md:text-base">
+          Every entry below was logged by a learner who chose to share it. The full journal stays
+          private; only the daily insight is published.
         </p>
         {configured && (
-          <Suspense fallback={<div className="card-2 h-10 skeleton" />}>
+          <Suspense fallback={<div className="card-2 skeleton h-10" />}>
             <JournalSearch />
           </Suspense>
         )}
         {q && (
           <p className="text-xs text-text-secondary">
-            Showing matches for <em className="text-text-primary not-italic">“{q}”</em>
+            Showing matches for <em className="not-italic text-text-primary">“{q}”</em>
             {entries.length > 0 && ` · ${total} result${total === 1 ? '' : 's'}`}
           </p>
         )}
@@ -175,7 +169,7 @@ export default async function JournalPage({
 
       {entries.length === 0 ? (
         <div className="card p-10 text-center">
-          <p className="text-text-secondary text-sm">
+          <p className="text-sm text-text-secondary">
             {q
               ? 'No matching insights yet. Try a different word.'
               : 'No public entries yet. Be the first to log a day.'}

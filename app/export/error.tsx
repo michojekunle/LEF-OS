@@ -7,6 +7,10 @@ export default function ExportError(props: {
   reset: () => void;
 }) {
   return (
-    <ErrorFallback {...props} title="Export failed." back={{ href: '/dashboard', label: 'Dashboard' }} />
+    <ErrorFallback
+      {...props}
+      title="Export failed."
+      back={{ href: '/dashboard', label: 'Dashboard' }}
+    />
   );
 }

@@ -16,11 +16,11 @@ export function WeekAccordion({ week, defaultOpen = false }: Props) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-surface-2/50 transition-colors"
+        className="hover:bg-surface-2/50 flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors"
         aria-expanded={open}
       >
         <span className="flex items-baseline gap-3">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-text-muted font-mono">
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted">
             W{week.weekNumber}
           </span>
           <span className="font-display text-base text-text-primary">{week.title}</span>
@@ -31,18 +31,13 @@ export function WeekAccordion({ week, defaultOpen = false }: Props) {
         />
       </button>
       {open && (
-        <ol className="px-4 pb-4 pt-1 space-y-1.5 border-t border-[var(--border-subtle)]">
+        <ol className="space-y-1.5 border-t border-[var(--border-subtle)] px-4 pb-4 pt-1">
           {week.days.map((d) => (
-            <li
-              key={d.day}
-              className="flex items-baseline gap-3 text-sm leading-snug"
-            >
-              <span className="font-mono text-[10px] text-text-muted w-12 shrink-0 tabular-nums">
+            <li key={d.day} className="flex items-baseline gap-3 text-sm leading-snug">
+              <span className="w-12 shrink-0 font-mono text-[10px] tabular-nums text-text-muted">
                 Day {d.day}
               </span>
-              <span className={d.isReview ? 'review-day' : 'text-text-secondary'}>
-                {d.topic}
-              </span>
+              <span className={d.isReview ? 'review-day' : 'text-text-secondary'}>{d.topic}</span>
             </li>
           ))}
         </ol>

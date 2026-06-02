@@ -1,12 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
 import { findDayMeta } from '@/components/curriculum-data';
-import type {
-  DailyEntry,
-  DayNote,
-  LefDomain,
-  Question,
-} from '@/lib/database.types';
+import type { DailyEntry, DayNote, LefDomain, Question } from '@/lib/database.types';
 
 export const dynamic = 'force-dynamic';
 
@@ -87,7 +82,8 @@ export async function GET() {
     if (e.finance_completed) flags.push('Finance');
     lines.push('');
     if (flags.length) lines.push(`**Completed**: ${flags.join(' · ')}`);
-    if (e.study_rating) lines.push(`**Depth**: ${'★'.repeat(e.study_rating)}${'☆'.repeat(5 - e.study_rating)}`);
+    if (e.study_rating)
+      lines.push(`**Depth**: ${'★'.repeat(e.study_rating)}${'☆'.repeat(5 - e.study_rating)}`);
     if (e.is_public && e.share_insight) lines.push(`**Public insight**: ${e.share_insight}`);
     lines.push('');
 

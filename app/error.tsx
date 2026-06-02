@@ -7,10 +7,6 @@ export default function GlobalRouteError(props: {
   reset: () => void;
 }) {
   return (
-    <ErrorFallback
-      {...props}
-      back={{ href: '/', label: 'Home' }}
-      title="Something cracked."
-    />
+    <ErrorFallback {...props} back={{ href: '/', label: 'Home' }} title="Something cracked." />
   );
 }

@@ -19,13 +19,9 @@ export type EntryInput = {
 const MAX_JOURNAL = 4000;
 const MAX_INSIGHT = 280;
 
-export type ActionResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: string };
+export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
-export async function upsertEntryAction(
-  input: EntryInput,
-): Promise<ActionResult<DailyEntry>> {
+export async function upsertEntryAction(input: EntryInput): Promise<ActionResult<DailyEntry>> {
   const sb = await supabaseServer();
   const { data: u } = await sb.auth.getUser();
   if (!u.user) return { ok: false, error: 'Not signed in' };
@@ -43,9 +39,7 @@ export async function upsertEntryAction(
         : null,
     journal_text: input.journal_text?.trim().slice(0, MAX_JOURNAL) || null,
     share_insight: input.share_insight?.trim().slice(0, MAX_INSIGHT) || null,
-    is_public:
-      input.is_public &&
-      Boolean((input.share_insight ?? '').trim().length > 0),
+    is_public: input.is_public && Boolean((input.share_insight ?? '').trim().length > 0),
   };
 
   const { data, error } = await sb
@@ -64,9 +58,7 @@ export async function upsertEntryAction(
   return { ok: true, data: data as DailyEntry };
 }
 
-export async function deleteEntryAction(
-  entryId: string,
-): Promise<ActionResult<true>> {
+export async function deleteEntryAction(entryId: string): Promise<ActionResult<true>> {
   const sb = await supabaseServer();
   const { data: u } = await sb.auth.getUser();
   if (!u.user) return { ok: false, error: 'Not signed in' };

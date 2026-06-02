@@ -49,13 +49,7 @@ export function DayLogPanel({
         <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
           {entry ? 'Edit log' : 'Log this day'}
         </h2>
-        <DailyLogForm
-          userId={userId}
-          day={day}
-          date={date}
-          existing={entry}
-          onSaved={setEntry}
-        />
+        <DailyLogForm userId={userId} day={day} date={date} existing={entry} onSaved={setEntry} />
       </section>
 
       {/* ── Per-domain notes ───────────────────────────────────────── */}
@@ -70,7 +64,7 @@ export function DayLogPanel({
         {/* Mobile: tab switcher */}
         <div className="md:hidden">
           {/* Domain tabs */}
-          <div className="flex rounded-lg border border-[var(--border-subtle)] overflow-hidden mb-3">
+          <div className="mb-3 flex overflow-hidden rounded-lg border border-[var(--border-subtle)]">
             {DOMAINS.map((d) => {
               const meta = DOMAIN_META[d];
               const active = activeTab === d;
@@ -85,7 +79,7 @@ export function DayLogPanel({
                   key={d}
                   type="button"
                   onClick={() => setActiveTab(d)}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium transition-colors border-r last:border-r-0 border-[var(--border-subtle)] ${
+                  className={`flex flex-1 items-center justify-center gap-1.5 border-r border-[var(--border-subtle)] py-2.5 text-xs font-medium transition-colors last:border-r-0 ${
                     active ? accentClass : 'text-text-secondary hover:text-text-primary'
                   }`}
                 >
@@ -107,7 +101,7 @@ export function DayLogPanel({
         </div>
 
         {/* Desktop: 3-column grid */}
-        <div className="hidden md:grid gap-3 md:grid-cols-3">
+        <div className="hidden gap-3 md:grid md:grid-cols-3">
           {DOMAINS.map((d) => (
             <NoteEditor
               key={d}
@@ -164,12 +158,12 @@ function NoteEditor({
   }
 
   return (
-    <div className="card p-4 flex flex-col gap-2">
+    <div className="card flex flex-col gap-2 p-4">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium flex items-center gap-1.5">
+        <span className="flex items-center gap-1.5 text-sm font-medium">
           <span>{meta.icon}</span> {meta.label}
         </span>
-        {saved && <span className="text-[10px] accent-econ">✓ saved</span>}
+        {saved && <span className="accent-econ text-[10px]">✓ saved</span>}
         {pending && <span className="text-[10px] text-text-muted">Saving…</span>}
       </div>
       <textarea
@@ -180,7 +174,7 @@ function NoteEditor({
         rows={6}
         placeholder={`What landed today on ${meta.label.toLowerCase()}?`}
       />
-      <div className="flex items-center justify-between text-[10px] text-text-muted tabular-nums">
+      <div className="flex items-center justify-between text-[10px] tabular-nums text-text-muted">
         <span>Autosaves on blur</span>
         <span>{value.length} / 8000</span>
       </div>
@@ -218,13 +212,13 @@ function QuestionStack({
   }
 
   return (
-    <div className="card p-4 space-y-4">
+    <div className="card space-y-4 p-4">
       <form onSubmit={add} className="flex gap-2">
         <input
           value={text}
           onChange={(e) => setText(e.target.value.slice(0, 1000))}
           placeholder="What do you want to research later?"
-          className="input flex-1 min-w-0"
+          className="input min-w-0 flex-1"
         />
         <button
           type="submit"
@@ -237,7 +231,7 @@ function QuestionStack({
         </button>
       </form>
       {questions.length === 0 ? (
-        <p className="text-xs text-text-muted italic py-2">No questions yet for this day.</p>
+        <p className="py-2 text-xs italic text-text-muted">No questions yet for this day.</p>
       ) : (
         <ul className="space-y-2">
           {questions.map((q) => (
@@ -294,23 +288,23 @@ function QuestionRow({
   }
 
   return (
-    <li className="card-2 p-3 flex flex-col gap-2">
+    <li className="card-2 flex flex-col gap-2 p-3">
       <div className="flex items-start justify-between gap-3">
         <p
-          className={`text-sm flex-1 leading-snug ${
+          className={`flex-1 text-sm leading-snug ${
             question.answered ? 'text-text-muted line-through' : 'text-text-primary'
           }`}
         >
           {question.body}
         </p>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
             onClick={() => setEditing((v) => !v)}
-            className={`p-1.5 rounded-md transition-colors ${
+            className={`rounded-md p-1.5 transition-colors ${
               editing
                 ? 'bg-gold/10 text-gold'
-                : 'text-text-muted hover:text-gold hover:bg-surface-2'
+                : 'text-text-muted hover:bg-surface-2 hover:text-gold'
             }`}
             aria-label="Answer this question"
             title="Add answer"
@@ -321,7 +315,7 @@ function QuestionRow({
             type="button"
             onClick={remove}
             disabled={pending}
-            className="p-1.5 rounded-md text-text-muted hover:text-red hover:bg-surface-2 transition-colors"
+            className="rounded-md p-1.5 text-text-muted transition-colors hover:bg-surface-2 hover:text-red"
             aria-label="Delete question"
           >
             <Trash2 size={13} />
@@ -342,7 +336,7 @@ function QuestionRow({
             <button
               type="button"
               onClick={() => setEditing(false)}
-              className="btn btn-ghost text-xs px-3 py-1.5"
+              className="btn btn-ghost px-3 py-1.5 text-xs"
             >
               Cancel
             </button>
@@ -350,7 +344,7 @@ function QuestionRow({
               type="button"
               onClick={saveAnswer}
               disabled={pending}
-              className="btn btn-primary text-xs px-3 py-1.5"
+              className="btn btn-primary px-3 py-1.5 text-xs"
             >
               {pending ? <Loader2 size={12} className="animate-spin" /> : null}
               Save answer
@@ -359,7 +353,7 @@ function QuestionRow({
         </div>
       )}
       {!editing && question.answer && (
-        <p className="text-xs text-text-secondary border-l-2 border-border pl-3 whitespace-pre-wrap leading-relaxed">
+        <p className="whitespace-pre-wrap border-l-2 border-border pl-3 text-xs leading-relaxed text-text-secondary">
           {question.answer}
         </p>
       )}

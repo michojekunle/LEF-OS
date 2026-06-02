@@ -4,7 +4,9 @@ import { supabaseServer } from '@/lib/supabase-server';
 export async function GET() {
   try {
     const sb = await supabaseServer();
-    const { data: { user } } = await sb.auth.getUser();
+    const {
+      data: { user },
+    } = await sb.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -28,7 +30,9 @@ export async function GET() {
 export async function PATCH(request: Request) {
   try {
     const sb = await supabaseServer();
-    const { data: { user } } = await sb.auth.getUser();
+    const {
+      data: { user },
+    } = await sb.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -37,10 +41,7 @@ export async function PATCH(request: Request) {
     const body = await request.json().catch(() => ({}));
     const { id } = body;
 
-    let query = sb
-      .from('in_app_notifications')
-      .update({ read: true })
-      .eq('user_id', user.id);
+    let query = sb.from('in_app_notifications').update({ read: true }).eq('user_id', user.id);
 
     if (id) {
       query = query.eq('id', id);

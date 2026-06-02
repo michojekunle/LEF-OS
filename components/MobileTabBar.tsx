@@ -2,14 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  Home,
-  Map,
-  LayoutDashboard,
-  BookOpen,
-  BarChart3,
-  Search,
-} from 'lucide-react';
+import { Home, Map, LayoutDashboard, BookOpen, BarChart3, Search } from 'lucide-react';
 import { useCommandPalette } from './CommandPalette';
 
 const tabs = [
@@ -27,22 +20,26 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label="Primary mobile navigation"
-      className="tabbar md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--bg-tabbar)] backdrop-blur-md"
+      className="tabbar fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--bg-tabbar)] backdrop-blur-md md:hidden"
     >
-      <ul className="grid grid-cols-6 h-[3.75rem]">
+      <ul className="grid h-[3.75rem] grid-cols-6">
         {tabs.map(({ href, label, Icon, exact }) => {
-          const active = exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+          const active = exact
+            ? pathname === href
+            : pathname === href || pathname.startsWith(`${href}/`);
           return (
             <li key={href} className="flex">
               <Link
                 href={href}
                 aria-current={active ? 'page' : undefined}
-                className={`flex flex-1 flex-col items-center justify-center gap-1 min-h-[44px] rounded-md mx-0.5 transition-colors ${
+                className={`mx-0.5 flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-md transition-colors ${
                   active ? 'text-gold' : 'text-text-secondary active:text-text-primary'
                 }`}
               >
                 <Icon size={20} strokeWidth={active ? 2 : 1.75} />
-                <span className={`text-[9px] tracking-wide font-medium ${active ? 'text-gold' : ''}`}>
+                <span
+                  className={`text-[9px] font-medium tracking-wide ${active ? 'text-gold' : ''}`}
+                >
                   {label}
                 </span>
               </Link>
@@ -54,10 +51,10 @@ export function MobileTabBar() {
             type="button"
             onClick={open}
             aria-label="Open command palette"
-            className="flex flex-1 flex-col items-center justify-center gap-1 min-h-[44px] rounded-md mx-0.5 text-text-secondary active:text-text-primary transition-colors"
+            className="mx-0.5 flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-md text-text-secondary transition-colors active:text-text-primary"
           >
             <Search size={20} strokeWidth={1.75} />
-            <span className="text-[9px] tracking-wide font-medium">Search</span>
+            <span className="text-[9px] font-medium tracking-wide">Search</span>
           </button>
         </li>
       </ul>

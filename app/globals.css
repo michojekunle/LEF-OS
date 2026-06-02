@@ -4,18 +4,18 @@
 
 /* ── Dark (default) ──────────────────────────────────────────────── */
 :root {
-  --bg: #0D0D0D;
+  --bg: #0d0d0d;
   --surface: #141414;
-  --surface-2: #1C1C1C;
+  --surface-2: #1c1c1c;
   --border: #262626;
-  --text-primary: #F0EAE0;
-  --text-secondary: #9A9080;
+  --text-primary: #f0eae0;
+  --text-secondary: #9a9080;
   --text-muted: #666666;
-  --gold: #C8A96E;
-  --sage: #7C9E8F;
-  --slate-blue: #8B9ECC;
-  --red: #C86E6E;
-  --success: #6E9E7C;
+  --gold: #c8a96e;
+  --sage: #7c9e8f;
+  --slate-blue: #8b9ecc;
+  --red: #c86e6e;
+  --success: #6e9e7c;
 
   /* Pre-baked semi-transparent values — used wherever Tailwind /opacity modifiers
      would be needed, because those modifiers require space-separated RGB channels
@@ -30,18 +30,18 @@
 
 /* Explicit dark override — wins over OS light preference when user picks dark */
 [data-theme='dark'] {
-  --bg: #0D0D0D;
+  --bg: #0d0d0d;
   --surface: #141414;
-  --surface-2: #1C1C1C;
+  --surface-2: #1c1c1c;
   --border: #262626;
-  --text-primary: #F0EAE0;
-  --text-secondary: #9A9080;
+  --text-primary: #f0eae0;
+  --text-secondary: #9a9080;
   --text-muted: #666666;
-  --gold: #C8A96E;
-  --sage: #7C9E8F;
-  --slate-blue: #8B9ECC;
-  --red: #C86E6E;
-  --success: #6E9E7C;
+  --gold: #c8a96e;
+  --sage: #7c9e8f;
+  --slate-blue: #8b9ecc;
+  --red: #c86e6e;
+  --success: #6e9e7c;
   --border-subtle: rgba(38, 38, 38, 0.65);
   --border-dim: rgba(38, 38, 38, 0.4);
   --surface-overlay: rgba(20, 20, 20, 0.6);
@@ -53,18 +53,18 @@
 /* ── Light (OS preference, not overridden) ───────────────────────── */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) {
-    --bg: #FFFFFF;
-    --surface: #FAFAFA;
-    --surface-2: #F0F0EE;
-    --border: #E0E0DC;
+    --bg: #ffffff;
+    --surface: #fafafa;
+    --surface-2: #f0f0ee;
+    --border: #e0e0dc;
     --text-primary: #111111;
     --text-secondary: #555550;
-    --text-muted: #8A8A84;
-    --gold: #8E6D38;
-    --sage: #4D6D5F;
-    --slate-blue: #4C5E87;
-    --red: #B34747;
-    --success: #3C7E55;
+    --text-muted: #8a8a84;
+    --gold: #8e6d38;
+    --sage: #4d6d5f;
+    --slate-blue: #4c5e87;
+    --red: #b34747;
+    --success: #3c7e55;
     --border-subtle: rgba(224, 224, 220, 0.7);
     --border-dim: rgba(224, 224, 220, 0.45);
     --surface-overlay: rgba(250, 250, 250, 0.6);
@@ -76,18 +76,18 @@
 
 /* Explicit light override — wins over OS dark preference when user picks light */
 [data-theme='light'] {
-  --bg: #FFFFFF;
-  --surface: #FAFAFA;
-  --surface-2: #F0F0EE;
-  --border: #E0E0DC;
+  --bg: #ffffff;
+  --surface: #fafafa;
+  --surface-2: #f0f0ee;
+  --border: #e0e0dc;
   --text-primary: #111111;
   --text-secondary: #555550;
-  --text-muted: #8A8A84;
-  --gold: #8E6D38;
-  --sage: #4D6D5F;
-  --slate-blue: #4C5E87;
-  --red: #B34747;
-  --success: #3C7E55;
+  --text-muted: #8a8a84;
+  --gold: #8e6d38;
+  --sage: #4d6d5f;
+  --slate-blue: #4c5e87;
+  --red: #b34747;
+  --success: #3c7e55;
   --border-subtle: rgba(224, 224, 220, 0.7);
   --border-dim: rgba(224, 224, 220, 0.45);
   --surface-overlay: rgba(250, 250, 250, 0.6);
@@ -159,13 +159,13 @@ h5 {
 }
 
 [data-theme='light'] .card:hover {
-  border-color: #C8C8C4;
+  border-color: #c8c8c4;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) .card:hover {
-    border-color: #C8C8C4;
+    border-color: #c8c8c4;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 }
@@ -263,24 +263,24 @@ h5 {
 [data-theme='light'] .input,
 [data-theme='light'] .textarea,
 [data-theme='light'] .select {
-  background: #FAFAFA;
+  background: #fafafa;
 }
 [data-theme='light'] .input:focus,
 [data-theme='light'] .textarea:focus,
 [data-theme='light'] .select:focus {
-  background: #FFFFFF;
+  background: #ffffff;
 }
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) .input,
   :root:not([data-theme='dark']) .textarea,
   :root:not([data-theme='dark']) .select {
-    background: #FAFAFA;
+    background: #fafafa;
   }
   :root:not([data-theme='dark']) .input:focus,
   :root:not([data-theme='dark']) .textarea:focus,
   :root:not([data-theme='dark']) .select:focus {
-    background: #FFFFFF;
+    background: #ffffff;
   }
 }
 

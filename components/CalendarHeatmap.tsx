@@ -22,7 +22,7 @@ export function CalendarHeatmap({ entries, currentDay }: Props) {
 
   return (
     <div className="card p-4">
-      <div className="flex items-baseline justify-between mb-3">
+      <div className="mb-3 flex items-baseline justify-between">
         <h3 className="font-display text-base">122-Day Map</h3>
         <div className="flex items-center gap-3 text-[10px] text-text-secondary">
           <Legend dotClass={dot.none} label="None" />

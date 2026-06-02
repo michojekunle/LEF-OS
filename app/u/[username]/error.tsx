@@ -7,6 +7,10 @@ export default function ProfileError(props: {
   reset: () => void;
 }) {
   return (
-    <ErrorFallback {...props} title="Couldn't load this profile." back={{ href: '/journal', label: 'Journal' }} />
+    <ErrorFallback
+      {...props}
+      title="Couldn't load this profile."
+      back={{ href: '/journal', label: 'Journal' }}
+    />
   );
 }

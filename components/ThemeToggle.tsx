@@ -13,7 +13,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
       onClick={toggle}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Light mode' : 'Dark mode'}
-      className={`btn btn-secondary p-1.5 md:p-2 rounded-md transition-colors ${className}`}
+      className={`btn btn-secondary rounded-md p-1.5 transition-colors md:p-2 ${className}`}
     >
       {isDark ? (
         <Sun size={14} className="text-gold" />
