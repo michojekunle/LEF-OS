@@ -205,6 +205,13 @@ export function SettingsClient({
       }
 
       // 3. Register push subscription via service worker
+      const existingRegistration = await navigator.serviceWorker.getRegistration();
+      if (!existingRegistration) {
+        throw new Error(
+          'No active Service Worker found. Push notifications may not work in local development mode without a valid PWA setup. Try refreshing.',
+        );
+      }
+
       const registration = await navigator.serviceWorker.ready;
       const applicationServerKey = urlBase64ToUint8Array(vapidKey);
 
