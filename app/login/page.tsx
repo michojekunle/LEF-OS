@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { AuthForm } from '../auth/AuthForm';
 
@@ -10,7 +11,9 @@ export default function LoginPage() {
         Continue your journey
       </p>
       <h1 className="font-display text-3xl md:text-4xl tracking-tight mb-6">Sign in</h1>
-      <AuthForm mode="signin" />
+      <Suspense fallback={<div className="card p-6 skeleton h-64" />}>
+        <AuthForm mode="signin" />
+      </Suspense>
       <div className="mt-6 flex items-center justify-between text-xs text-text-secondary">
         <Link href="/signup" className="hover:text-text-primary">
           Create an account →
