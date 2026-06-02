@@ -85,6 +85,7 @@ export function SettingsClient({
   const [newTitle, setNewTitle] = useState('');
   const [newTime, setNewTime] = useState('08:00');
   const [newType, setNewType] = useState<'email' | 'in_app' | 'both'>('both');
+  const [isAddingReminder, setIsAddingReminder] = useState(false);
 
   // Push subscription state
   const [pushRegistered, setPushRegistered] = useState(hasActivePush);
@@ -113,11 +114,12 @@ export function SettingsClient({
   // ── Add a custom reminder ────────────────────────────────────────────────
   async function handleAddReminder(e: React.FormEvent) {
     e.preventDefault();
-    if (!newTitle.trim()) return;
+    if (!newTitle.trim() || isAddingReminder) return;
 
     // Time needs to be in format "HH:MM:SS"
     const reminderTime = `${newTime}:00`;
 
+    setIsAddingReminder(true);
     try {
       const sb = supabaseBrowser();
       const { data, error } = await sb
@@ -144,6 +146,8 @@ export function SettingsClient({
     } catch (err) {
       console.error(err);
       toast.error('Failed to schedule reminder.');
+    } finally {
+      setIsAddingReminder(false);
     }
   }
 
@@ -436,7 +440,8 @@ export function SettingsClient({
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
                     placeholder="e.g. Afternoon Econ Log"
-                    className="input py-1.5 text-xs"
+                    disabled={isAddingReminder}
+                    className="input py-1.5 text-xs disabled:opacity-50"
                   />
                 </div>
 
@@ -453,7 +458,8 @@ export function SettingsClient({
                     required
                     value={newTime}
                     onChange={(e) => setNewTime(e.target.value)}
-                    className="input py-1.5 font-mono text-xs"
+                    disabled={isAddingReminder}
+                    className="input py-1.5 font-mono text-xs disabled:opacity-50"
                   />
                 </div>
 
@@ -468,7 +474,8 @@ export function SettingsClient({
                     id="rem-type"
                     value={newType}
                     onChange={(e) => setNewType(e.target.value as 'email' | 'in_app' | 'both')}
-                    className="select py-1.5 text-xs"
+                    disabled={isAddingReminder}
+                    className="select py-1.5 text-xs disabled:opacity-50"
                   >
                     <option value="both">Both (Email & Push)</option>
                     <option value="email">Email only</option>
@@ -479,9 +486,18 @@ export function SettingsClient({
 
               <button
                 type="submit"
-                className="btn btn-secondary flex w-full items-center justify-center gap-1.5 border-dashed px-3.5 py-1.5 text-xs"
+                disabled={isAddingReminder}
+                className="btn btn-secondary flex w-full items-center justify-center gap-1.5 border-dashed px-3.5 py-1.5 text-xs disabled:opacity-50"
               >
-                <Plus size={13} /> Schedule Reminder
+                {isAddingReminder ? (
+                  <>
+                    <Loader2 size={13} className="animate-spin" /> Scheduling...
+                  </>
+                ) : (
+                  <>
+                    <Plus size={13} /> Schedule Reminder
+                  </>
+                )}
               </button>
             </form>
           </section>
