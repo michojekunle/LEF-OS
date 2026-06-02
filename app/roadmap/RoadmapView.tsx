@@ -182,7 +182,7 @@ export function RoadmapView() {
           </p>
         </div>
         <a
-          href="https://github.com/michojekunle/LEF"
+          href="https://github.com/michojekunle/lef-os"
           target="_blank"
           rel="noopener noreferrer"
           className="w-full sm:w-auto btn btn-secondary text-xs py-2 px-4 flex items-center justify-center gap-2 hover:border-gold hover:text-gold transition-colors shrink-0"

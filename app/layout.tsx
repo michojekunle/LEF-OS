@@ -94,7 +94,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     'provider': {
       '@type': 'Organization',
       'name': 'LEF OS',
-      'sameAs': 'https://github.com/michojekunle/LEF'
+      'sameAs': 'https://github.com/michojekunle/lef-os'
     }
   };
 
