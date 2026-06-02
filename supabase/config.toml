@@ -1,0 +1,9 @@
+# Minimal Supabase CLI config — used only for `supabase db push` / `supabase link`.
+# Project ref lives in the .supabase/ folder created by `supabase link`.
+project_id = "lef-os"
+
+[db]
+major_version = 15
+
+[auth]
+enable_signup = true
