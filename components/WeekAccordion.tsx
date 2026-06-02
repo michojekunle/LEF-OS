@@ -31,10 +31,10 @@ export function WeekAccordion({ week, defaultOpen = false }: Props) {
         />
       </button>
       {open && (
-        <ol className="space-y-1.5 border-t border-[var(--border-subtle)] px-4 pb-4 pt-1">
+        <ol className="space-y-3 border-t border-[var(--border-subtle)] px-4 pb-5 pt-3">
           {week.days.map((d) => (
-            <li key={d.day} className="flex items-baseline gap-3 text-sm leading-snug max-[320px]:mb-3 max-[320px]:flex-col max-[320px]:items-start max-[320px]:gap-0.5">
-              <span className="w-12 shrink-0 font-mono text-[10px] tabular-nums text-text-muted">
+            <li key={d.day} className="flex items-baseline gap-4 text-base leading-snug max-[320px]:mb-4 max-[320px]:flex-col max-[320px]:items-start max-[320px]:gap-1">
+              <span className="w-14 shrink-0 font-mono text-xs tabular-nums text-text-muted">
                 Day {d.day}
               </span>
               <span className={d.isReview ? 'review-day' : 'text-text-secondary'}>{d.topic}</span>
