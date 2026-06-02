@@ -16,10 +16,10 @@ export function SignOutButton() {
     <button
       type="button"
       onClick={signOut}
-      className="btn btn-secondary text-xs p-1.5 md:p-2 lg:px-3 lg:py-1.5 inline-flex items-center gap-1.5 shrink-0"
+      className="btn btn-secondary inline-flex shrink-0 items-center gap-1.5 p-1.5 text-xs md:p-2 lg:px-3 lg:py-1.5"
       aria-label="Sign out"
     >
-      <LogOut size={14} className="lg:w-3 lg:h-3" />
+      <LogOut size={14} className="lg:h-3 lg:w-3" />
       <span className="hidden lg:inline">Sign out</span>
     </button>
   );

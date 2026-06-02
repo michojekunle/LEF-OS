@@ -22,10 +22,7 @@ export async function toggleReactionAction(input: {
     .maybeSingle();
 
   if (existing) {
-    const { error } = await sb
-      .from('journal_reactions')
-      .delete()
-      .eq('id', existing.id);
+    const { error } = await sb.from('journal_reactions').delete().eq('id', existing.id);
     if (error) return { ok: false, error: error.message };
     revalidatePath('/journal');
     return { ok: true, data: { added: false } };

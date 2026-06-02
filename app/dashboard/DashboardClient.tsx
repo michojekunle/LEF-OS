@@ -81,36 +81,32 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
 
   if (before) {
     return (
-      <div className="mx-auto max-w-content px-5 md:px-6 py-16 text-center">
-        <h1 className="font-display text-3xl mb-3">Course starts June 1, 2026.</h1>
-        <p className="text-text-secondary">
-          Hi {displayName ?? email}. See you on day one.
-        </p>
+      <div className="mx-auto max-w-content px-5 py-16 text-center md:px-6">
+        <h1 className="mb-3 font-display text-3xl">Course starts June 1, 2026.</h1>
+        <p className="text-text-secondary">Hi {displayName ?? email}. See you on day one.</p>
       </div>
     );
   }
 
   if (after) {
     return (
-      <div className="mx-auto max-w-content px-5 md:px-6 py-16 text-center">
-        <h1 className="font-display text-3xl mb-3">Course completed.</h1>
-        <p className="text-text-secondary">
-          122 days. 3 domains. Now go build with it.
-        </p>
+      <div className="mx-auto max-w-content px-5 py-16 text-center md:px-6">
+        <h1 className="mb-3 font-display text-3xl">Course completed.</h1>
+        <p className="text-text-secondary">122 days. 3 domains. Now go build with it.</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-content px-5 md:px-6 py-8 space-y-8">
+    <div className="mx-auto max-w-content space-y-8 px-5 py-8 md:px-6">
       {showNotificationPrompt && (
-        <div className="card-2 px-4 py-3 bg-gold/5 border-gold/20 text-xs flex items-center justify-between gap-4 animate-fade-in reveal">
+        <div className="card-2 bg-gold/5 border-gold/20 reveal flex animate-fade-in items-center justify-between gap-4 px-4 py-3 text-xs">
           <div className="flex items-center gap-2 text-text-primary">
-            <Bell size={14} className="text-gold shrink-0 animate-bounce" />
+            <Bell size={14} className="shrink-0 animate-bounce text-gold" />
             <span>Stay on track: Enable device push notifications to receive study reminders.</span>
           </div>
-          <div className="flex items-center gap-4 shrink-0">
-            <Link href="/settings" className="text-gold font-semibold hover:underline">
+          <div className="flex shrink-0 items-center gap-4">
+            <Link href="/settings" className="font-semibold text-gold hover:underline">
               Configure Alerts
             </Link>
             <button
@@ -118,7 +114,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
                 localStorage.setItem('dismissed-push-prompt', 'true');
                 setShowNotificationPrompt(false);
               }}
-              className="text-text-muted hover:text-text-primary p-0.5"
+              className="p-0.5 text-text-muted hover:text-text-primary"
               aria-label="Dismiss notification prompt"
             >
               <X size={14} />
@@ -127,34 +123,35 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
         </div>
       )}
       {/* HEADER */}
-      <header className="flex items-start justify-between gap-4 flex-wrap">
+      <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary mb-1">
+          <p className="mb-1 text-[10px] uppercase tracking-[0.32em] text-text-secondary">
             Hi {displayName ?? email.split('@')[0]}
           </p>
-          <div className="flex items-center gap-4 flex-wrap mt-1">
-            <h1 className="font-display text-3xl md:text-4xl tracking-tight">
-              Day {activeDay} <span className="text-text-muted text-lg">of {TOTAL_CALENDAR_DAYS}</span>
+          <div className="mt-1 flex flex-wrap items-center gap-4">
+            <h1 className="font-display text-3xl tracking-tight md:text-4xl">
+              Day {activeDay}{' '}
+              <span className="text-lg text-text-muted">of {TOTAL_CALENDAR_DAYS}</span>
             </h1>
-            
+
             {/* Today/Yesterday Toggle */}
-            <div className="flex gap-0.5 p-0.5 bg-surface-2 border border-border rounded-lg max-w-[200px]">
-              <button 
+            <div className="flex max-w-[200px] gap-0.5 rounded-lg border border-border bg-surface-2 p-0.5">
+              <button
                 onClick={() => setSelectedDayOffset(0)}
-                className={`px-3 py-1 text-[11px] font-medium rounded-md transition-all duration-150 ${selectedDayOffset === 0 ? 'bg-surface text-gold shadow-sm border border-border/40' : 'text-text-secondary hover:text-text-primary'}`}
+                className={`rounded-md px-3 py-1 text-[11px] font-medium transition-all duration-150 ${selectedDayOffset === 0 ? 'border border-[var(--border-dim)] bg-surface text-gold shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
               >
                 Today
               </button>
-              <button 
+              <button
                 onClick={() => setSelectedDayOffset(-1)}
-                className={`px-3 py-1 text-[11px] font-medium rounded-md transition-all duration-150 ${selectedDayOffset === -1 ? 'bg-surface text-gold shadow-sm border border-border/40' : 'text-text-secondary hover:text-text-primary'}`}
+                className={`rounded-md px-3 py-1 text-[11px] font-medium transition-all duration-150 ${selectedDayOffset === -1 ? 'border border-[var(--border-dim)] bg-surface text-gold shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
               >
                 Yesterday
               </button>
             </div>
           </div>
           {monthData && (
-            <p className="text-sm text-text-secondary mt-1">
+            <p className="mt-1 text-sm text-text-secondary">
               {monthData.monthName} · {monthData.theme}
             </p>
           )}
@@ -173,7 +170,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
           <DayCard domain="finance" day={activeDay} />
         </div>
         {!topics.law && !topics.economics && !topics.finance && (
-          <p className="text-xs text-text-muted italic">
+          <p className="text-xs italic text-text-muted">
             Day {activeDay} is in the integration & sharing buffer. Review, write, ship.
           </p>
         )}
@@ -182,8 +179,8 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
       {/* LOG FORM */}
       <section className="space-y-3">
         <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
-          {existing 
-            ? `Edit ${selectedDayOffset === 0 ? "today's" : "yesterday's"} log` 
+          {existing
+            ? `Edit ${selectedDayOffset === 0 ? "today's" : "yesterday's"} log`
             : `Day ${activeDay} is waiting. What did you study?`}
         </h2>
         <DailyLogForm
@@ -217,10 +214,15 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
         />
       </section>
 
-      <section className="card p-5 space-y-4">
+      <section className="card space-y-4 p-5">
         <h3 className="font-display text-base">Per-domain progress</h3>
         <ProgressBar value={lawDone} max={TOTAL_CALENDAR_DAYS} label="⚖️ Law" accent="gold" />
-        <ProgressBar value={econDone} max={TOTAL_CALENDAR_DAYS} label="📊 Economics" accent="sage" />
+        <ProgressBar
+          value={econDone}
+          max={TOTAL_CALENDAR_DAYS}
+          label="📊 Economics"
+          accent="sage"
+        />
         <ProgressBar value={finDone} max={TOTAL_CALENDAR_DAYS} label="💰 Finance" accent="slate" />
       </section>
 
@@ -233,7 +235,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
           Entry history
         </h2>
         {entries.length === 0 ? (
-          <div className="card p-6 text-sm text-text-secondary text-center">
+          <div className="card p-6 text-center text-sm text-text-secondary">
             No entries yet. Start your streak today.
           </div>
         ) : (
@@ -269,7 +271,7 @@ function Stat({
       </div>
       <p className="mt-2 font-display text-3xl">
         {value}
-        {sub && <span className="text-text-muted text-base"> {sub}</span>}
+        {sub && <span className="text-base text-text-muted"> {sub}</span>}
       </p>
     </div>
   );
@@ -277,7 +279,7 @@ function Stat({
 
 function StreakBadge({ streak }: { streak: number }) {
   return (
-    <div className="card-2 px-4 py-3 inline-flex items-center gap-3">
+    <div className="card-2 inline-flex items-center gap-3 px-4 py-3">
       <Flame size={18} className={streak > 0 ? 'text-gold' : 'text-text-muted'} />
       <div>
         <p className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">Streak</p>
@@ -294,9 +296,7 @@ function ThursdayTracker({ entries }: { entries: DailyEntry[] }) {
   const byDate = new Map(entries.map((e) => [e.entry_date, e]));
   return (
     <section className="card p-5">
-      <h3 className="font-display text-base mb-3">
-        Weekly video review · Thursdays
-      </h3>
+      <h3 className="mb-3 font-display text-base">Weekly video review · Thursdays</h3>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(96px,1fr))] gap-2">
         {thursdays.map((t) => {
           const e = byDate.get(isoDate(t.date));
@@ -306,14 +306,12 @@ function ThursdayTracker({ entries }: { entries: DailyEntry[] }) {
           return (
             <div
               key={t.day}
-              className={`rounded-md border px-2.5 py-2 flex items-center justify-between gap-2 text-[11px] transition-colors ${
+              className={`flex items-center justify-between gap-2 rounded-md border px-2.5 py-2 text-[11px] transition-colors ${
                 done ? 'border-gold/40 bg-accent-law' : 'border-border bg-surface'
               }`}
             >
               <span className="font-mono text-text-muted">D{t.day}</span>
-              <span className={done ? 'text-gold' : 'text-text-muted'}>
-                {done ? '✓' : '○'}
-              </span>
+              <span className={done ? 'text-gold' : 'text-text-muted'}>{done ? '✓' : '○'}</span>
             </div>
           );
         })}

@@ -44,9 +44,11 @@ export function getMonthForDay(day: number): 1 | 2 | 3 | 4 {
   return 4;
 }
 
-export function getTodayTopics(
-  day: number,
-): { law: string | null; economics: string | null; finance: string | null } {
+export function getTodayTopics(day: number): {
+  law: string | null;
+  economics: string | null;
+  finance: string | null;
+} {
   return {
     law: findDayMeta('law', day)?.topic ?? null,
     economics: findDayMeta('economics', day)?.topic ?? null,
@@ -73,9 +75,8 @@ export function dateFromDayNumber(day: number): Date {
 }
 
 export function getOverallProgress(entries: DailyEntry[]): number {
-  return entries.filter(
-    (e) => e.law_completed || e.economics_completed || e.finance_completed,
-  ).length;
+  return entries.filter((e) => e.law_completed || e.economics_completed || e.finance_completed)
+    .length;
 }
 
 export function getDomainProgress(entries: DailyEntry[], domain: Domain): number {

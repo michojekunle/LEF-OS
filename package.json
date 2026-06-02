@@ -1,6 +1,6 @@
 {
   "name": "lef-os",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Law · Economics · Finance — a founder's 4-month learning OS",
   "scripts": {
@@ -8,8 +8,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,css}\"",
     "typecheck": "tsc --noEmit",
-    "icons": "node scripts/generate-icons.mjs"
+    "check": "npm run typecheck && npm run lint && npm run format:check",
+    "icons": "node scripts/generate-icons.mjs",
+    "db:push": "supabase db push",
+    "db:diff": "supabase db diff",
+    "db:reset": "supabase db reset"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",
@@ -27,8 +34,15 @@
     "@types/react-dom": "^18.3.0",
     "@types/web-push": "^3.6.4",
     "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.0.3",
     "postcss": "^8.4.47",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.13",
     "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

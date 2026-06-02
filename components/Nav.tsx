@@ -4,6 +4,8 @@ import { supabaseServer } from '@/lib/supabase-server';
 import { SignOutButton } from './SignOutButton';
 import { NavLinks, NavTrigger } from './NavLinks';
 import { NotificationCenter } from './NotificationCenter';
+import { ThemeToggle } from './ThemeToggle';
+import { Settings } from 'lucide-react';
 
 export async function Nav() {
   let isAuthed = false;
@@ -22,25 +24,42 @@ export async function Nav() {
   }
 
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-md bg-bg/75 border-b border-border/60">
-      <nav className="mx-auto max-w-6xl px-4 md:px-6 h-14 flex items-center justify-between gap-2 md:gap-4">
-        <Link href="/" className="flex items-baseline gap-2 shrink-0">
-          <span className="font-display text-lg tracking-tight text-gold">LEF</span>
-          <span className="hidden xl:inline text-[11px] uppercase tracking-[0.22em] text-text-secondary">
+    <header className="sticky top-0 z-40 border-b border-[var(--border-subtle)] bg-[var(--bg-nav)] backdrop-blur-md">
+      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 md:h-[4.5rem] md:gap-4 md:px-6">
+        {/* Logo */}
+        <Link href="/" className="group flex shrink-0 items-baseline gap-2">
+          <span className="font-display text-xl tracking-tight text-gold transition-opacity group-hover:opacity-80 md:text-2xl">
+            LEF
+          </span>
+          <span className="hidden text-[11px] uppercase tracking-[0.22em] text-text-secondary xl:inline">
             Law · Economics · Finance
           </span>
         </Link>
+
+        {/* Desktop nav links */}
         <NavLinks />
-        <div className="flex items-center gap-1.5 md:gap-2">
-          <NavTrigger />
+
+        {/* Right-side actions */}
+        <div className="flex items-center gap-1.5 md:gap-2.5">
+          <ThemeToggle />
+          {/* Command palette trigger — hidden on mobile, tab bar Search covers it */}
+          <span className="hidden md:flex">
+            <NavTrigger />
+          </span>
+          {isAuthed && (
+            <Link
+              href="/settings"
+              className="rounded-md p-1.5 text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary md:p-2"
+              aria-label="Settings"
+            >
+              <Settings size={20} strokeWidth={1.75} />
+            </Link>
+          )}
           {isAuthed && <NotificationCenter userId={userId} />}
           {isAuthed ? (
             <SignOutButton />
           ) : (
-            <Link
-              href="/login"
-              className="btn btn-secondary text-xs p-1.5 md:p-2 lg:px-3 lg:py-1.5 shrink-0"
-            >
+            <Link href="/login" className="btn btn-secondary shrink-0 px-3 py-2 text-xs">
               Sign in
             </Link>
           )}

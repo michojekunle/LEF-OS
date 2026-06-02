@@ -94,7 +94,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         aria-live="polite"
         role="region"
         aria-label="Notifications"
-        className="pointer-events-none fixed inset-x-0 bottom-20 md:bottom-6 z-[80] flex flex-col items-center gap-2 px-4"
+        className="pointer-events-none fixed inset-x-0 bottom-20 z-[80] flex flex-col items-center gap-2 px-4 md:bottom-6"
       >
         {toasts.map((t) => (
           <ToastItem key={t.id} toast={t} onDismiss={() => dismiss(t.id)} />
@@ -117,15 +117,15 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
         : 'border-[rgba(139,158,204,0.5)]';
   return (
     <div
-      className={`pointer-events-auto w-full max-w-sm card-2 ${border} px-4 py-3 flex items-center gap-3 reveal shadow-[0_8px_28px_-12px_rgba(0,0,0,0.5)]`}
+      className={`card-2 pointer-events-auto w-full max-w-sm ${border} reveal flex items-center gap-3 px-4 py-3 shadow-[0_8px_28px_-12px_rgba(0,0,0,0.5)]`}
     >
       <Icon size={16} className={accent} />
-      <p className="flex-1 text-sm text-text-primary leading-snug">{message}</p>
+      <p className="flex-1 text-sm leading-snug text-text-primary">{message}</p>
       <button
         type="button"
         onClick={onDismiss}
         aria-label="Dismiss"
-        className="text-text-muted hover:text-text-primary transition-colors"
+        className="text-text-muted transition-colors hover:text-text-primary"
       >
         <X size={14} />
       </button>

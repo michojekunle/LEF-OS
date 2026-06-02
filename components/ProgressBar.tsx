@@ -28,20 +28,18 @@ export function ProgressBar({
   return (
     <div className={className}>
       {(label || showCount) && (
-        <div className="flex items-baseline justify-between mb-1.5">
+        <div className="mb-1.5 flex items-baseline justify-between">
           {label && (
-            <span className="text-xs uppercase tracking-[0.18em] text-text-secondary">
-              {label}
-            </span>
+            <span className="text-xs uppercase tracking-[0.18em] text-text-secondary">{label}</span>
           )}
           {showCount && (
-            <span className="text-xs font-mono text-text-secondary tabular-nums">
+            <span className="font-mono text-xs tabular-nums text-text-secondary">
               {clamped} / {max} <span className="text-text-muted">· {pct}%</span>
             </span>
           )}
         </div>
       )}
-      <div className="h-1.5 w-full rounded-full bg-surface-2 overflow-hidden border border-border">
+      <div className="h-1.5 w-full overflow-hidden rounded-full border border-border bg-surface-2">
         <div
           className={`h-full ${fill[accent]} rounded-full transition-all duration-700 ease-out`}
           style={{ width: `${pct}%` }}

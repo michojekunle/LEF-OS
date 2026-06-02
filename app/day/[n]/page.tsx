@@ -64,11 +64,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
             .eq('user_id', u.user.id)
             .eq('entry_date', iso)
             .maybeSingle(),
-          sb
-            .from('day_notes')
-            .select('*')
-            .eq('user_id', u.user.id)
-            .eq('day_number', day),
+          sb.from('day_notes').select('*').eq('user_id', u.user.id).eq('day_number', day),
           sb
             .from('questions')
             .select('*')
@@ -92,19 +88,19 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CourseInstance',
-    'name': `Day ${day} Curriculum Study Log`,
-    'description': `Study details for Day ${day} curriculum covering: Law (${
+    name: `Day ${day} Curriculum Study Log`,
+    description: `Study details for Day ${day} curriculum covering: Law (${
       metas.law?.topic || 'Review'
     }), Economics (${metas.economics?.topic || 'Review'}), Finance (${metas.finance?.topic || 'Review'}).`,
-    'courseMode': 'Online/Self-paced',
-    'instructor': {
+    courseMode: 'Online/Self-paced',
+    instructor: {
       '@type': 'Organization',
-      'name': 'LEF OS'
-    }
+      name: 'LEF OS',
+    },
   };
 
   return (
-    <div className="mx-auto max-w-content px-5 md:px-6 py-8 space-y-8">
+    <div className="mx-auto max-w-content space-y-8 px-5 py-8 md:px-6">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -116,11 +112,10 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
         >
           <ArrowLeft size={11} /> Roadmap
         </Link>
-        <h1 className="font-display text-4xl md:text-5xl tracking-tight">
-          Day {day}{' '}
-          <span className="text-text-muted text-lg">of {TOTAL_CALENDAR_DAYS}</span>
+        <h1 className="font-display text-4xl tracking-tight md:text-5xl">
+          Day {day} <span className="text-lg text-text-muted">of {TOTAL_CALENDAR_DAYS}</span>
         </h1>
-        <div className="flex items-center gap-3 flex-wrap text-xs text-text-secondary">
+        <div className="flex flex-wrap items-center gap-3 text-xs text-text-secondary">
           <span className="inline-flex items-center gap-1.5">
             <CalendarDays size={12} className="text-text-muted" />
             {formatDate(date, { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
@@ -131,7 +126,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
             </span>
           )}
           {isThu && (
-            <span className="accent-law border border-accent-law bg-accent-law rounded-md px-2 py-0.5">
+            <span className="accent-law border-accent-law bg-accent-law rounded-md border px-2 py-0.5">
               Thursday · weekly video review
             </span>
           )}
@@ -142,7 +137,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
         {domains.map((d) => {
           const m = metas[d];
           return (
-            <div key={d} className="card p-5 flex flex-col gap-3 min-h-[160px]">
+            <div key={d} className="card flex min-h-[160px] flex-col gap-3 p-5">
               <DomainBadge domain={d} />
               {m ? (
                 <p
@@ -153,12 +148,12 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
                   {m.topic}
                 </p>
               ) : (
-                <p className="text-sm text-text-secondary italic">
+                <p className="text-sm italic text-text-secondary">
                   Buffer day · use today to review and ship.
                 </p>
               )}
               {m && (
-                <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted mt-auto">
+                <p className="mt-auto text-[10px] uppercase tracking-[0.18em] text-text-muted">
                   {m.weekTitle}
                 </p>
               )}
@@ -169,26 +164,28 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
 
       {/* RECOMMENDED RESOURCES */}
       {month && (
-        <section className="card p-6 space-y-4">
+        <section className="card space-y-4 p-6">
           <div>
-            <h2 className="text-xs font-semibold text-text-primary uppercase tracking-wider">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-text-primary">
               Recommended Reading & Resources
             </h2>
-            <p className="text-xs text-text-secondary mt-0.5">
-              Reference materials and primary literature for Month {month.month} ({month.name}) study tracks.
+            <p className="mt-0.5 text-xs text-text-secondary">
+              Reference materials and primary literature for Month {month.month} ({month.name})
+              study tracks.
             </p>
           </div>
-          
+
           <div className="grid gap-6 md:grid-cols-3">
             {domains.map((d) => {
               const track = month.tracks[d];
               const resList = track?.resources || [];
               if (resList.length === 0) return null;
-              
+
               return (
                 <div key={d} className="space-y-2">
-                  <span className="text-[10px] uppercase tracking-wider text-text-muted font-semibold block">
-                    {d === 'law' ? '⚖️ Law' : d === 'economics' ? '📊 Economics' : '💰 Finance'} Resources
+                  <span className="block text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+                    {d === 'law' ? '⚖️ Law' : d === 'economics' ? '📊 Economics' : '💰 Finance'}{' '}
+                    Resources
                   </span>
                   <ul className="space-y-1.5">
                     {resList.map((res) => {
@@ -200,7 +197,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
                               href={url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gold hover:underline hover:text-gold/80 transition-colors inline-flex items-center gap-1 leading-normal"
+                              className="hover:text-gold/80 inline-flex items-center gap-1 leading-normal text-gold transition-colors hover:underline"
                             >
                               {res}
                               <span className="text-[9px] opacity-75">↗</span>
@@ -242,7 +239,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
         }}
       />
 
-      <nav className="flex items-center justify-between border-t border-border/60 pt-6">
+      <nav className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-6">
         {prev ? (
           <Link
             href={`/day/${prev}`}
@@ -270,7 +267,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
 
 function SignInPrompt({ day }: { day: number }) {
   return (
-    <section className="card p-6 text-center space-y-3">
+    <section className="card space-y-3 p-6 text-center">
       <p className="text-sm text-text-secondary">
         Sign in to log Day {day}, save private notes, and capture questions.
       </p>

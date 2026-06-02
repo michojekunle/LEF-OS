@@ -23,7 +23,7 @@ export function MarkdownText({ text }: Props) {
     return tokens.map((token, i) => {
       if (token.startsWith('**') && token.endsWith('**')) {
         return (
-          <strong key={i} className="font-semibold text-text-primary text-gold">
+          <strong key={i} className="font-semibold text-gold text-text-primary">
             {token.slice(2, -2)}
           </strong>
         );
@@ -31,7 +31,7 @@ export function MarkdownText({ text }: Props) {
         return (
           <code
             key={i}
-            className="px-1.5 py-0.5 rounded bg-surface-2 border border-border text-gold font-mono text-[10px]"
+            className="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-gold"
           >
             {token.slice(1, -1)}
           </code>
@@ -45,9 +45,12 @@ export function MarkdownText({ text }: Props) {
     if (currentParagraphLines.length > 0) {
       const pText = currentParagraphLines.join(' ');
       blocks.push(
-        <p key={`p-${blocks.length}`} className="mb-3 text-xs text-text-secondary leading-relaxed last:mb-0">
+        <p
+          key={`p-${blocks.length}`}
+          className="mb-3 text-xs leading-relaxed text-text-secondary last:mb-0"
+        >
           {parseInline(pText)}
-        </p>
+        </p>,
       );
       currentParagraphLines = [];
     }
@@ -58,23 +61,26 @@ export function MarkdownText({ text }: Props) {
       const listKey = `list-${blocks.length}`;
       if (currentList.type === 'ul') {
         blocks.push(
-          <ul key={listKey} className="list-disc pl-5 mb-3 space-y-1 text-xs text-text-secondary">
+          <ul key={listKey} className="mb-3 list-disc space-y-1 pl-5 text-xs text-text-secondary">
             {currentList.items.map((item, idx) => (
               <li key={idx} className="leading-relaxed">
                 {parseInline(item)}
               </li>
             ))}
-          </ul>
+          </ul>,
         );
       } else {
         blocks.push(
-          <ol key={listKey} className="list-decimal pl-5 mb-3 space-y-1 text-xs text-text-secondary">
+          <ol
+            key={listKey}
+            className="mb-3 list-decimal space-y-1 pl-5 text-xs text-text-secondary"
+          >
             {currentList.items.map((item, idx) => (
               <li key={idx} className="leading-relaxed">
                 {parseInline(item)}
               </li>
             ))}
-          </ol>
+          </ol>,
         );
       }
       currentList = null;
@@ -84,12 +90,18 @@ export function MarkdownText({ text }: Props) {
   function flushTable() {
     if (currentTable) {
       blocks.push(
-        <div key={`table-wrapper-${blocks.length}`} className="w-full overflow-x-auto my-3 border border-border rounded-lg bg-surface-2/20">
+        <div
+          key={`table-wrapper-${blocks.length}`}
+          className="bg-surface-2/20 my-3 w-full overflow-x-auto rounded-lg border border-border"
+        >
           <table className="w-full border-collapse text-left text-[11px] text-text-secondary">
             <thead>
-              <tr className="border-b border-border bg-surface-2/50">
+              <tr className="bg-surface-2/50 border-b border-border">
                 {currentTable.headers.map((h, idx) => (
-                  <th key={idx} className="px-3 py-2 font-semibold text-text-primary border-r border-border last:border-r-0">
+                  <th
+                    key={idx}
+                    className="border-r border-border px-3 py-2 font-semibold text-text-primary last:border-r-0"
+                  >
                     {parseInline(h)}
                   </th>
                 ))}
@@ -97,9 +109,15 @@ export function MarkdownText({ text }: Props) {
             </thead>
             <tbody>
               {currentTable.rows.map((row, rIdx) => (
-                <tr key={rIdx} className="border-b border-border last:border-b-0 hover:bg-surface-2/20 transition-colors">
+                <tr
+                  key={rIdx}
+                  className="hover:bg-surface-2/20 border-b border-border transition-colors last:border-b-0"
+                >
                   {row.map((cell, cIdx) => (
-                    <td key={cIdx} className="px-3 py-2 border-r border-border last:border-r-0 leading-normal">
+                    <td
+                      key={cIdx}
+                      className="border-r border-border px-3 py-2 leading-normal last:border-r-0"
+                    >
                       {parseInline(cell)}
                     </td>
                   ))}
@@ -107,7 +125,7 @@ export function MarkdownText({ text }: Props) {
               ))}
             </tbody>
           </table>
-        </div>
+        </div>,
       );
       currentTable = null;
     }
@@ -129,14 +147,14 @@ export function MarkdownText({ text }: Props) {
         level === 1
           ? 'text-sm font-semibold text-text-primary mt-4 mb-2 first:mt-0 font-display'
           : level === 2
-          ? 'text-xs font-semibold text-text-primary mt-3 mb-2 first:mt-0 font-display border-b border-border pb-1'
-          : 'text-[11px] font-semibold text-gold mt-2 mb-1.5 first:mt-0 font-display';
+            ? 'text-xs font-semibold text-text-primary mt-3 mb-2 first:mt-0 font-display border-b border-border pb-1'
+            : 'text-[11px] font-semibold text-gold mt-2 mb-1.5 first:mt-0 font-display';
 
       const HeadingTag = `h${Math.min(level, 6)}` as keyof JSX.IntrinsicElements;
       blocks.push(
         <HeadingTag key={`h-${i}`} className={headingClass}>
           {parseInline(headingText)}
-        </HeadingTag>
+        </HeadingTag>,
       );
       continue;
     }

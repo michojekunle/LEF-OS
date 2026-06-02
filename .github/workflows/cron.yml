@@ -1,0 +1,15 @@
+name: Hourly Reminder Cron
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs at the top of every hour
+  workflow_dispatch: # Allows manual triggering from the GitHub UI
+
+jobs:
+  ping-cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Daily Reminder API
+        run: |
+          curl -f -X GET "${{ secrets.SITE_URL }}/api/cron/daily-reminder" \
+               -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

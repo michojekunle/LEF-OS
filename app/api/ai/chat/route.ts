@@ -4,7 +4,9 @@ import { supabaseServer } from '@/lib/supabase-server';
 export async function POST(request: Request) {
   try {
     const sb = await supabaseServer();
-    const { data: { user } } = await sb.auth.getUser();
+    const {
+      data: { user },
+    } = await sb.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -12,9 +14,13 @@ export async function POST(request: Request) {
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({
-        error: 'LEF Counsel: GEMINI_API_KEY environment variable is not configured on this server.'
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          error:
+            'LEF Counsel: GEMINI_API_KEY environment variable is not configured on this server.',
+        },
+        { status: 500 },
+      );
     }
 
     const { messages, day, topics } = await request.json();
@@ -46,7 +52,19 @@ Instructions:
 2. Provide practical Nigerian context (e.g. referencing CAMA 2020, FIRS tax codes, CBN monetary policy, local informal markets) alongside global principles.
 3. Be concise and structured. Use Markdown tables, bullet points, and clean lists. Keep explanations under 3-4 paragraphs unless a deep dive is explicitly requested.
 4. Always identify yourself as "LEF Counsel".
-5. If the user asks for a quiz, generate a quick 3-question multiple-choice quiz based on the current day's topics, and wait for their answers.`;
+5. If the user asks for a quiz, you must generate a quick 3-question multiple-choice quiz based on the current day's topics. Format the quiz strictly as a JSON block wrapped in \`\`\`json and \`\`\` code blocks. The JSON must follow this exact format:
+{
+  "type": "quiz",
+  "questions": [
+    {
+      "question": "The question text",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "answerIndex": 0,
+      "explanation": "Explanation text"
+    }
+  ]
+}
+Do not add any other text outside of the JSON block when a quiz is requested.`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -62,16 +80,21 @@ Instructions:
           },
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 1024,
+            // 4096 handles full quizzes (3 Qs + explanations ≈ 600–900 tokens)
+            // and rich markdown answers without cutting off
+            maxOutputTokens: 4096,
           },
         }),
-      }
+      },
     );
 
     if (!response.ok) {
       const errText = await response.text();
       console.error('Gemini API request failed:', errText);
-      return NextResponse.json({ error: 'Gemini service returned an error.' }, { status: response.status });
+      return NextResponse.json(
+        { error: 'Gemini service returned an error.' },
+        { status: response.status },
+      );
     }
 
     const resJson = await response.json();

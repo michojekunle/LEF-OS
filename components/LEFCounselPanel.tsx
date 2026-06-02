@@ -35,9 +35,18 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
   }, [messages, loading]);
 
   const starterPills = [
-    { label: "💡 Explain today's concepts", query: "Can you explain today's Law, Economics, and Finance topics in simple terms?" },
-    { label: "📝 Give me a quick quiz", query: "Give me a quick 3-question multiple-choice quiz based on today's study topics." },
-    { label: "🇳🇬 Apply to Nigeria context", query: "How do today's topics apply practically to a business or founder in Nigeria?" },
+    {
+      label: "💡 Explain today's concepts",
+      query: "Can you explain today's Law, Economics, and Finance topics in simple terms?",
+    },
+    {
+      label: '📝 Give me a quick quiz',
+      query: "Give me a quick 3-question multiple-choice quiz based on today's study topics.",
+    },
+    {
+      label: '🇳🇬 Apply to Nigeria context',
+      query: "How do today's topics apply practically to a business or founder in Nigeria?",
+    },
   ];
 
   async function handleSend(textToSend: string) {
@@ -83,20 +92,22 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
   // --- FLOATING WIDGET TRIGGER ---
   if (isFloating) {
     return (
-      <div className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-40 select-none">
+      <div className="fixed bottom-24 right-4 z-40 select-none md:bottom-6 md:right-6">
         {isOpen ? (
-          <div className="w-80 md:w-96 h-[460px] max-h-[75vh] card-2 bg-surface/95 border-border shadow-2xl rounded-xl flex flex-col overflow-hidden reveal">
+          <div className="card-2 bg-surface/95 reveal flex h-[460px] max-h-[75vh] w-80 flex-col overflow-hidden rounded-xl border-border shadow-2xl md:w-96">
             {/* Header */}
-            <header className="px-4 py-3 bg-surface-2 border-b border-border flex items-center justify-between">
+            <header className="flex items-center justify-between border-b border-border bg-surface-2 px-4 py-3">
               <div className="flex items-center gap-2">
-                <Sparkles size={14} className="text-gold animate-pulse" />
-                <span className="text-xs font-semibold text-text-primary uppercase tracking-wider">LEF Counsel</span>
+                <Sparkles size={14} className="animate-pulse text-gold" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-text-primary">
+                  LEF Counsel
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 {userId && (
                   <button
                     onClick={handleReset}
-                    className="text-text-muted hover:text-text-secondary transition-colors p-0.5"
+                    className="p-0.5 text-text-muted transition-colors hover:text-text-secondary"
                     title="Reset conversation"
                     aria-label="Reset conversation"
                   >
@@ -105,7 +116,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
                 )}
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-text-muted hover:text-text-primary p-0.5"
+                  className="p-0.5 text-text-muted hover:text-text-primary"
                   title="Close LEF Counsel chat"
                   aria-label="Close LEF Counsel chat"
                 >
@@ -141,18 +152,18 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
             )}
           </div>
         ) : (
-          <div className="relative group">
+          <div className="group relative">
             {/* Tooltip */}
-            <div className="absolute bottom-full right-0 mb-2 hidden group-hover:block pointer-events-none whitespace-nowrap bg-surface-2 border border-border text-gold text-[10px] uppercase tracking-wider px-2.5 py-1 rounded shadow-lg">
+            <div className="pointer-events-none absolute bottom-full right-0 mb-2 hidden whitespace-nowrap rounded border border-border bg-surface-2 px-2.5 py-1 text-[10px] uppercase tracking-wider text-gold shadow-lg group-hover:block">
               Ask LEF Counsel
             </div>
 
             {/* Pulsing glow */}
-            <div className="absolute inset-0 rounded-full bg-gold/25 animate-ping pointer-events-none" />
+            <div className="bg-gold/25 pointer-events-none absolute inset-0 animate-ping rounded-full" />
 
             <button
               onClick={() => setIsOpen(true)}
-              className="relative w-11 h-11 md:w-12 md:h-12 bg-surface border border-gold text-gold hover:bg-gold hover:text-bg font-semibold rounded-full shadow-2xl flex items-center justify-center transition-all duration-200"
+              className="relative flex h-11 w-11 items-center justify-center rounded-full border border-gold bg-surface font-semibold text-gold shadow-2xl transition-all duration-200 hover:bg-gold hover:text-bg md:h-12 md:w-12"
               title="Chat with LEF Counsel"
               aria-label="Open LEF Counsel chat"
             >
@@ -166,29 +177,27 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
 
   // --- INLINE STUDY PAGE PANEL ---
   return (
-    <section className="card border-border bg-surface overflow-hidden">
+    <section className="card overflow-hidden border-border bg-surface">
       {/* Header */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-5 py-4 border-b border-border bg-surface-2/20 flex items-center justify-between hover:bg-surface-2/40 transition-colors"
+        className="bg-surface-2/20 hover:bg-surface-2/40 flex w-full items-center justify-between border-b border-border px-5 py-4 transition-colors"
         aria-expanded={isOpen}
         aria-controls="lef-counsel-inline-panel"
       >
         <div className="flex items-center gap-2">
           <Sparkles size={15} className="text-gold" />
-          <h2 className="text-xs font-semibold text-text-primary uppercase tracking-wider">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-text-primary">
             Ask LEF Counsel
           </h2>
-          <span className="text-[10px] text-text-muted font-normal">
-            · AI Syllabus Assistant
-          </span>
+          <span className="text-[10px] font-normal text-text-muted">· AI Syllabus Assistant</span>
         </div>
         {isOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
       </button>
 
       {/* Panel Body */}
       {isOpen && (
-        <div id="lef-counsel-inline-panel" className="h-[400px] flex flex-col">
+        <div id="lef-counsel-inline-panel" className="flex h-[400px] flex-col">
           <ChatBody
             messages={messages}
             starterPills={starterPills}

@@ -6,7 +6,9 @@ export function supabaseAdmin() {
   const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !serviceRole) {
-    throw new Error('Supabase admin env vars not configured (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY).');
+    throw new Error(
+      'Supabase admin env vars not configured (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY).',
+    );
   }
 
   return createClient<Database>(url, serviceRole, {

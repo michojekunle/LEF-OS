@@ -1,18 +1,13 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import {
-  getDayNumber,
-  getTodayTopics,
-  getCurrentStreak,
-  clampDay,
-  isoDate,
-} from '@/lib/utils';
+import { getDayNumber, getTodayTopics, getCurrentStreak, clampDay, isoDate } from '@/lib/utils';
 import webpush from 'web-push';
 
 export async function GET(request: Request) {
   // Verify authorization secret
   const { searchParams } = new URL(request.url);
-  const key = searchParams.get('secret') ?? request.headers.get('Authorization')?.replace('Bearer ', '');
+  const key =
+    searchParams.get('secret') ?? request.headers.get('Authorization')?.replace('Bearer ', '');
   const secret = process.env.CRON_SECRET;
 
   if (secret && key !== secret) {
@@ -58,11 +53,7 @@ export async function GET(request: Request) {
     const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
     const hasVapid = Boolean(vapidPublicKey && vapidPrivateKey);
     if (hasVapid) {
-      webpush.setVapidDetails(
-        'mailto:support@lef-os.com',
-        vapidPublicKey!,
-        vapidPrivateKey!
-      );
+      webpush.setVapidDetails('mailto:support@lef-os.com', vapidPublicKey!, vapidPrivateKey!);
     }
 
     // Process reminders for each user
@@ -126,8 +117,14 @@ export async function GET(request: Request) {
       const todayLog = logs?.find((l) => l.entry_date === todayIso);
       const yesterdayLog = logs?.find((l) => l.entry_date === yesterdayIso);
 
-      const todayComplete = todayLog && (todayLog.law_completed || todayLog.economics_completed || todayLog.finance_completed);
-      const yesterdayComplete = yesterdayLog && (yesterdayLog.law_completed || yesterdayLog.economics_completed || yesterdayLog.finance_completed);
+      const todayComplete =
+        todayLog &&
+        (todayLog.law_completed || todayLog.economics_completed || todayLog.finance_completed);
+      const yesterdayComplete =
+        yesterdayLog &&
+        (yesterdayLog.law_completed ||
+          yesterdayLog.economics_completed ||
+          yesterdayLog.finance_completed);
 
       // Do not send reminders if today is already logged/complete
       if (todayComplete) {
@@ -158,12 +155,26 @@ export async function GET(request: Request) {
         if (sendEmail) {
           const reqUrl = new URL(request.url);
           const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-            ? (process.env.NEXT_PUBLIC_SITE_URL.includes('http') ? process.env.NEXT_PUBLIC_SITE_URL : `https://${process.env.NEXT_PUBLIC_SITE_URL}`)
+            ? process.env.NEXT_PUBLIC_SITE_URL.includes('http')
+              ? process.env.NEXT_PUBLIC_SITE_URL
+              : `https://${process.env.NEXT_PUBLIC_SITE_URL}`
             : process.env.VERCEL_URL
               ? `https://${process.env.VERCEL_URL}`
-              : reqUrl.origin.includes('localhost') ? reqUrl.origin : 'http://localhost:3001';
+              : reqUrl.origin.includes('localhost')
+                ? reqUrl.origin
+                : 'http://localhost:3001';
 
-          const emailHtml = getReminderEmailHtml(title, message, streak, todayDay, todayTopics, yesterdayDay, yesterdayTopics, Boolean(yesterdayComplete), siteUrl);
+          const emailHtml = getReminderEmailHtml(
+            title,
+            message,
+            streak,
+            todayDay,
+            todayTopics,
+            yesterdayDay,
+            yesterdayTopics,
+            Boolean(yesterdayComplete),
+            siteUrl,
+          );
 
           const emailRes = await fetch('https://api.resend.com/emails', {
             method: 'POST',
@@ -187,13 +198,11 @@ export async function GET(request: Request) {
 
         // --- IN-APP & DEVICE PUSH NOTIFICATION ---
         if (sendInApp) {
-          const { error: insertError } = await sb
-            .from('in_app_notifications')
-            .insert({
-              user_id: userId,
-              title: title,
-              message: message,
-            });
+          const { error: insertError } = await sb.from('in_app_notifications').insert({
+            user_id: userId,
+            title: title,
+            message: message,
+          });
 
           inAppSent = !insertError;
           if (insertError) {
@@ -220,10 +229,7 @@ export async function GET(request: Request) {
                 } catch (pushErr) {
                   const statusCode = (pushErr as any).statusCode;
                   if (statusCode === 404 || statusCode === 410) {
-                    await sb
-                      .from('push_subscriptions')
-                      .delete()
-                      .eq('id', subRecord.id);
+                    await sb.from('push_subscriptions').delete().eq('id', subRecord.id);
                   }
                   console.error(`Web Push failed for subscription ${subRecord.id}:`, pushErr);
                 }
@@ -259,7 +265,7 @@ function getReminderEmailHtml(
   yesterdayDay: number,
   yesterdayTopics: any,
   yesterdayComplete: boolean,
-  siteUrl: string
+  siteUrl: string,
 ): string {
   return `
 <!DOCTYPE html>
@@ -420,7 +426,9 @@ function getReminderEmailHtml(
         <a href="${siteUrl}/dashboard" class="btn">Log Today's Progress</a>
       </div>
 
-      ${!yesterdayComplete ? `
+      ${
+        !yesterdayComplete
+          ? `
       <div style="border-top: 1px solid #262626; margin-top: 32px; padding-top: 24px;">
         <div class="section-title" style="color: #C86E6E;">Yesterday was waiting (Day ${yesterdayDay})</div>
         <p style="font-size: 13px; color: #8A8070; margin-bottom: 12px;">You haven't logged yesterday's study yet. Here is what you were to do:</p>
@@ -440,7 +448,9 @@ function getReminderEmailHtml(
           <a href="${siteUrl}/dashboard" class="btn btn-secondary">Log Yesterday's Progress</a>
         </div>
       </div>
-      ` : ''}
+      `
+          : ''
+      }
 
       <div class="footer">
         This is an automated reminder from your LEF OS accountability companion.<br>

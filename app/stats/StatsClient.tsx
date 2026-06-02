@@ -1,15 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import {
-  Flame,
-  CheckCircle2,
-  Calendar,
-  Award,
-  Video,
-  BookOpen,
-  TrendingUp,
-} from 'lucide-react';
+import { Flame, CheckCircle2, Calendar, Award, Video, BookOpen, TrendingUp } from 'lucide-react';
 import {
   getOverallProgress,
   getDomainProgress,
@@ -39,7 +31,7 @@ export function StatsClient({ email, initialEntries }: Props) {
     const loggedDates = new Set(
       entries
         .filter((e) => e.law_completed || e.economics_completed || e.finance_completed)
-        .map((e) => e.entry_date)
+        .map((e) => e.entry_date),
     );
 
     if (loggedDates.size === 0) return 0;
@@ -107,14 +99,14 @@ export function StatsClient({ email, initialEntries }: Props) {
   }, [totalCompleted]);
 
   return (
-    <div className="mx-auto max-w-content px-5 md:px-6 py-8 space-y-8 animate-fade-in">
+    <div className="mx-auto max-w-content animate-fade-in space-y-8 px-5 py-8 md:px-6">
       {/* HEADER */}
       <header>
-        <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary mb-1">
+        <p className="mb-1 text-[10px] uppercase tracking-[0.32em] text-text-secondary">
           Academic Progress
         </p>
-        <h1 className="font-display text-3xl md:text-4xl tracking-tight">Curriculum Statistics</h1>
-        <p className="text-sm text-text-secondary mt-1 max-w-md">
+        <h1 className="font-display text-3xl tracking-tight md:text-4xl">Curriculum Statistics</h1>
+        <p className="mt-1 max-w-md text-sm text-text-secondary">
           A breakdown of your learning journey across law, economics, and finance tracks.
         </p>
       </header>
@@ -150,42 +142,57 @@ export function StatsClient({ email, initialEntries }: Props) {
       {/* MAIN PLOTS */}
       <div className="grid gap-6 md:grid-cols-3">
         {/* DOMAIN PROGRESS PANEL */}
-        <section className="card p-5 space-y-5 md:col-span-2 flex flex-col justify-between">
+        <section className="card flex flex-col justify-between space-y-5 p-5 md:col-span-2">
           <div>
-            <h2 className="text-xs font-semibold text-text-primary uppercase tracking-wider flex items-center gap-2">
+            <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-primary">
               <BookOpen size={14} className="text-gold" />
               Per-Domain Syllabus Progress
             </h2>
-            <p className="text-xs text-text-secondary mt-1">
+            <p className="mt-1 text-xs text-text-secondary">
               Check your level of progress across the specific course domains.
             </p>
           </div>
 
           <div className="space-y-4 py-2">
-            <ProgressBar value={lawDone} max={TOTAL_CALENDAR_DAYS} label="⚖️ Law Domain" accent="gold" />
-            <ProgressBar value={econDone} max={TOTAL_CALENDAR_DAYS} label="📊 Economics Domain" accent="sage" />
-            <ProgressBar value={finDone} max={TOTAL_CALENDAR_DAYS} label="💰 Finance Domain" accent="slate" />
+            <ProgressBar
+              value={lawDone}
+              max={TOTAL_CALENDAR_DAYS}
+              label="⚖️ Law Domain"
+              accent="gold"
+            />
+            <ProgressBar
+              value={econDone}
+              max={TOTAL_CALENDAR_DAYS}
+              label="📊 Economics Domain"
+              accent="sage"
+            />
+            <ProgressBar
+              value={finDone}
+              max={TOTAL_CALENDAR_DAYS}
+              label="💰 Finance Domain"
+              accent="slate"
+            />
           </div>
 
-          <div className="border-t border-border/40 pt-4 flex items-center justify-between text-[11px] text-text-secondary">
+          <div className="flex items-center justify-between border-t border-[var(--border-dim)] pt-4 text-[11px] text-text-secondary">
             <span>Minimum domain target: 122 completions</span>
             <span className="font-semibold text-gold">Learning in public</span>
           </div>
         </section>
 
         {/* THURSDAYS STATS */}
-        <section className="card p-5 flex flex-col justify-between">
+        <section className="card flex flex-col justify-between p-5">
           <div>
-            <h2 className="text-xs font-semibold text-text-primary uppercase tracking-wider flex items-center gap-2">
-              <Video size={14} className="text-slate-blue animate-pulse" />
+            <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-primary">
+              <Video size={14} className="animate-pulse text-slate-blue" />
               Video Review Syncs
             </h2>
-            <p className="text-xs text-text-secondary mt-1">
+            <p className="mt-1 text-xs text-text-secondary">
               Thursdays logged for weekly interactive summary reviews.
             </p>
           </div>
 
-          <div className="py-6 text-center space-y-2">
+          <div className="space-y-2 py-6 text-center">
             <p className="font-display text-5xl font-bold text-text-primary">
               {thursdaysDone} <span className="text-lg text-text-muted">/ {thursdayCount}</span>
             </p>
@@ -194,9 +201,9 @@ export function StatsClient({ email, initialEntries }: Props) {
             </p>
           </div>
 
-          <div className="w-full bg-surface-2/40 rounded-full h-1.5 border border-border">
+          <div className="bg-surface-2/40 h-1.5 w-full rounded-full border border-border">
             <div
-              className="bg-slate-blue h-full rounded-full transition-all duration-300"
+              className="h-full rounded-full bg-slate-blue transition-all duration-300"
               style={{ width: `${(thursdaysDone / (thursdayCount || 1)) * 100}%` }}
             />
           </div>
@@ -204,22 +211,46 @@ export function StatsClient({ email, initialEntries }: Props) {
       </div>
 
       {/* MONTHLY BREAKDOWN */}
-      <section className="card p-5 space-y-4">
+      <section className="card space-y-4 p-5">
         <div>
-          <h2 className="text-xs font-semibold text-text-primary uppercase tracking-wider flex items-center gap-2">
+          <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-primary">
             <Calendar size={14} className="text-gold" />
             Monthly Milestone Progress
           </h2>
-          <p className="text-xs text-text-secondary mt-1">
+          <p className="mt-1 text-xs text-text-secondary">
             Visual breakdown of study logs recorded in each month of the 4-month curriculum.
           </p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <MonthMetric title="Month 1: Foundation" days={28} logged={monthStats[1]} color="border-accent-law" bg="bg-accent-law" />
-          <MonthMetric title="Month 2: Deepening" days={28} logged={monthStats[2]} color="border-accent-econ" bg="bg-accent-econ" />
-          <MonthMetric title="Month 3: Synthesis" days={28} logged={monthStats[3]} color="border-accent-finance" bg="bg-accent-finance" />
-          <MonthMetric title="Month 4: Application" days={38} logged={monthStats[4]} color="border-accent-synthesis" bg="bg-accent-synthesis" />
+          <MonthMetric
+            title="Month 1: Foundation"
+            days={28}
+            logged={monthStats[1]}
+            color="border-accent-law"
+            bg="bg-accent-law"
+          />
+          <MonthMetric
+            title="Month 2: Deepening"
+            days={28}
+            logged={monthStats[2]}
+            color="border-accent-econ"
+            bg="bg-accent-econ"
+          />
+          <MonthMetric
+            title="Month 3: Synthesis"
+            days={28}
+            logged={monthStats[3]}
+            color="border-accent-finance"
+            bg="bg-accent-finance"
+          />
+          <MonthMetric
+            title="Month 4: Application"
+            days={38}
+            logged={monthStats[4]}
+            color="border-accent-synthesis"
+            bg="bg-accent-synthesis"
+          />
         </div>
       </section>
     </div>
@@ -240,14 +271,14 @@ function StatCard({
   sub: string;
 }) {
   return (
-    <div className="card p-5 space-y-2.5">
+    <div className="card space-y-2.5 p-5">
       <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-text-secondary">
         {icon}
         {label}
       </div>
       <div>
         <p className="font-display text-3xl font-semibold text-text-primary">{value}</p>
-        <p className="text-[10px] text-text-muted mt-0.5">{sub}</p>
+        <p className="mt-0.5 text-[10px] text-text-muted">{sub}</p>
       </div>
     </div>
   );
@@ -268,17 +299,21 @@ function MonthMetric({
 }) {
   const percentage = Math.round((logged / days) * 100) || 0;
   return (
-    <div className={`p-4 rounded-lg border bg-surface-2/20 flex flex-col justify-between gap-3 ${color}`}>
+    <div
+      className={`bg-surface-2/20 flex flex-col justify-between gap-3 rounded-lg border p-4 ${color}`}
+    >
       <div>
-        <p className="text-xs font-semibold text-text-primary font-display">{title}</p>
-        <p className="text-[10px] text-text-muted mt-0.5">{days} syllabus days</p>
+        <p className="font-display text-xs font-semibold text-text-primary">{title}</p>
+        <p className="mt-0.5 text-[10px] text-text-muted">{days} syllabus days</p>
       </div>
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-[10px] tracking-wide text-text-secondary">
-          <span>Logged: {logged} / {days}</span>
+          <span>
+            Logged: {logged} / {days}
+          </span>
           <span className="font-mono">{percentage}%</span>
         </div>
-        <div className="w-full bg-border/20 rounded-full h-1">
+        <div className="bg-border/20 h-1 w-full rounded-full">
           <div
             className={`h-full rounded-full transition-all duration-300 ${bg}`}
             style={{ width: `${percentage}%` }}

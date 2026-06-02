@@ -43,7 +43,13 @@ export function LevelBadge({
   className?: string;
 }) {
   const key =
-    level === 'Synthesis' ? 'synthesis' : level === 'Advanced' ? 'law' : level === 'Intermediate' ? 'econ' : 'finance';
+    level === 'Synthesis'
+      ? 'synthesis'
+      : level === 'Advanced'
+        ? 'law'
+        : level === 'Intermediate'
+          ? 'econ'
+          : 'finance';
   const a = accentMap[key];
   return (
     <span

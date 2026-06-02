@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { Star, Send, Loader2, CheckCheck } from 'lucide-react';
+import { Star, Send, Loader2 } from 'lucide-react';
 import type { DailyEntry } from '@/lib/utils';
 import { isoDate } from '@/lib/utils';
 import { upsertEntryAction } from '@/app/actions/entries';
@@ -22,7 +22,7 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
   const [studied, setStudied] = useState(
     Boolean(
       existing &&
-        (existing.law_completed || existing.economics_completed || existing.finance_completed),
+      (existing.law_completed || existing.economics_completed || existing.finance_completed),
     ),
   );
   const [law, setLaw] = useState(existing?.law_completed ?? false);
@@ -77,22 +77,31 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="card p-5 space-y-5">
-      <div className="flex items-center gap-3">
-        <input
-          id="studied"
-          type="checkbox"
-          checked={studied}
-          onChange={(e) => setStudied(e.target.checked)}
-          className="h-4 w-4 accent-[var(--gold)]"
-        />
-        <label htmlFor="studied" className="text-sm font-medium">
-          Studied today
-        </label>
+    <form onSubmit={handleSubmit} className="card space-y-5 p-5">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <input
+            id="studied"
+            type="checkbox"
+            checked={studied}
+            onChange={(e) => setStudied(e.target.checked)}
+            className="h-4 w-4 accent-[var(--gold)]"
+          />
+          <label htmlFor="studied" className="text-sm font-medium">
+            Studied today
+          </label>
+        </div>
+        <button
+          type="button"
+          onClick={markAll}
+          className="text-[10px] uppercase tracking-[0.18em] text-text-secondary transition-colors hover:text-gold"
+        >
+          Mark all 3
+        </button>
       </div>
 
-      <fieldset disabled={!studied} className={!studied ? 'opacity-50 pointer-events-none' : ''}>
-        <legend className="text-[10px] uppercase tracking-[0.18em] text-text-secondary mb-2">
+      <fieldset disabled={!studied} className={!studied ? 'pointer-events-none opacity-50' : ''}>
+        <legend className="mb-2 text-[10px] uppercase tracking-[0.18em] text-text-secondary">
           Domains completed
         </legend>
         <div className="flex flex-wrap gap-3">
@@ -103,29 +112,29 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
       </fieldset>
 
       <div>
-        <div className="text-[10px] uppercase tracking-[0.18em] text-text-secondary mb-2">
+        <div className="mb-2 text-[10px] uppercase tracking-[0.18em] text-text-secondary">
           Depth — how deeply did you study?
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
               type="button"
               key={n}
               onClick={() => setRating(rating === n ? 0 : n)}
-              className="p-1 rounded hover:bg-surface-2 transition-colors"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md p-2.5 transition-colors hover:bg-surface-2"
               aria-label={`${n} star${n > 1 ? 's' : ''}`}
             >
-              <Star
-                size={20}
-                className={n <= rating ? 'fill-gold text-gold' : 'text-text-muted'}
-              />
+              <Star size={22} className={n <= rating ? 'fill-gold text-gold' : 'text-text-muted'} />
             </button>
           ))}
         </div>
       </div>
 
       <div>
-        <label htmlFor="journal" className="text-[10px] uppercase tracking-[0.18em] text-text-secondary block mb-2">
+        <label
+          htmlFor="journal"
+          className="mb-2 block text-[10px] uppercase tracking-[0.18em] text-text-secondary"
+        >
           What did I learn today?
         </label>
         <textarea
@@ -136,13 +145,16 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
           rows={4}
           placeholder="Private. For your future self."
         />
-        <div className="mt-1 text-[10px] text-text-muted tabular-nums text-right">
+        <div className="mt-1 text-right text-[10px] tabular-nums text-text-muted">
           {journal.length} / {MAX_JOURNAL}
         </div>
       </div>
 
       <div>
-        <label htmlFor="insight" className="text-[10px] uppercase tracking-[0.18em] text-text-secondary block mb-2">
+        <label
+          htmlFor="insight"
+          className="mb-2 block text-[10px] uppercase tracking-[0.18em] text-text-secondary"
+        >
           My insight to share
         </label>
         <textarea
@@ -164,21 +176,21 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
             />
             Make public on /journal
           </label>
-          <div className="text-[10px] text-text-muted tabular-nums">
+          <div className="text-[10px] tabular-nums text-text-muted">
             {insight.length} / {MAX_INSIGHT}
           </div>
         </div>
       </div>
 
       {error && (
-        <div className="text-xs accent-synthesis border border-accent-synthesis bg-accent-synthesis rounded-md p-2">
+        <div className="accent-synthesis border-accent-synthesis bg-accent-synthesis rounded-md border p-2 text-xs">
           {error}
         </div>
       )}
 
       <div className="flex items-center justify-between pt-1">
         <span
-          className={`text-xs transition-opacity ${saved ? 'opacity-100 accent-econ' : 'opacity-0'}`}
+          className={`text-xs transition-opacity ${saved ? 'accent-econ opacity-100' : 'opacity-0'}`}
         >
           ✓ Saved
         </span>
@@ -209,8 +221,10 @@ function DomainCheck({
 }) {
   return (
     <label
-      className={`inline-flex items-center gap-2 px-3 py-2 rounded-md border cursor-pointer transition-all text-sm ${
-        checked ? 'border-gold bg-accent-law text-text-primary' : 'border-border text-text-secondary'
+      className={`inline-flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm transition-all ${
+        checked
+          ? 'bg-accent-law border-gold text-text-primary'
+          : 'border-border text-text-secondary'
       }`}
     >
       <input

@@ -14,14 +14,14 @@ export function DayCard({ domain, day, completed, onToggle }: Props) {
     return (
       <div className="card p-5">
         <DomainBadge domain={domain} />
-        <p className="mt-3 text-text-secondary text-sm">
+        <p className="mt-3 text-sm text-text-secondary">
           Integration & sharing day — no curriculum topic. Use today to review, write, or publish.
         </p>
       </div>
     );
   }
   return (
-    <div className="card p-5 flex flex-col gap-3 reveal">
+    <div className="card reveal flex flex-col gap-3 p-5">
       <div className="flex items-center justify-between">
         <DomainBadge domain={domain} />
         <span className="text-[10px] uppercase tracking-[0.18em] text-text-muted">

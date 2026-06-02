@@ -54,17 +54,11 @@ export async function answerQuestionAction(input: {
   return { ok: true, data: data as Question };
 }
 
-export async function deleteQuestionAction(
-  id: string,
-): Promise<ActionResult<true>> {
+export async function deleteQuestionAction(id: string): Promise<ActionResult<true>> {
   const sb = await supabaseServer();
   const { data: u } = await sb.auth.getUser();
   if (!u.user) return { ok: false, error: 'Not signed in' };
-  const { error } = await sb
-    .from('questions')
-    .delete()
-    .eq('id', id)
-    .eq('user_id', u.user.id);
+  const { error } = await sb.from('questions').delete().eq('id', id).eq('user_id', u.user.id);
   if (error) return { ok: false, error: error.message };
   revalidatePath('/dashboard');
   return { ok: true, data: true };

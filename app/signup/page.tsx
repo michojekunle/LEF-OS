@@ -7,11 +7,11 @@ export const metadata = { title: 'Sign up — LEF' };
 export default function SignUpPage() {
   return (
     <div className="mx-auto max-w-md px-5 py-16">
-      <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary mb-3">
+      <p className="mb-3 text-[10px] uppercase tracking-[0.32em] text-text-secondary">
         Begin in public
       </p>
-      <h1 className="font-display text-3xl md:text-4xl tracking-tight mb-6">Sign up</h1>
-      <Suspense fallback={<div className="card p-6 skeleton h-64" />}>
+      <h1 className="mb-6 font-display text-3xl tracking-tight md:text-4xl">Sign up</h1>
+      <Suspense fallback={<div className="card skeleton h-64 p-6" />}>
         <AuthForm mode="signup" />
       </Suspense>
       <div className="mt-6 flex items-center justify-between text-xs text-text-secondary">

@@ -1,161 +1,120 @@
 # Law · Economics · Finance — LEF OS
 
-A 4-month founder's curriculum in Nigerian and global **Law, Economics, and Finance**, June 1 – September 30, 2026. A production-grade mobile-first **PWA** for daily study tracking and learning in public.
+A 4-month founder's curriculum in Nigerian and global **Law, Economics, and Finance**,
+shipped as a mobile-first, installable PWA. June 1 – September 30, 2026.
 
 - 122 calendar days · 111 study days · 3 domains · 16 weekly reviews
-- Public curriculum browser (no login)
-- Private dashboard with streaks, calendar heatmap, per-domain progress
-- Public journal of shared insights
-- Installable PWA, dark editorial design
+- Public roadmap, public journal, private daily tracker
+- Per-day notes, open question stack, bookmarks, public reactions
+- Email + in-app + push reminders, custom reminder schedules
+- AI study companion (LEF Counsel)
+- Markdown / CSV export of your archive
+- Command palette (⌘K) and keyboard-first navigation
+- Dark editorial design, installable PWA, offline-friendly
 
 ## Stack
 
-- **Next.js 15** (App Router) — `app/` directory, RSC + client components
-- **Tailwind CSS** with custom CSS variables for the editorial palette
-- **Supabase** — Postgres + Auth (email/password), Row Level Security
-- **next-pwa** — service worker, offline support, install prompt
-- **Google Fonts** — Playfair Display (display) + DM Sans (body)
-- **Lucide React** — icons
+- **Next.js 15** (App Router, server actions, middleware)
+- **Tailwind CSS** with hand-tuned editorial palette
+- **Supabase** — Postgres + Auth (email/password & Google) + RLS + RPC
+- **next-pwa** — service worker, manifest, install prompt
+- **web-push** + **Resend** — push & email reminders
+- **Gemini** — AI companion (optional)
 
-## Setup
+## Quick start
 
 ```bash
-git clone https://github.come/michojekunle/lef-os
+git clone <your-repo> lef-os
 cd lef-os
 npm install
-cp .env.example .env.local
-# fill in environment variables
+cp .env.example .env.local      # fill in Supabase + (optional) Resend/Gemini/VAPID
 npm run dev
 ```
 
 Open <http://localhost:3000>.
 
-### Supabase setup
+## Environment
 
-1. Create a project at <https://supabase.com>.
-2. Copy the **Project URL** and **anon public** key into `.env.local`.
-3. In the SQL editor, run the schema below.
-4. (Optional) under **Authentication → Providers → Email**, disable email confirmation while you're developing.
+Required:
 
-```sql
--- profiles
-create table if not exists profiles (
-  id uuid references auth.users primary key,
-  username text unique,
-  display_name text,
-  avatar_url text,
-  is_primary_user boolean default false,
-  created_at timestamptz default now()
-);
+| Var                             | Purpose              |
+| ------------------------------- | -------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key    |
 
--- daily_entries
-create table if not exists daily_entries (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references profiles(id) on delete cascade,
-  entry_date date not null,
-  day_number integer not null,
-  law_completed boolean default false,
-  economics_completed boolean default false,
-  finance_completed boolean default false,
-  study_rating integer check (study_rating between 1 and 5),
-  journal_text text,
-  share_insight text,
-  is_public boolean default false,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now(),
-  unique(user_id, entry_date)
-);
+Optional (server-side features):
 
--- Auto-create profile on sign-up
-create or replace function public.handle_new_user()
-returns trigger
-language plpgsql
-security definer
-as $$
-begin
-  insert into public.profiles (id, display_name)
-  values (new.id, coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email, '@', 1)));
-  return new;
-end;
-$$;
+| Var                            | Powers                                       |
+| ------------------------------ | -------------------------------------------- |
+| `SUPABASE_SERVICE_ROLE_KEY`    | Cron job daily reminder (server-only)        |
+| `RESEND_API_KEY`               | Email reminders                              |
+| `CRON_SECRET`                  | Auth header for `/api/cron/*` endpoints      |
+| `NEXT_PUBLIC_SITE_URL`         | Override origin (e.g. for non-default ports) |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Web push subscription                        |
+| `VAPID_PRIVATE_KEY`            | Web push signing                             |
+| `GEMINI_API_KEY`               | LEF Counsel AI companion                     |
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user();
+## Supabase
 
--- Row-Level Security
-alter table profiles enable row level security;
-alter table daily_entries enable row level security;
+See [`supabase/README.md`](supabase/README.md) for the full migration set and how to
+apply it. Seven numbered SQL files cover everything from `profiles` through
+`custom_reminders` and push subscriptions.
 
-create policy "Public profiles are viewable"
-  on profiles for select using (true);
-create policy "Users can update own profile"
-  on profiles for update using (auth.uid() = id);
-create policy "Users can insert own profile"
-  on profiles for insert with check (auth.uid() = id);
+```bash
+# CLI (recommended)
+npm run db:push
 
-create policy "Public entries viewable"
-  on daily_entries for select
-  using (is_public = true or auth.uid() = user_id);
-create policy "Users can insert own entries"
-  on daily_entries for insert with check (auth.uid() = user_id);
-create policy "Users can update own entries"
-  on daily_entries for update using (auth.uid() = user_id);
-create policy "Users can delete own entries"
-  on daily_entries for delete using (auth.uid() = user_id);
+# or paste each file in the dashboard SQL editor, in order:
+ls supabase/migrations
 ```
 
 ## Scripts
 
 ```bash
-npm run dev        # local dev (PWA disabled)
-npm run build      # production build (with service worker)
-npm run start      # serve production build
-npm run typecheck  # tsc --noEmit
-npm run icons      # regenerate placeholder PWA icons
+npm run dev          # local dev (PWA disabled)
+npm run build        # production build (with service worker)
+npm run start        # serve production build
+npm run typecheck    # tsc --noEmit
+npm run lint         # next lint
+npm run lint:fix     # next lint --fix
+npm run format       # prettier write
+npm run format:check # prettier check (CI)
+npm run check        # typecheck + lint + format:check
+npm run icons        # regenerate PWA placeholder icons
+npm run db:push      # supabase db push (requires `supabase link`)
 ```
 
-## Project structure
+## Routes
 
-```
-app/
-  page.tsx              # landing
-  roadmap/              # public 122-day curriculum browser
-  dashboard/            # authenticated daily tracker
-  journal/              # public shared entries
-  login/, signup/, auth/AuthForm.tsx
-  layout.tsx, globals.css
-components/
-  curriculum-data.ts    # SINGLE SOURCE OF TRUTH for all 111 study days
-  DayCard, DomainBadge, ProgressBar, CalendarHeatmap,
-  WeekAccordion, DailyLogForm, EntryCard,
-  Nav, Footer, MobileTabBar, SignOutButton
-lib/
-  supabase.ts           # browser + server clients
-  utils.ts              # date math, streak, progress helpers
-public/
-  manifest.json, icon-192.png, icon-512.png
-scripts/
-  generate-icons.mjs    # placeholder PWA icon generator (zero deps)
-```
+| Path                | Auth   | What                                              |
+| ------------------- | ------ | ------------------------------------------------- |
+| `/`                 | public | Landing                                           |
+| `/roadmap`          | public | 4-month / 3-domain curriculum browser             |
+| `/day/[n]`          | mixed  | Any day's topics, your notes, log form, prev/next |
+| `/today`            | mixed  | Redirects to `/day/<current>`                     |
+| `/journal`          | public | Public insights · search · reactions · pagination |
+| `/u/[username]`     | public | Public profile + stats + public stream            |
+| `/dashboard`        | auth   | Today's log, streak, heatmap, recent entries      |
+| `/stats`            | auth   | Full stats snapshot (server RPC)                  |
+| `/settings`         | auth   | Display name, username, bio, reminders, push      |
+| `/export`           | auth   | Download Markdown or CSV bundle                   |
+| `/login`, `/signup` | public | Email/password (`?next=` supported)               |
+| `/auth/callback`    | —      | OAuth / email-confirm handoff                     |
 
-## Deploy to Vercel
+## Architecture notes
 
-1. Push to GitHub.
-2. In Vercel, import the repo.
-3. Add the two `NEXT_PUBLIC_SUPABASE_*` env vars.
-4. Deploy. The PWA service worker is automatically wired in production builds.
-
-## Curriculum
-
-The full curriculum lives in [`components/curriculum-data.ts`](components/curriculum-data.ts). To tune a day's topic, edit it there — every page reads from that one source of truth.
-
-- Month 1 · June · Foundations & Frameworks · Days 1–28
-- Month 2 · July · Intermediate Depth & Nigerian Context · Days 29–56
-- Month 3 · August · Advanced Mastery & Global Depth · Days 57–84
-- Month 4 · September · Integration, Application & Teaching · Days 85–111
-- Days 112–122 · integration & public-sharing buffer (calendar slack)
+- **Server actions** under `app/actions/*` mediate every write. They validate,
+  enforce ownership, and call `revalidatePath` for the affected routes.
+- **Middleware** refreshes the Supabase session on every request and gates
+  protected paths (redirects to `/login?next=…`).
+- **Strong typing** — `lib/database.types.ts` mirrors the migrations and is
+  threaded through the Supabase client as a generic.
+- **Toast + Command Palette** are wired into the root layout
+  (`ToastProvider`, `CommandPaletteProvider`) — accessible from any client
+  component via hooks.
+- **Per-day notes & questions** live on `/day/[n]` and autosave via server actions.
+- **Reactions** (clap / brain / fire / bookmark) are powered by an aggregate
+  view (`journal_reaction_counts`) — one query per page, optimistic UI.
 
 ## Design
 
@@ -166,7 +125,18 @@ Dark editorial. Playfair Display for headings, DM Sans for body. Domain accents:
 - Finance — slate blue `#8B9ECC`
 - Synthesis / alerts — red `#C86E6E`
 
-Surfaces stay close to true black with a fixed subtle grain texture and a faint gold/blue radial wash. No rounded corners larger than 10px. No purple gradients.
+Surfaces stay close to true black with a fixed subtle grain texture and a faint
+gold/blue radial wash. No rounded corners larger than 10px. No purple gradients.
+
+## Deploy
+
+1. Push to GitHub.
+2. Import the repo on Vercel.
+3. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (plus any
+   optional ones you want).
+4. In Supabase, add your deployed origin under **Authentication → URL
+   Configuration → Site URL** and **Redirect URLs**.
+5. Deploy. The PWA service worker is auto-wired in production builds.
 
 ## License
 

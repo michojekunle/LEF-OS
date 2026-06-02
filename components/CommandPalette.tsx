@@ -26,11 +26,7 @@ import {
   Download,
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase';
-import {
-  CURRICULUM,
-  TOTAL_CALENDAR_DAYS,
-  type Domain,
-} from './curriculum-data';
+import { CURRICULUM, TOTAL_CALENDAR_DAYS, type Domain } from './curriculum-data';
 
 type Command = {
   id: string;
@@ -104,12 +100,48 @@ function Palette({ onClose }: { onClose: () => void }) {
   const commands: Command[] = useMemo(() => {
     const base: Command[] = [
       { id: 'home', group: 'Navigate', label: 'Home', Icon: Home, run: () => router.push('/') },
-      { id: 'roadmap', group: 'Navigate', label: 'Roadmap', Icon: Map, run: () => router.push('/roadmap') },
-      { id: 'today', group: 'Navigate', label: 'Today', Icon: Sparkles, run: () => router.push('/today') },
-      { id: 'dashboard', group: 'Navigate', label: 'Dashboard', Icon: LayoutDashboard, run: () => router.push('/dashboard') },
-      { id: 'journal', group: 'Navigate', label: 'Journal', Icon: BookOpen, run: () => router.push('/journal') },
-      { id: 'stats', group: 'Navigate', label: 'Stats', Icon: BarChart3, run: () => router.push('/stats') },
-      { id: 'settings', group: 'Navigate', label: 'Settings', Icon: Settings, run: () => router.push('/settings') },
+      {
+        id: 'roadmap',
+        group: 'Navigate',
+        label: 'Roadmap',
+        Icon: Map,
+        run: () => router.push('/roadmap'),
+      },
+      {
+        id: 'today',
+        group: 'Navigate',
+        label: 'Today',
+        Icon: Sparkles,
+        run: () => router.push('/today'),
+      },
+      {
+        id: 'dashboard',
+        group: 'Navigate',
+        label: 'Dashboard',
+        Icon: LayoutDashboard,
+        run: () => router.push('/dashboard'),
+      },
+      {
+        id: 'journal',
+        group: 'Navigate',
+        label: 'Journal',
+        Icon: BookOpen,
+        run: () => router.push('/journal'),
+      },
+      {
+        id: 'stats',
+        group: 'Navigate',
+        label: 'Stats',
+        Icon: BarChart3,
+        run: () => router.push('/stats'),
+      },
+      {
+        id: 'settings',
+        group: 'Navigate',
+        label: 'Settings',
+        Icon: Settings,
+        run: () => router.push('/settings'),
+      },
       {
         id: 'export',
         group: 'Tools',
@@ -117,19 +149,22 @@ function Palette({ onClose }: { onClose: () => void }) {
         Icon: ArrowRight,
         run: () => router.push('/export'),
       },
-      ...((typeof window !== 'undefined' && (
-        window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone === true
-      )) ? [] : [{
-        id: 'install-pwa',
-        group: 'Tools',
-        label: 'Install LEF OS (Web App)',
-        Icon: Download,
-        run: () => {
-          localStorage.removeItem('lef-pwa-dismissed');
-          window.dispatchEvent(new CustomEvent('show-install-prompt'));
-        },
-      }]),
+      ...(typeof window !== 'undefined' &&
+      (window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone === true)
+        ? []
+        : [
+            {
+              id: 'install-pwa',
+              group: 'Tools',
+              label: 'Install LEF OS (Web App)',
+              Icon: Download,
+              run: () => {
+                localStorage.removeItem('lef-pwa-dismissed');
+                window.dispatchEvent(new CustomEvent('show-install-prompt'));
+              },
+            },
+          ]),
       {
         id: 'signout',
         group: 'Account',
@@ -265,25 +300,39 @@ function Palette({ onClose }: { onClose: () => void }) {
       className="fixed inset-0 z-[90] flex items-start justify-center p-4 md:pt-[14vh]"
     >
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-[2px] animate-fade-in"
+        className="absolute inset-0 animate-fade-in bg-black/70 backdrop-blur-[2px]"
         onClick={onClose}
         aria-hidden
       />
-      <div className="relative w-full max-w-xl card-2 border-border rounded-xl shadow-[0_24px_60px_-20px_rgba(0,0,0,0.6)] overflow-hidden reveal">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
-          <Search size={16} className="text-text-secondary" />
+      <div className="card-2 reveal relative w-full max-w-xl overflow-hidden rounded-xl border-border shadow-[0_24px_60px_-20px_rgba(0,0,0,0.6)]">
+        <div className="flex items-center gap-2 border-b border-border px-4 py-3">
+          <Search size={16} className="shrink-0 text-text-secondary" />
           <input
             ref={inputRef}
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={onKey}
-            placeholder="Type a command, day number (e.g. 42), or search…"
-            className="flex-1 bg-transparent outline-none text-sm placeholder:text-text-muted"
+            placeholder="Search or type a day number…"
+            className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-text-muted"
             aria-label="Command input"
           />
-          <kbd className="text-[10px] text-text-muted font-mono">ESC</kbd>
+          {/* Close button — visible on mobile; keyboard shortcut shown on desktop */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="shrink-0 rounded p-1 text-text-muted hover:text-text-primary md:hidden"
+            aria-label="Close"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 1 1 1.06 1.06L9.06 8l3.22 3.22a.749.749 0 1 1-1.06 1.06L8 9.06l-3.22 3.22a.749.749 0 1 1-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06z" />
+            </svg>
+          </button>
+          <kbd className="hidden rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-text-muted md:inline">
+            ESC
+          </kbd>
         </div>
-        <ul ref={listRef} className="max-h-[60vh] overflow-y-auto py-1">
+        {/* List: shorter on mobile so on-screen keyboard doesn't hide results */}
+        <ul ref={listRef} className="max-h-[45vh] overflow-y-auto py-1 md:max-h-[60vh]">
           {grouped.map((g) => (
             <li key={g.group}>
               <div className="px-4 py-1.5 text-[10px] uppercase tracking-[0.18em] text-text-muted">
@@ -301,14 +350,19 @@ function Palette({ onClose }: { onClose: () => void }) {
                           void cmd.run();
                           onClose();
                         }}
-                        className={`w-full flex items-center gap-3 px-4 py-2 text-sm text-left transition-colors ${
+                        className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors md:py-2 ${
                           active ? 'bg-surface text-gold' : 'text-text-primary'
                         }`}
                       >
-                        <cmd.Icon size={14} className={active ? 'text-gold' : 'text-text-secondary'} />
+                        <cmd.Icon
+                          size={14}
+                          className={active ? 'text-gold' : 'text-text-secondary'}
+                        />
                         <span className="flex-1">{cmd.label}</span>
                         {cmd.hint && (
-                          <span className="text-[10px] text-text-muted">{cmd.hint}</span>
+                          <span className="hidden text-[10px] text-text-muted sm:inline">
+                            {cmd.hint}
+                          </span>
                         )}
                       </button>
                     </li>
@@ -318,14 +372,13 @@ function Palette({ onClose }: { onClose: () => void }) {
             </li>
           ))}
           {items.length === 0 && (
-            <li className="px-4 py-6 text-center text-sm text-text-secondary">
-              Nothing matches.
-            </li>
+            <li className="px-4 py-8 text-center text-sm text-text-secondary">Nothing matches.</li>
           )}
         </ul>
-        <div className="border-t border-border px-4 py-2 flex items-center justify-between text-[10px] text-text-muted">
-          <span>↑↓ to navigate · ↵ to run</span>
-          <span>⌘K to toggle</span>
+        <div className="flex items-center justify-between border-t border-border px-4 py-2 text-[10px] text-text-muted">
+          <span className="hidden md:inline">↑↓ navigate · ↵ run · ESC close</span>
+          <span className="md:hidden">Tap to run a command</span>
+          <span className="hidden md:inline">⌘K to toggle</span>
         </div>
       </div>
     </div>
@@ -340,11 +393,11 @@ export function CommandPaletteTrigger({ className = '' }: { className?: string }
       type="button"
       onClick={open}
       aria-label="Open command palette"
-      className={`inline-flex items-center justify-center gap-1.5 text-xs text-text-secondary hover:text-text-primary border border-border rounded-md p-1.5 md:p-2 lg:px-2.5 lg:py-1.5 transition-colors shrink-0 ${className}`}
+      className={`inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md border border-border p-1.5 text-xs text-text-secondary transition-colors hover:text-text-primary md:p-2 lg:px-2.5 lg:py-1.5 ${className}`}
     >
-      <Search size={14} className="lg:w-3 lg:h-3" />
+      <Search size={14} className="lg:h-3 lg:w-3" />
       <span className="hidden lg:inline">Search · </span>
-      <kbd className="hidden lg:inline font-mono text-[10px] text-text-muted">⌘K</kbd>
+      <kbd className="hidden font-mono text-[10px] text-text-muted lg:inline">⌘K</kbd>
     </button>
   );
 }
