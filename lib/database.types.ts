@@ -111,8 +111,36 @@ export type UserSettings = {
   user_id: string;
   email: string;
   daily_reminder_enabled: boolean;
+  timezone: string;
   created_at: string;
   updated_at: string;
+};
+
+export type CustomReminderRow = {
+  id: string;
+  user_id: string;
+  title: string;
+  reminder_time: string;
+  delivery_type: 'email' | 'in_app' | 'both';
+  enabled: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type InAppNotificationRow = {
+  id: string;
+  user_id: string;
+  title: string;
+  message: string;
+  read: boolean;
+  created_at: string;
+};
+
+export type PushSubscriptionRow = {
+  id: string;
+  user_id: string;
+  subscription: any;
+  created_at: string;
 };
 
 type Insertable<T, OptionalKeys extends keyof T = never> = Omit<
@@ -167,6 +195,24 @@ export type Database = {
         Row: JournalReaction;
         Insert: Insertable<JournalReaction>;
         Update: Partial<JournalReaction>;
+        Relationships: [];
+      };
+      custom_reminders: {
+        Row: CustomReminderRow;
+        Insert: Insertable<CustomReminderRow, 'enabled'>;
+        Update: Partial<CustomReminderRow>;
+        Relationships: [];
+      };
+      in_app_notifications: {
+        Row: InAppNotificationRow;
+        Insert: Omit<Insertable<InAppNotificationRow, 'read'>, 'updated_at'>;
+        Update: Partial<InAppNotificationRow>;
+        Relationships: [];
+      };
+      push_subscriptions: {
+        Row: PushSubscriptionRow;
+        Insert: Omit<Insertable<PushSubscriptionRow>, 'updated_at'>;
+        Update: Partial<PushSubscriptionRow>;
         Relationships: [];
       };
     };
