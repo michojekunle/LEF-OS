@@ -159,5 +159,6 @@ function writeIcon(size, path) {
   console.log(`wrote ${path} (${png.length} bytes)`);
 }
 
+writeIcon(32, resolve('public/icon-32.png'));
 writeIcon(192, resolve('public/icon-192.png'));
 writeIcon(512, resolve('public/icon-512.png'));

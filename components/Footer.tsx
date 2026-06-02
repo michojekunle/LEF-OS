@@ -28,7 +28,7 @@ export function Footer() {
             </li>
             <li>
               <a
-                href="https://github.com"
+                href="https://github.com/michojekunle/lef-os"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-text-primary transition-colors inline-flex items-center gap-1"
@@ -39,7 +39,7 @@ export function Footer() {
             </li>
             <li>
               <a
-                href="https://twitter.com"
+                href="https://x.com/devvmichael"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-text-primary transition-colors inline-flex items-center gap-1"
@@ -50,7 +50,7 @@ export function Footer() {
             </li>
             <li>
               <a
-                href="#"
+                href="https://michaelojekunle.dev"
                 className="hover:text-text-primary transition-colors inline-flex items-center gap-1"
                 aria-label="Website"
               >

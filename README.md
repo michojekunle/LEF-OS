@@ -20,11 +20,11 @@ A 4-month founder's curriculum in Nigerian and global **Law, Economics, and Fina
 ## Setup
 
 ```bash
-git clone <your-repo> lef-os
+git clone https://github.come/michojekunle/lef-os
 cd lef-os
 npm install
 cp .env.example .env.local
-# fill in NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY
+# fill in environment variables
 npm run dev
 ```
 

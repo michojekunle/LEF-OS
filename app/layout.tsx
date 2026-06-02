@@ -4,6 +4,9 @@ import './globals.css';
 import { Nav } from '@/components/Nav';
 import { Footer } from '@/components/Footer';
 import { MobileTabBar } from '@/components/MobileTabBar';
+import { ToastProvider } from '@/components/Toast';
+import { CommandPaletteProvider } from '@/components/CommandPalette';
+import { InstallPrompt } from '@/components/InstallPrompt';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -22,6 +25,11 @@ export const metadata: Metadata = {
   description:
     'A 4-month personal learning OS for studying Nigerian and global Law, Economics, and Finance. Learned in public.',
   manifest: '/manifest.json',
+  icons: {
+    icon: '/icon-32.png',
+    shortcut: '/icon-32.png',
+    apple: '/icon-192.png',
+  },
   applicationName: 'LEF OS',
   appleWebApp: {
     capable: true,
@@ -52,12 +60,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
       <body>
-        <Nav />
-        <main className="min-h-[calc(100dvh-120px)] pb-24 md:pb-12">
-          {children}
-        </main>
-        <Footer />
-        <MobileTabBar />
+        <ToastProvider>
+          <CommandPaletteProvider>
+            <Nav />
+            <main className="min-h-[calc(100dvh-120px)] pb-24 md:pb-12">{children}</main>
+            <Footer />
+            <MobileTabBar />
+            <InstallPrompt />
+          </CommandPaletteProvider>
+        </ToastProvider>
       </body>
     </html>
   );
