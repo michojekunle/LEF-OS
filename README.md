@@ -25,18 +25,21 @@ A 4-month founder's curriculum in Nigerian and global **Law, Economics, and Fina
 ## Quick Start
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/michojekunle/lef-os.git
    cd lef-os
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Configure environment variables**
    Copy `.env.example` to `.env.local` and fill in your Supabase keys (and optional Gemini/Resend keys):
+
    ```bash
    cp .env.example .env.local
    ```
