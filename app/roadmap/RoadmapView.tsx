@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Github, GitFork } from 'lucide-react';
-import { CURRICULUM, DOMAIN_META, RESOURCE_URLS, type Domain } from '@/components/curriculum-data';
+import { CURRICULUM, DOMAIN_META, RESOURCE_URLS, type Domain } from '@/data/curriculum-data';
 import { WeekAccordion } from '@/components/WeekAccordion';
 import { LevelBadge } from '@/components/DomainBadge';
 
@@ -37,7 +37,10 @@ export function RoadmapView() {
   return (
     <div className="space-y-8">
       {/* Month tabs */}
-      <div className="w-full overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-[var(--border-subtle)] scrollbar-track-transparent">
+      <div
+        className="scrollbar-thin scrollbar-thumb-[var(--border-subtle)] scrollbar-track-transparent w-full overflow-x-auto pb-2"
+        data-tour="month-tabs"
+      >
         <div
           role="tablist"
           aria-label="Syllabus months"
@@ -48,6 +51,7 @@ export function RoadmapView() {
               key={m.month}
               id={`month-tab-${m.month}`}
               role="tab"
+              data-tour-action="month-tab"
               aria-selected={month === m.month}
               aria-controls="roadmap-panel"
               onClick={() => {
@@ -122,9 +126,12 @@ export function RoadmapView() {
         </div>
 
         {/* Weeks */}
-        <div className="space-y-2">
+        <div className="space-y-2" data-tour="week-accordions">
           {track.weeks.map((w, i) => (
-            <WeekAccordion key={w.weekNumber} week={w} defaultOpen={i === 0} />
+            /* Wrapper gives the click listener a data-tour-action anchor */
+            <div key={w.weekNumber} data-tour-action="week-accordion">
+              <WeekAccordion week={w} defaultOpen={i === 0} />
+            </div>
           ))}
         </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { dateFromDayNumber, isoDate, type DailyEntry, statusForEntry } from '@/lib/utils';
-import { TOTAL_CALENDAR_DAYS } from './curriculum-data';
+import { TOTAL_CALENDAR_DAYS } from '../data/curriculum-data';
 
 type Props = {
   entries: DailyEntry[];

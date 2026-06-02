@@ -26,7 +26,7 @@ export function DayCard({ domain, day, completed, onToggle }: Props) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <DomainBadge domain={domain} size="md" />
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted">
-            {meta.weekTitle}
+            {meta.weekNumber}
           </span>
         </div>
 

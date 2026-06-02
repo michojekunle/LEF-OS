@@ -10,7 +10,12 @@ type Props = { mode: 'signin' | 'signup' };
 export function AuthForm({ mode }: Props) {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get('next') || '/dashboard';
+  // Validate redirect target — must be a relative path, never external
+  const rawNext = params.get('next') ?? '';
+  const next =
+    rawNext.startsWith('/') && !rawNext.startsWith('//') && !/[\r\n]/.test(rawNext)
+      ? rawNext
+      : '/dashboard';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');

@@ -1,4 +1,4 @@
-import { DOMAIN_META, type Domain } from './curriculum-data';
+import { DOMAIN_META, type Domain } from '../data/curriculum-data';
 
 const accentMap: Record<string, { bg: string; border: string; text: string }> = {
   law: { bg: 'bg-accent-law', border: 'border-accent-law', text: 'accent-law' },

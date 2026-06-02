@@ -26,7 +26,7 @@ import {
   Download,
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase';
-import { CURRICULUM, TOTAL_CALENDAR_DAYS, type Domain } from './curriculum-data';
+import { CURRICULUM, TOTAL_CALENDAR_DAYS, type Domain } from '../data/curriculum-data';
 
 type Command = {
   id: string;
@@ -34,7 +34,7 @@ type Command = {
   hint?: string;
   keywords?: string;
   group: string;
-  Icon: React.ComponentType<any>;
+  Icon: React.ComponentType<{ size?: number | string; className?: string }>;
   run: () => void | Promise<void>;
 };
 
@@ -151,7 +151,7 @@ function Palette({ onClose }: { onClose: () => void }) {
       },
       ...(typeof window !== 'undefined' &&
       (window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone === true)
+        (window.navigator as Navigator & { standalone?: boolean }).standalone === true)
         ? []
         : [
             {

@@ -13,7 +13,6 @@ import {
   isAfterCourse,
   isoDate,
   getAllThursdays,
-  dateFromDayNumber,
   clampDay,
   type DailyEntry,
 } from '@/lib/utils';
@@ -22,7 +21,7 @@ import { DailyLogForm } from '@/components/DailyLogForm';
 import { CalendarHeatmap } from '@/components/CalendarHeatmap';
 import { ProgressBar } from '@/components/ProgressBar';
 import { EntryCard } from '@/components/EntryCard';
-import { TOTAL_CALENDAR_DAYS, getMonthByCurriculumDay } from '@/components/curriculum-data';
+import { TOTAL_CALENDAR_DAYS, getMonthByCurriculumDay } from '@/data/curriculum-data';
 
 type Props = {
   userId: string;
@@ -47,7 +46,9 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
     }
   }, []);
 
-  const today = new Date();
+  // Stable today reference — new Date() at render level creates a new object
+  // every render, making any useMemo with today in deps miss its cache always.
+  const today = useMemo(() => new Date(), []);
   const before = isBeforeCourse(today);
   const after = isAfterCourse(today);
   const rawDay = getDayNumber(today);
@@ -58,7 +59,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
     const d = new Date(today);
     d.setDate(today.getDate() + selectedDayOffset);
     return d;
-  }, [selectedDayOffset]);
+  }, [today, selectedDayOffset]);
 
   const topics = useMemo(() => getTodayTopics(activeDay), [activeDay]);
   const monthData = getMonthByCurriculumDay(activeDay);
@@ -160,7 +161,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
       </header>
 
       {/* TODAY TOPICS */}
-      <section className="space-y-3">
+      <section className="space-y-3" data-tour="today-topics">
         <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
           {selectedDayOffset === 0 ? "Today's study" : "Yesterday's study"}
         </h2>
@@ -177,7 +178,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
       </section>
 
       {/* LOG FORM */}
-      <section className="space-y-3">
+      <section className="space-y-3" data-tour="daily-log-form">
         <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
           {existing
             ? `Edit ${selectedDayOffset === 0 ? "today's" : "yesterday's"} log`
@@ -193,7 +194,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
       </section>
 
       {/* PROGRESS */}
-      <section className="grid gap-3 md:grid-cols-3">
+      <section className="grid gap-3 md:grid-cols-3" data-tour="streak-stats">
         <Stat
           icon={<CheckCircle2 size={14} className="text-success" />}
           label="Days completed"
@@ -214,7 +215,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
         />
       </section>
 
-      <section className="card space-y-4 p-5">
+      <section className="card space-y-4 p-5" data-tour="domain-progress">
         <h3 className="font-display text-base">Per-domain progress</h3>
         <ProgressBar value={lawDone} max={TOTAL_CALENDAR_DAYS} label="⚖️ Law" accent="gold" />
         <ProgressBar

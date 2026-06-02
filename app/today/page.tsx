@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { clampDay, getDayNumber, isBeforeCourse, isAfterCourse } from '@/lib/utils';
-import { TOTAL_CALENDAR_DAYS } from '@/components/curriculum-data';
+import { TOTAL_CALENDAR_DAYS } from '@/data/curriculum-data';
 
 export const dynamic = 'force-dynamic';
 

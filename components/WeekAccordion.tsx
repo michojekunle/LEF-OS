@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import type { Week } from './curriculum-data';
+import type { Week } from '../data/curriculum-data';
 
 type Props = {
   week: Week;
@@ -33,11 +33,18 @@ export function WeekAccordion({ week, defaultOpen = false }: Props) {
       {open && (
         <ol className="space-y-3 border-t border-[var(--border-subtle)] px-4 pb-5 pt-3">
           {week.days.map((d) => (
-            <li key={d.day} className="flex items-start gap-4 text-base leading-snug max-[320px]:mb-6 max-[320px]:flex-col max-[320px]:gap-2">
+            <li
+              key={d.day}
+              className="flex items-start gap-4 text-base leading-snug max-[320px]:mb-6 max-[320px]:flex-col max-[320px]:gap-2"
+            >
               <span className="inline-flex shrink-0 items-center justify-center rounded-md bg-surface-2 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-text-primary shadow-sm max-[320px]:justify-start">
                 Day {d.day}
               </span>
-              <span className={`pt-0.5 ${d.isReview ? 'review-day font-medium text-text-primary' : 'text-text-secondary'}`}>{d.topic}</span>
+              <span
+                className={`pt-0.5 ${d.isReview ? 'review-day font-medium text-text-primary' : 'text-text-secondary'}`}
+              >
+                {d.topic}
+              </span>
             </li>
           ))}
         </ol>

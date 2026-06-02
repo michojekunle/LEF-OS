@@ -136,10 +136,15 @@ export type InAppNotificationRow = {
   created_at: string;
 };
 
+/**
+ * The subscription JSONB column stores the output of PushSubscription.toJSON().
+ * The browser's own type (PushSubscriptionJSON) uses optional fields, so we
+ * mirror that rather than inventing stricter types that would fail to assign.
+ */
 export type PushSubscriptionRow = {
   id: string;
   user_id: string;
-  subscription: any;
+  subscription: PushSubscriptionJSON;
   created_at: string;
 };
 

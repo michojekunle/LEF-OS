@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { supabaseBrowser } from '@/lib/supabase';
 import { useToast } from '@/components/Toast';
@@ -12,7 +12,6 @@ import {
   Plus,
   Loader2,
   Smartphone,
-  Check,
   CheckCircle,
   User,
   Download,
@@ -62,15 +61,16 @@ function urlBase64ToUint8Array(base64String: string) {
 
 export function SettingsClient({
   userId,
-  email,
+  // email and displayName are passed from the server for a future profile
+  // editing UI — unused here but kept in the type for forward compatibility.
+  email: _email,
   username,
-  displayName,
+  displayName: _displayName,
   initialSettings,
   initialReminders,
   hasActivePush,
 }: Props) {
   const toast = useToast();
-  const [isPending, startTransition] = useTransition();
 
   // Settings states
   const [dailyReminderEnabled, setDailyReminderEnabled] = useState(
@@ -190,7 +190,7 @@ export function SettingsClient({
     }
 
     setRegisteringPush(true);
-    
+
     try {
       const doRegister = async () => {
         // 1. Request notification permission
@@ -461,7 +461,7 @@ export function SettingsClient({
                   <select
                     id="rem-type"
                     value={newType}
-                    onChange={(e) => setNewType(e.target.value as any)}
+                    onChange={(e) => setNewType(e.target.value as 'email' | 'in_app' | 'both')}
                     className="select py-1.5 text-xs"
                   >
                     <option value="both">Both (Email & Push)</option>

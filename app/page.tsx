@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import { CURRICULUM, DOMAIN_META } from '@/components/curriculum-data';
+import { CURRICULUM, DOMAIN_META } from '@/data/curriculum-data';
 import { ProgressBar } from '@/components/ProgressBar';
 import { getDayNumber, isBeforeCourse, isAfterCourse } from '@/lib/utils';
 
@@ -35,7 +35,7 @@ export default function LandingPage() {
         </p>
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Link href="/roadmap" className="btn btn-primary">
+          <Link href="/roadmap" className="btn btn-primary" data-tour="explore-cta">
             Explore the Curriculum <ArrowRight size={14} />
           </Link>
           <Link href="/login" className="btn btn-secondary">
@@ -44,7 +44,7 @@ export default function LandingPage() {
         </div>
 
         {/* PROGRESS */}
-        <div className="mt-12 max-w-md">
+        <div className="mt-12 max-w-md" data-tour="hero-progress-bar">
           <ProgressBar
             value={dayShown}
             max={122}
@@ -64,13 +64,17 @@ export default function LandingPage() {
           Each month deepens. Each domain reinforces the others. By Day 111, the three stop being
           separate and start being a single way of thinking.
         </p>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3" data-tour="domain-cards-row">
           {(['law', 'economics', 'finance'] as const).map((d) => {
             const meta = DOMAIN_META[d];
             const accent =
               d === 'law' ? 'accent-law' : d === 'economics' ? 'accent-econ' : 'accent-finance';
             return (
-              <div key={d} className="card flex min-h-[200px] flex-col gap-4 p-6">
+              <div
+                key={d}
+                className="card flex min-h-[200px] flex-col gap-4 p-6"
+                data-tour-action="domain-card"
+              >
                 <div className="flex items-center justify-between">
                   <span className="text-2xl">{meta.icon}</span>
                   <span className={`font-display text-xl ${accent}`}>{meta.label}</span>

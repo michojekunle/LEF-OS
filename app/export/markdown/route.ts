@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
-import { findDayMeta } from '@/components/curriculum-data';
+import { findDayMeta } from '@/data/curriculum-data';
 import type { DailyEntry, DayNote, LefDomain, Question } from '@/lib/database.types';
 
 export const dynamic = 'force-dynamic';

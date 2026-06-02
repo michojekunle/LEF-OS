@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { supabaseBrowser } from '@/lib/supabase';
 import { useToast } from './Toast';
-import { Bell, X, Check, CheckCheck } from 'lucide-react';
+import { Bell, X, CheckCheck } from 'lucide-react';
 
 type Notification = {
   id: string;
