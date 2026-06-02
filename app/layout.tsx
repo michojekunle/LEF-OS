@@ -7,6 +7,10 @@ import { MobileTabBar } from '@/components/MobileTabBar';
 import { ToastProvider } from '@/components/Toast';
 import { CommandPaletteProvider } from '@/components/CommandPalette';
 import { InstallPrompt } from '@/components/InstallPrompt';
+import { hasSupabaseConfig } from '@/lib/supabase';
+import { supabaseServer } from '@/lib/supabase-server';
+import { getDayNumber, clampDay } from '@/lib/utils';
+import { LEFCounselPanel } from '@/components/LEFCounselPanel';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -56,7 +60,23 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  let isAuthed = false;
+  let activeDay = 1;
+
+  if (hasSupabaseConfig()) {
+    try {
+      const sb = await supabaseServer();
+      const { data } = await sb.auth.getUser();
+      isAuthed = Boolean(data.user);
+      if (data.user) {
+        activeDay = clampDay(getDayNumber(new Date()));
+      }
+    } catch {
+      isAuthed = false;
+    }
+  }
+
   return (
     <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
       <body>
@@ -67,6 +87,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
             <MobileTabBar />
             <InstallPrompt />
+            {isAuthed && (
+              <LEFCounselPanel day={activeDay} isFloating={true} />
+            )}
           </CommandPaletteProvider>
         </ToastProvider>
       </body>
