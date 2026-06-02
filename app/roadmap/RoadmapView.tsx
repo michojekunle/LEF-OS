@@ -171,7 +171,7 @@ export function RoadmapView() {
       </div>
 
       {/* GitHub Contribute Callout */}
-      <section className="card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 bg-surface-2/10 border-border/80 rounded-lg reveal mt-12">
+      <section className="card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-[var(--border-subtle)] rounded-lg reveal mt-12">
         <div className="space-y-2.5 max-w-xl">
           <div className="flex items-center gap-2 text-xs font-semibold text-text-primary uppercase tracking-wider">
             <GitFork size={14} className="text-gold" />

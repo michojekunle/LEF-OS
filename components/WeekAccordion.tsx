@@ -31,7 +31,7 @@ export function WeekAccordion({ week, defaultOpen = false }: Props) {
         />
       </button>
       {open && (
-        <ol className="px-4 pb-4 pt-1 space-y-1.5 border-t border-border/60">
+        <ol className="px-4 pb-4 pt-1 space-y-1.5 border-t border-[var(--border-subtle)]">
           {week.days.map((d) => (
             <li
               key={d.day}

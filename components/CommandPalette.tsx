@@ -271,19 +271,31 @@ function Palette({ onClose }: { onClose: () => void }) {
       />
       <div className="relative w-full max-w-xl card-2 border-border rounded-xl shadow-[0_24px_60px_-20px_rgba(0,0,0,0.6)] overflow-hidden reveal">
         <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
-          <Search size={16} className="text-text-secondary" />
+          <Search size={16} className="text-text-secondary shrink-0" />
           <input
             ref={inputRef}
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={onKey}
-            placeholder="Type a command, day number (e.g. 42), or search…"
-            className="flex-1 bg-transparent outline-none text-sm placeholder:text-text-muted"
+            placeholder="Search or type a day number…"
+            className="flex-1 min-w-0 bg-transparent outline-none text-sm placeholder:text-text-muted"
             aria-label="Command input"
           />
-          <kbd className="text-[10px] text-text-muted font-mono">ESC</kbd>
+          {/* Close button — visible on mobile; keyboard shortcut shown on desktop */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="md:hidden text-text-muted hover:text-text-primary p-1 rounded shrink-0"
+            aria-label="Close"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 1 1 1.06 1.06L9.06 8l3.22 3.22a.749.749 0 1 1-1.06 1.06L8 9.06l-3.22 3.22a.749.749 0 1 1-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06z" />
+            </svg>
+          </button>
+          <kbd className="hidden md:inline text-[10px] text-text-muted font-mono bg-surface-2 border border-border px-1.5 py-0.5 rounded">ESC</kbd>
         </div>
-        <ul ref={listRef} className="max-h-[60vh] overflow-y-auto py-1">
+        {/* List: shorter on mobile so on-screen keyboard doesn't hide results */}
+        <ul ref={listRef} className="max-h-[45vh] md:max-h-[60vh] overflow-y-auto py-1">
           {grouped.map((g) => (
             <li key={g.group}>
               <div className="px-4 py-1.5 text-[10px] uppercase tracking-[0.18em] text-text-muted">
@@ -301,14 +313,14 @@ function Palette({ onClose }: { onClose: () => void }) {
                           void cmd.run();
                           onClose();
                         }}
-                        className={`w-full flex items-center gap-3 px-4 py-2 text-sm text-left transition-colors ${
+                        className={`w-full flex items-center gap-3 px-4 py-3 md:py-2 text-sm text-left transition-colors ${
                           active ? 'bg-surface text-gold' : 'text-text-primary'
                         }`}
                       >
                         <cmd.Icon size={14} className={active ? 'text-gold' : 'text-text-secondary'} />
                         <span className="flex-1">{cmd.label}</span>
                         {cmd.hint && (
-                          <span className="text-[10px] text-text-muted">{cmd.hint}</span>
+                          <span className="text-[10px] text-text-muted hidden sm:inline">{cmd.hint}</span>
                         )}
                       </button>
                     </li>
@@ -318,14 +330,15 @@ function Palette({ onClose }: { onClose: () => void }) {
             </li>
           ))}
           {items.length === 0 && (
-            <li className="px-4 py-6 text-center text-sm text-text-secondary">
+            <li className="px-4 py-8 text-center text-sm text-text-secondary">
               Nothing matches.
             </li>
           )}
         </ul>
         <div className="border-t border-border px-4 py-2 flex items-center justify-between text-[10px] text-text-muted">
-          <span>↑↓ to navigate · ↵ to run</span>
-          <span>⌘K to toggle</span>
+          <span className="hidden md:inline">↑↓ navigate · ↵ run · ESC close</span>
+          <span className="md:hidden">Tap to run a command</span>
+          <span className="hidden md:inline">⌘K to toggle</span>
         </div>
       </div>
     </div>

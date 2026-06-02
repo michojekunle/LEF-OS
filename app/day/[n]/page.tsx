@@ -242,7 +242,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
         }}
       />
 
-      <nav className="flex items-center justify-between border-t border-border/60 pt-6">
+      <nav className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-6">
         {prev ? (
           <Link
             href={`/day/${prev}`}

@@ -141,13 +141,13 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
             <div className="flex gap-0.5 p-0.5 bg-surface-2 border border-border rounded-lg max-w-[200px]">
               <button 
                 onClick={() => setSelectedDayOffset(0)}
-                className={`px-3 py-1 text-[11px] font-medium rounded-md transition-all duration-150 ${selectedDayOffset === 0 ? 'bg-surface text-gold shadow-sm border border-border/40' : 'text-text-secondary hover:text-text-primary'}`}
+                className={`px-3 py-1 text-[11px] font-medium rounded-md transition-all duration-150 ${selectedDayOffset === 0 ? 'bg-surface text-gold shadow-sm border border-[var(--border-dim)]' : 'text-text-secondary hover:text-text-primary'}`}
               >
                 Today
               </button>
               <button 
                 onClick={() => setSelectedDayOffset(-1)}
-                className={`px-3 py-1 text-[11px] font-medium rounded-md transition-all duration-150 ${selectedDayOffset === -1 ? 'bg-surface text-gold shadow-sm border border-border/40' : 'text-text-secondary hover:text-text-primary'}`}
+                className={`px-3 py-1 text-[11px] font-medium rounded-md transition-all duration-150 ${selectedDayOffset === -1 ? 'bg-surface text-gold shadow-sm border border-[var(--border-dim)]' : 'text-text-secondary hover:text-text-primary'}`}
               >
                 Yesterday
               </button>

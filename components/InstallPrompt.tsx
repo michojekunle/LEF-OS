@@ -126,7 +126,7 @@ export function InstallPrompt() {
         </button>
       </div>
 
-      <div className="border-t border-border/40 my-0.5" />
+      <div className="border-t border-[var(--border-dim)] my-0.5" />
 
       {deferredPrompt ? (
         <button
@@ -136,14 +136,14 @@ export function InstallPrompt() {
           <Download size={12} /> Install Web App
         </button>
       ) : isIOS ? (
-        <div className="text-[10px] text-text-secondary bg-surface-2/50 rounded-md p-2.5 border border-border/30 flex items-start gap-2">
+        <div className="text-[10px] text-text-secondary bg-surface-2/50 rounded-md p-2.5 border border-[var(--border-dim)] flex items-start gap-2">
           <Share size={14} className="text-gold shrink-0 mt-0.5" />
           <div className="leading-normal">
             To install: tap <span className="font-semibold text-text-primary">Share</span> in Safari, then select <span className="font-semibold text-text-primary">Add to Home Screen</span>.
           </div>
         </div>
       ) : (
-        <div className="text-[10px] text-text-secondary bg-surface-2/50 rounded-md p-2.5 border border-border/30 leading-normal">
+        <div className="text-[10px] text-text-secondary bg-surface-2/50 rounded-md p-2.5 border border-[var(--border-dim)] leading-normal">
           To install: tap your browser menu (usually <span className="font-semibold text-text-primary">⋮</span> or <span className="font-semibold text-text-primary">⋯</span>) and select <span className="font-semibold text-text-primary">Install App</span> or <span className="font-semibold text-text-primary">Add to Home Screen</span>.
         </div>
       )}

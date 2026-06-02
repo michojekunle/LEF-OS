@@ -162,7 +162,7 @@ export function NotificationCenter({ userId }: Props) {
       {/* FLOATING DRAWER */}
       {isOpen && (
         <div className="absolute right-0 mt-2 w-80 md:w-96 card-2 bg-surface border-border shadow-2xl rounded-xl z-50 overflow-hidden reveal">
-          <header className="px-4 py-3 border-b border-border/80 flex items-center justify-between">
+          <header className="px-4 py-3 border-b border-[var(--border-subtle)] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-text-primary uppercase tracking-wider">Notifications</span>
               {unreadCount > 0 && (

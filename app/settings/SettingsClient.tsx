@@ -320,7 +320,7 @@ export function SettingsClient({
                     <div
                       key={reminder.id}
                       className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
-                        reminder.enabled ? 'border-border bg-surface-2/20' : 'border-border/40 opacity-60 bg-transparent'
+                        reminder.enabled ? 'border-border' : 'border-[var(--border-dim)] opacity-60 bg-transparent'
                       }`}
                     >
                       <div className="space-y-1">
@@ -466,7 +466,7 @@ export function SettingsClient({
               </button>
             )}
 
-            <div className="border-t border-border/40 pt-4 text-[10px] text-text-muted space-y-2">
+            <div className="border-t border-[var(--border-dim)] pt-4 text-[10px] text-text-muted space-y-2">
               <p>
                 Web Push relies on browser service workers. If notifications are not displaying, check:
               </p>

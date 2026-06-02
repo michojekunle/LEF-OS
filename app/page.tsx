@@ -19,7 +19,7 @@ export default function LandingPage() {
           <Sparkles size={12} className="text-gold" />
           <span>Founder's Learning OS</span>
         </div>
-        <h1 className="font-display text-[clamp(2.5rem,8vw,5rem)] leading-[0.95] tracking-tight text-text-primary reveal">
+        <h1 className="font-display text-[clamp(2.8rem,10vw,5rem)] leading-[0.95] tracking-tight text-text-primary reveal">
           Law
           <span className="text-text-muted"> · </span>
           <span className="accent-econ">Economics</span>

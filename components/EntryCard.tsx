@@ -2,17 +2,31 @@
 
 import { Star, Share2 } from 'lucide-react';
 import { useState } from 'react';
-import type { DailyEntry } from '@/lib/utils';
+import Link from 'next/link';
+import type { DailyEntry, ReactionKind } from '@/lib/database.types';
 import { formatDate } from '@/lib/utils';
 import { DomainBadge } from './DomainBadge';
+import { ReactionBar } from './ReactionBar';
 
 type Props = {
   entry: DailyEntry;
   showJournal?: boolean;
   authorName?: string | null;
+  authorUsername?: string | null;
+  reactionCounts?: Partial<Record<ReactionKind, number>>;
+  myReactions?: ReactionKind[];
+  viewerSignedIn?: boolean;
 };
 
-export function EntryCard({ entry, showJournal = false, authorName }: Props) {
+export function EntryCard({
+  entry,
+  showJournal = false,
+  authorName,
+  authorUsername,
+  reactionCounts,
+  myReactions,
+  viewerSignedIn,
+}: Props) {
   const [copied, setCopied] = useState(false);
 
   async function share() {
@@ -40,13 +54,28 @@ export function EntryCard({ entry, showJournal = false, authorName }: Props) {
     }
   }
 
+  const author =
+    authorUsername ? (
+      <Link
+        href={`/u/${authorUsername}`}
+        className="hover:text-text-primary transition-colors"
+      >
+        {authorName ?? `@${authorUsername}`}
+      </Link>
+    ) : (
+      <span>{authorName ?? 'Anonymous'}</span>
+    );
+
   return (
     <article id={`day-${entry.day_number}`} className="card p-5 reveal">
       <header className="flex items-center justify-between gap-2 mb-3">
         <div className="flex items-baseline gap-3">
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted">
+          <Link
+            href={`/day/${entry.day_number}`}
+            className="font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted hover:text-gold transition-colors"
+          >
             Day {entry.day_number}
-          </span>
+          </Link>
           <span className="text-xs text-text-secondary">
             {formatDate(entry.entry_date)}
           </span>
@@ -84,17 +113,27 @@ export function EntryCard({ entry, showJournal = false, authorName }: Props) {
         </p>
       )}
 
-      <footer className="flex items-center justify-between text-xs text-text-secondary mt-3 pt-3 border-t border-border/60">
-        <span>{authorName ?? 'Anonymous'}</span>
-        {entry.share_insight && (
-          <button
-            type="button"
-            onClick={share}
-            className="inline-flex items-center gap-1.5 text-text-secondary hover:text-gold transition-colors"
-          >
-            <Share2 size={12} />
-            {copied ? 'Copied' : 'Share'}
-          </button>
+      <footer className="flex flex-col gap-3 mt-3 pt-3 border-t border-[var(--border-subtle)]">
+        <div className="flex items-center justify-between text-xs text-text-secondary">
+          {author}
+          {entry.share_insight && (
+            <button
+              type="button"
+              onClick={share}
+              className="inline-flex items-center gap-1.5 text-text-secondary hover:text-gold transition-colors"
+            >
+              <Share2 size={12} />
+              {copied ? 'Copied' : 'Share'}
+            </button>
+          )}
+        </div>
+        {reactionCounts && (
+          <ReactionBar
+            entryId={entry.id}
+            initialCounts={reactionCounts}
+            initialMine={myReactions ?? []}
+            signedIn={Boolean(viewerSignedIn)}
+          />
         )}
       </footer>
     </article>

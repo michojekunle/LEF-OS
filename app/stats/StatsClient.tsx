@@ -167,7 +167,7 @@ export function StatsClient({ email, initialEntries }: Props) {
             <ProgressBar value={finDone} max={TOTAL_CALENDAR_DAYS} label="💰 Finance Domain" accent="slate" />
           </div>
 
-          <div className="border-t border-border/40 pt-4 flex items-center justify-between text-[11px] text-text-secondary">
+          <div className="border-t border-[var(--border-dim)] pt-4 flex items-center justify-between text-[11px] text-text-secondary">
             <span>Minimum domain target: 122 completions</span>
             <span className="font-semibold text-gold">Learning in public</span>
           </div>

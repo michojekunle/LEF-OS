@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { Star, Send, Loader2, CheckCheck } from 'lucide-react';
+import { Star, Send, Loader2 } from 'lucide-react';
 import type { DailyEntry } from '@/lib/utils';
 import { isoDate } from '@/lib/utils';
 import { upsertEntryAction } from '@/app/actions/entries';
@@ -78,17 +78,26 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="card p-5 space-y-5">
-      <div className="flex items-center gap-3">
-        <input
-          id="studied"
-          type="checkbox"
-          checked={studied}
-          onChange={(e) => setStudied(e.target.checked)}
-          className="h-4 w-4 accent-[var(--gold)]"
-        />
-        <label htmlFor="studied" className="text-sm font-medium">
-          Studied today
-        </label>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <input
+            id="studied"
+            type="checkbox"
+            checked={studied}
+            onChange={(e) => setStudied(e.target.checked)}
+            className="h-4 w-4 accent-[var(--gold)]"
+          />
+          <label htmlFor="studied" className="text-sm font-medium">
+            Studied today
+          </label>
+        </div>
+        <button
+          type="button"
+          onClick={markAll}
+          className="text-[10px] uppercase tracking-[0.18em] text-text-secondary hover:text-gold transition-colors"
+        >
+          Mark all 3
+        </button>
       </div>
 
       <fieldset disabled={!studied} className={!studied ? 'opacity-50 pointer-events-none' : ''}>
@@ -106,17 +115,17 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
         <div className="text-[10px] uppercase tracking-[0.18em] text-text-secondary mb-2">
           Depth — how deeply did you study?
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
               type="button"
               key={n}
               onClick={() => setRating(rating === n ? 0 : n)}
-              className="p-1 rounded hover:bg-surface-2 transition-colors"
+              className="p-2.5 rounded-md hover:bg-surface-2 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label={`${n} star${n > 1 ? 's' : ''}`}
             >
               <Star
-                size={20}
+                size={22}
                 className={n <= rating ? 'fill-gold text-gold' : 'text-text-muted'}
               />
             </button>
