@@ -27,6 +27,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(!isFloating); // Floating starts closed, inline starts open
   const [error, setError] = useState<string | null>(null);
+  const [animatedIndices, setAnimatedIndices] = useState<number[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -82,6 +83,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
   function handleReset() {
     setMessages([]);
     setError(null);
+    setAnimatedIndices([]);
   }
 
   // --- FLOATING WIDGET TRIGGER ---
@@ -100,8 +102,9 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
                 {userId && (
                   <button
                     onClick={handleReset}
-                    className="text-text-muted hover:text-text-secondary transition-colors"
+                    className="text-text-muted hover:text-text-secondary transition-colors p-0.5"
                     title="Reset conversation"
+                    aria-label="Reset conversation"
                   >
                     <RefreshCw size={11} />
                   </button>
@@ -109,6 +112,8 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
                 <button
                   onClick={() => setIsOpen(false)}
                   className="text-text-muted hover:text-text-primary p-0.5"
+                  title="Close LEF Counsel chat"
+                  aria-label="Close LEF Counsel chat"
                 >
                   <X size={14} />
                 </button>
@@ -125,6 +130,10 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
               messagesEndRef={messagesEndRef}
               userId={userId}
               onWordAdded={scrollToBottom}
+              animatedIndices={animatedIndices}
+              onMessageAnimated={(idx) => {
+                setAnimatedIndices((prev) => [...prev, idx]);
+              }}
             />
 
             {/* Input Bar */}
@@ -168,6 +177,8 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-5 py-4 border-b border-border bg-surface-2/20 flex items-center justify-between hover:bg-surface-2/40 transition-colors"
+        aria-expanded={isOpen}
+        aria-controls="lef-counsel-inline-panel"
       >
         <div className="flex items-center gap-2">
           <Sparkles size={15} className="text-gold" />
@@ -183,7 +194,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
 
       {/* Panel Body */}
       {isOpen && (
-        <div className="h-[400px] flex flex-col">
+        <div id="lef-counsel-inline-panel" className="h-[400px] flex flex-col">
           <ChatBody
             messages={messages}
             starterPills={starterPills}
@@ -193,6 +204,10 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
             messagesEndRef={messagesEndRef}
             userId={userId}
             onWordAdded={scrollToBottom}
+            animatedIndices={animatedIndices}
+            onMessageAnimated={(idx) => {
+              setAnimatedIndices((prev) => [...prev, idx]);
+            }}
           />
           {userId && (
             <ChatInput
@@ -214,9 +229,10 @@ type AssistantMessageProps = {
   content: string;
   isLatest: boolean;
   onWordAdded?: () => void;
+  onFinished?: () => void;
 };
 
-function AssistantMessage({ content, isLatest, onWordAdded }: AssistantMessageProps) {
+function AssistantMessage({ content, isLatest, onWordAdded, onFinished }: AssistantMessageProps) {
   const [displayedText, setDisplayedText] = useState(isLatest ? '' : content);
 
   useEffect(() => {
@@ -232,6 +248,9 @@ function AssistantMessage({ content, isLatest, onWordAdded }: AssistantMessagePr
     const interval = setInterval(() => {
       if (currentWordIndex >= words.length) {
         clearInterval(interval);
+        if (onFinished) {
+          onFinished();
+        }
         return;
       }
 
@@ -247,7 +266,7 @@ function AssistantMessage({ content, isLatest, onWordAdded }: AssistantMessagePr
     }, 20); // 20ms reveal speed
 
     return () => clearInterval(interval);
-  }, [content, isLatest, onWordAdded]);
+  }, [content, isLatest, onWordAdded, onFinished]);
 
   return <MarkdownText text={displayedText} />;
 }
@@ -261,6 +280,8 @@ type BodyProps = {
   messagesEndRef: React.RefObject<HTMLDivElement>;
   userId?: string;
   onWordAdded?: () => void;
+  animatedIndices: number[];
+  onMessageAnimated: (idx: number) => void;
 };
 
 function GuestOnboarding() {
@@ -294,6 +315,8 @@ function ChatBody({
   messagesEndRef,
   userId,
   onWordAdded,
+  animatedIndices,
+  onMessageAnimated,
 }: BodyProps) {
   if (!userId) {
     return <GuestOnboarding />;
@@ -348,8 +371,9 @@ function ChatBody({
               ) : (
                 <AssistantMessage
                   content={m.content}
-                  isLatest={idx === messages.length - 1}
+                  isLatest={idx === messages.length - 1 && !animatedIndices.includes(idx)}
                   onWordAdded={onWordAdded}
+                  onFinished={() => onMessageAnimated(idx)}
                 />
               )}
             </div>
@@ -399,11 +423,13 @@ function ChatInput({ input, loading, onChange, onSubmit }: InputProps) {
         onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
         placeholder="Ask LEF Counsel a question…"
         className="flex-1 bg-transparent text-xs outline-none border border-border focus:border-text-primary rounded px-2.5 py-1.5 placeholder:text-text-muted"
+        aria-label="Type your question to LEF Counsel"
       />
       <button
         onClick={onSubmit}
         disabled={loading || !input.trim()}
         className="btn btn-primary text-xs p-1.5 w-8 h-8 flex items-center justify-center shrink-0"
+        aria-label="Send message"
       >
         <Send size={12} />
       </button>
