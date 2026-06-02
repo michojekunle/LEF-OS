@@ -39,7 +39,7 @@ const config: Config = {
         xl: '10px',
       },
       maxWidth: {
-        content: '900px',
+        content: '1100px',
       },
       animation: {
         'fade-in': 'fadeIn 0.4s ease-out',

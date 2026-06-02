@@ -386,18 +386,31 @@ function Palette({ onClose }: { onClose: () => void }) {
 }
 
 /** Small icon button — opens the palette. Use anywhere in the app. */
-export function CommandPaletteTrigger({ className = '' }: { className?: string }) {
+export function CommandPaletteTrigger({
+  className = '',
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   const { open } = useCommandPalette();
   return (
     <button
       type="button"
       onClick={open}
       aria-label="Open command palette"
-      className={`inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md border border-border p-1.5 text-xs text-text-secondary transition-colors hover:text-text-primary md:p-2 lg:px-2.5 lg:py-1.5 ${className}`}
+      className={
+        className ||
+        `inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md border border-border p-1.5 text-xs text-text-secondary transition-colors hover:text-text-primary md:p-2 lg:px-2.5 lg:py-1.5`
+      }
     >
-      <Search size={14} className="lg:h-3 lg:w-3" />
-      <span className="hidden lg:inline">Search · </span>
-      <kbd className="hidden font-mono text-[10px] text-text-muted lg:inline">⌘K</kbd>
+      {children || (
+        <>
+          <Search size={14} className="lg:h-3 lg:w-3" />
+          <span className="hidden lg:inline">Search · </span>
+          <kbd className="hidden font-mono text-[10px] text-text-muted lg:inline">⌘K</kbd>
+        </>
+      )}
     </button>
   );
 }

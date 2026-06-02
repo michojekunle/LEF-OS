@@ -69,7 +69,6 @@ export const metadata: Metadata = {
     description: "A Founder's 4-Month Curriculum. Learned in public.",
     images: ['/og-image.png'],
   },
-  
 };
 
 export const viewport: Viewport = {

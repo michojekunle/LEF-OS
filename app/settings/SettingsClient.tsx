@@ -5,7 +5,18 @@ import Link from 'next/link';
 import { supabaseBrowser } from '@/lib/supabase';
 import { useToast } from '@/components/Toast';
 import { getPublicEnv } from '@/lib/env';
-import { Bell, Mail, Trash2, Plus, Loader2, Smartphone, Check, CheckCircle, User, Download } from 'lucide-react';
+import {
+  Bell,
+  Mail,
+  Trash2,
+  Plus,
+  Loader2,
+  Smartphone,
+  Check,
+  CheckCircle,
+  User,
+  Download,
+} from 'lucide-react';
 
 type CustomReminder = {
   id: string;

@@ -37,34 +37,36 @@ export function RoadmapView() {
   return (
     <div className="space-y-8">
       {/* Month tabs */}
-      <div
-        role="tablist"
-        aria-label="Syllabus months"
-        className="card flex gap-1 overflow-x-auto p-1.5 md:grid md:grid-cols-4 md:overflow-x-visible"
-      >
-        {CURRICULUM.map((m) => (
-          <button
-            key={m.month}
-            id={`month-tab-${m.month}`}
-            role="tab"
-            aria-selected={month === m.month}
-            aria-controls="roadmap-panel"
-            onClick={() => {
-              setMonth(m.month);
-              update({ month: m.month });
-            }}
-            className={`shrink-0 rounded-md px-3 py-2 text-center text-xs transition-all md:shrink md:text-sm ${
-              month === m.month
-                ? 'bg-surface-2 text-text-primary'
-                : 'text-text-secondary hover:text-text-primary'
-            }`}
-          >
-            <span className="block font-display leading-tight">{m.monthName}</span>
-            <span className="mt-0.5 block text-[9px] uppercase tracking-[0.18em] text-text-muted">
-              M{m.month}
-            </span>
-          </button>
-        ))}
+      <div className="w-full overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-[var(--border-subtle)] scrollbar-track-transparent">
+        <div
+          role="tablist"
+          aria-label="Syllabus months"
+          className="card grid min-w-[420px] grid-cols-4 gap-1 p-1.5"
+        >
+          {CURRICULUM.map((m) => (
+            <button
+              key={m.month}
+              id={`month-tab-${m.month}`}
+              role="tab"
+              aria-selected={month === m.month}
+              aria-controls="roadmap-panel"
+              onClick={() => {
+                setMonth(m.month);
+                update({ month: m.month });
+              }}
+              className={`rounded-md px-2 py-2 text-center text-xs transition-all md:px-3 md:text-sm ${
+                month === m.month
+                  ? 'bg-surface-2 text-text-primary'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <span className="block font-display leading-tight">{m.monthName}</span>
+              <span className="mt-0.5 block text-[9px] uppercase tracking-[0.18em] text-text-muted">
+                M{m.month}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Domain tabs */}
