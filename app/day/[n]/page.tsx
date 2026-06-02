@@ -7,7 +7,7 @@ import {
   getMonthByCurriculumDay,
   RESOURCE_URLS,
   type Domain,
-} from '@/components/curriculum-data';
+} from '@/data/curriculum-data';
 import { DomainBadge } from '@/components/DomainBadge';
 import { dateFromDayNumber, formatDate, isThursday } from '@/lib/utils';
 import { hasSupabaseConfig } from '@/lib/supabase';

@@ -1,9 +1,4 @@
-import {
-  CURRICULUM,
-  findDayMeta,
-  TOTAL_CALENDAR_DAYS,
-  type Domain,
-} from '@/components/curriculum-data';
+import { CURRICULUM, findDayMeta, TOTAL_CALENDAR_DAYS, type Domain } from '@/data/curriculum-data';
 import type { DailyEntry } from './database.types';
 
 export type { DailyEntry };

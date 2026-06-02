@@ -123,6 +123,7 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
               onClick={() => setRating(rating === n ? 0 : n)}
               className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md p-2.5 transition-colors hover:bg-surface-2"
               aria-label={`${n} star${n > 1 ? 's' : ''}`}
+              data-tour-action="star-rating"
             >
               <Star size={22} className={n <= rating ? 'fill-gold text-gold' : 'text-text-muted'} />
             </button>

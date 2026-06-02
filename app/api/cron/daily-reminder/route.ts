@@ -4,13 +4,21 @@ import { getDayNumber, getTodayTopics, getCurrentStreak, clampDay, isoDate } fro
 import webpush from 'web-push';
 
 export async function GET(request: Request) {
-  // Verify authorization secret
-  const { searchParams } = new URL(request.url);
-  const key =
-    searchParams.get('secret') ?? request.headers.get('Authorization')?.replace('Bearer ', '');
+  // ── Auth: CRON_SECRET must be set and must match the Authorization header ──
+  // Vercel cron jobs send: Authorization: Bearer <CRON_SECRET>
+  // Without CRON_SECRET set, anyone could trigger mass email sends.
   const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    // No secret configured → block all requests to prevent abuse.
+    // Set CRON_SECRET in your environment variables.
+    console.error('[cron] CRON_SECRET is not set — request blocked for safety.');
+    return NextResponse.json({ error: 'Service not configured' }, { status: 503 });
+  }
 
-  if (secret && key !== secret) {
+  // Accept the secret via header only — query params appear in logs/CDN traces.
+  const authHeader = request.headers.get('Authorization') ?? '';
+  const provided = authHeader.replace(/^Bearer\s+/i, '').trim();
+  if (provided !== secret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -70,7 +78,8 @@ export async function GET(request: Request) {
           hour12: false,
           timeZone: timezone,
         }).format(todayDate);
-      } catch (err) {
+      } catch {
+        // Invalid timezone string — fall back to UTC
         localHourStr = new Intl.DateTimeFormat('en-US', {
           hour: '2-digit',
           hour12: false,
@@ -223,11 +232,17 @@ export async function GET(request: Request) {
               });
 
               for (const subRecord of subscriptions) {
+                // endpoint is always present in real push subscriptions —
+                // the browser PushSubscriptionJSON type marks it optional for spec correctness
+                if (!subRecord.subscription.endpoint) continue;
                 try {
-                  await webpush.sendNotification(subRecord.subscription, pushPayload);
+                  await webpush.sendNotification(
+                    subRecord.subscription as webpush.PushSubscription,
+                    pushPayload,
+                  );
                   pushSent = true;
                 } catch (pushErr) {
-                  const statusCode = (pushErr as any).statusCode;
+                  const statusCode = (pushErr as { statusCode?: number }).statusCode;
                   if (statusCode === 404 || statusCode === 410) {
                     await sb.from('push_subscriptions').delete().eq('id', subRecord.id);
                   }
@@ -261,9 +276,9 @@ function getReminderEmailHtml(
   message: string,
   streak: number,
   todayDay: number,
-  todayTopics: any,
+  todayTopics: { law?: string | null; economics?: string | null; finance?: string | null },
   yesterdayDay: number,
-  yesterdayTopics: any,
+  yesterdayTopics: { law?: string | null; economics?: string | null; finance?: string | null },
   yesterdayComplete: boolean,
   siteUrl: string,
 ): string {

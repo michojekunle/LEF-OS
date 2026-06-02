@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { Plus, Trash2, Check, Loader2, HelpCircle, BookOpen } from 'lucide-react';
 import type { DailyEntry, DayNote, LefDomain, Question } from '@/lib/database.types';
-import { DOMAIN_META } from '@/components/curriculum-data';
+import { DOMAIN_META } from '@/data/curriculum-data';
 import { DailyLogForm } from '@/components/DailyLogForm';
 import { upsertDayNoteAction } from '@/app/actions/notes';
 import {
