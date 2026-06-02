@@ -33,8 +33,8 @@ export function WeekAccordion({ week, defaultOpen = false }: Props) {
       {open && (
         <ol className="space-y-1.5 border-t border-[var(--border-subtle)] px-4 pb-4 pt-1">
           {week.days.map((d) => (
-            <li key={d.day} className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-3 text-sm leading-snug mb-3 sm:mb-1.5 last:mb-0">
-              <span className="font-mono text-[10px] tabular-nums text-text-muted sm:w-12 sm:shrink-0">
+            <li key={d.day} className="flex items-baseline gap-3 text-sm leading-snug max-[320px]:mb-3 max-[320px]:flex-col max-[320px]:items-start max-[320px]:gap-0.5">
+              <span className="w-12 shrink-0 font-mono text-[10px] tabular-nums text-text-muted">
                 Day {d.day}
               </span>
               <span className={d.isReview ? 'review-day' : 'text-text-secondary'}>{d.topic}</span>
