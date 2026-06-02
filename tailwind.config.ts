@@ -7,6 +7,14 @@ const config: Config = {
     './lib/**/*.{ts,tsx}',
   ],
   theme: {
+    screens: {
+      xs: '380px',
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1280px',
+      '2xl': '1536px',
+    },
     extend: {
       colors: {
         bg: 'var(--bg)',
@@ -20,6 +28,7 @@ const config: Config = {
         sage: 'var(--sage)',
         'slate-blue': 'var(--slate-blue)',
         'lef-red': 'var(--red)',
+        red: 'var(--red)',
         success: 'var(--success)',
       },
       fontFamily: {
