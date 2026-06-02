@@ -5,6 +5,7 @@ import {
   TOTAL_CALENDAR_DAYS,
   findDayMeta,
   getMonthByCurriculumDay,
+  RESOURCE_URLS,
   type Domain,
 } from '@/components/curriculum-data';
 import { DomainBadge } from '@/components/DomainBadge';
@@ -13,6 +14,7 @@ import { hasSupabaseConfig } from '@/lib/supabase';
 import { supabaseServer } from '@/lib/supabase-server';
 import type { DailyEntry, DayNote, Question } from '@/lib/database.types';
 import { DayLogPanel } from './DayLogPanel';
+import { LEFCounselPanel } from '@/components/LEFCounselPanel';
 
 type Params = { n: string };
 
@@ -87,8 +89,26 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
   const next = day < TOTAL_CALENDAR_DAYS ? day + 1 : null;
   const isThu = isThursday(date);
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CourseInstance',
+    'name': `Day ${day} Curriculum Study Log`,
+    'description': `Study details for Day ${day} curriculum covering: Law (${
+      metas.law?.topic || 'Review'
+    }), Economics (${metas.economics?.topic || 'Review'}), Finance (${metas.finance?.topic || 'Review'}).`,
+    'courseMode': 'Online/Self-paced',
+    'instructor': {
+      '@type': 'Organization',
+      'name': 'LEF OS'
+    }
+  };
+
   return (
     <div className="mx-auto max-w-content px-5 md:px-6 py-8 space-y-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className="space-y-3">
         <Link
           href="/roadmap"
@@ -147,6 +167,58 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
         })}
       </section>
 
+      {/* RECOMMENDED RESOURCES */}
+      {month && (
+        <section className="card p-6 space-y-4">
+          <div>
+            <h2 className="text-xs font-semibold text-text-primary uppercase tracking-wider">
+              Recommended Reading & Resources
+            </h2>
+            <p className="text-xs text-text-secondary mt-0.5">
+              Reference materials and primary literature for Month {month.month} ({month.name}) study tracks.
+            </p>
+          </div>
+          
+          <div className="grid gap-6 md:grid-cols-3">
+            {domains.map((d) => {
+              const track = month.tracks[d];
+              const resList = track?.resources || [];
+              if (resList.length === 0) return null;
+              
+              return (
+                <div key={d} className="space-y-2">
+                  <span className="text-[10px] uppercase tracking-wider text-text-muted font-semibold block">
+                    {d === 'law' ? '⚖️ Law' : d === 'economics' ? '📊 Economics' : '💰 Finance'} Resources
+                  </span>
+                  <ul className="space-y-1.5">
+                    {resList.map((res) => {
+                      const url = RESOURCE_URLS[res];
+                      return (
+                        <li key={res} className="text-xs">
+                          {url ? (
+                            <a
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-gold hover:underline hover:text-gold/80 transition-colors inline-flex items-center gap-1 leading-normal"
+                            >
+                              {res}
+                              <span className="text-[9px] opacity-75">↗</span>
+                            </a>
+                          ) : (
+                            <span className="text-text-secondary">{res}</span>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {userId ? (
         <DayLogPanel
           userId={userId}
@@ -159,6 +231,16 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
       ) : (
         <SignInPrompt day={day} />
       )}
+
+      <LEFCounselPanel
+        day={day}
+        userId={userId || undefined}
+        topics={{
+          law: metas.law?.topic,
+          economics: metas.economics?.topic,
+          finance: metas.finance?.topic,
+        }}
+      />
 
       <nav className="flex items-center justify-between border-t border-border/60 pt-6">
         {prev ? (

@@ -7,6 +7,7 @@ import {
   clampDay,
   isoDate,
 } from '@/lib/utils';
+import webpush from 'web-push';
 
 export async function GET(request: Request) {
   // Verify authorization secret
@@ -39,10 +40,10 @@ export async function GET(request: Request) {
   try {
     const sb = supabaseAdmin();
 
-    // 1. Fetch user settings for active notifications
+    // Fetch user settings for active notifications (with timezone)
     const { data: settingsList, error: settingsError } = await sb
       .from('user_settings')
-      .select('user_id, email, daily_reminder_enabled')
+      .select('user_id, email, timezone, daily_reminder_enabled')
       .eq('daily_reminder_enabled', true);
 
     if (settingsError) throw settingsError;
@@ -52,12 +53,65 @@ export async function GET(request: Request) {
 
     const results = [];
 
-    // 2. Process reminders for each user
+    // Setup web-push details if VAPID keys are configured
+    const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+    const hasVapid = Boolean(vapidPublicKey && vapidPrivateKey);
+    if (hasVapid) {
+      webpush.setVapidDetails(
+        'mailto:support@lef-os.com',
+        vapidPublicKey!,
+        vapidPrivateKey!
+      );
+    }
+
+    // Process reminders for each user
     for (const setting of settingsList) {
       const userId = setting.user_id;
       const email = setting.email;
+      const timezone = setting.timezone || 'Africa/Lagos';
 
-      // Fetch today's and yesterday's log for this user
+      // 1. Calculate user's current hour in their timezone
+      let localHourStr = '';
+      try {
+        localHourStr = new Intl.DateTimeFormat('en-US', {
+          hour: '2-digit',
+          hour12: false,
+          timeZone: timezone,
+        }).format(todayDate);
+      } catch (err) {
+        localHourStr = new Intl.DateTimeFormat('en-US', {
+          hour: '2-digit',
+          hour12: false,
+          timeZone: 'UTC',
+        }).format(todayDate);
+      }
+
+      const localHour = parseInt(localHourStr, 10);
+
+      // 2. Fetch custom reminders for this user
+      const { data: customReminders, error: remindersError } = await sb
+        .from('custom_reminders')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('enabled', true);
+
+      if (remindersError) {
+        console.error(`Error fetching custom reminders for user ${userId}:`, remindersError);
+        continue;
+      }
+
+      // Filter reminders matching the current hour
+      const matchingReminders = (customReminders || []).filter((r) => {
+        const reminderHour = parseInt(r.reminder_time.split(':')[0], 10);
+        return reminderHour === localHour;
+      });
+
+      if (matchingReminders.length === 0) {
+        continue;
+      }
+
+      // Fetch logs to check completion status
       const { data: logs, error: logsError } = await sb
         .from('daily_entries')
         .select('*')
@@ -75,12 +129,11 @@ export async function GET(request: Request) {
       const todayComplete = todayLog && (todayLog.law_completed || todayLog.economics_completed || todayLog.finance_completed);
       const yesterdayComplete = yesterdayLog && (yesterdayLog.law_completed || yesterdayLog.economics_completed || yesterdayLog.finance_completed);
 
-      // If they have completed today, they don't need a reminder!
+      // Do not send reminders if today is already logged/complete
       if (todayComplete) {
         continue;
       }
 
-      // Fetch all user entries to calculate their current streak
       const { data: allEntries } = await sb
         .from('daily_entries')
         .select('*')
@@ -89,20 +142,131 @@ export async function GET(request: Request) {
 
       const streak = getCurrentStreak(allEntries ?? [], todayDate);
 
-      // Send the email via Resend API
-      const reqUrl = new URL(request.url);
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-        ? (process.env.NEXT_PUBLIC_SITE_URL.includes('http') ? process.env.NEXT_PUBLIC_SITE_URL : `https://${process.env.NEXT_PUBLIC_SITE_URL}`)
-        : process.env.VERCEL_URL
-          ? `https://${process.env.VERCEL_URL}`
-          : reqUrl.origin.includes('localhost') ? reqUrl.origin : 'http://localhost:3001';
+      // 3. Trigger each matching reminder
+      for (const reminder of matchingReminders) {
+        const title = reminder.title || 'LEF OS Study Reminder';
+        const message = `Day ${todayDay} awaits: Law, Economics, and Finance. Keep your ${streak}-day streak going!`;
 
-      const emailHtml = `
+        let emailSent = false;
+        let inAppSent = false;
+        let pushSent = false;
+
+        const sendEmail = reminder.delivery_type === 'email' || reminder.delivery_type === 'both';
+        const sendInApp = reminder.delivery_type === 'in_app' || reminder.delivery_type === 'both';
+
+        // --- EMAIL NOTIFICATION ---
+        if (sendEmail) {
+          const reqUrl = new URL(request.url);
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+            ? (process.env.NEXT_PUBLIC_SITE_URL.includes('http') ? process.env.NEXT_PUBLIC_SITE_URL : `https://${process.env.NEXT_PUBLIC_SITE_URL}`)
+            : process.env.VERCEL_URL
+              ? `https://${process.env.VERCEL_URL}`
+              : reqUrl.origin.includes('localhost') ? reqUrl.origin : 'http://localhost:3001';
+
+          const emailHtml = getReminderEmailHtml(title, message, streak, todayDay, todayTopics, yesterdayDay, yesterdayTopics, Boolean(yesterdayComplete), siteUrl);
+
+          const emailRes = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${resendApiKey}`,
+            },
+            body: JSON.stringify({
+              from: 'LEF OS Reminder <onboarding@resend.dev>',
+              to: email,
+              subject: `LEF OS · ${title} (Day ${todayDay})`,
+              html: emailHtml,
+            }),
+          });
+
+          emailSent = emailRes.ok;
+          if (!emailRes.ok) {
+            console.error(`Failed to send email to ${email}:`, await emailRes.text());
+          }
+        }
+
+        // --- IN-APP & DEVICE PUSH NOTIFICATION ---
+        if (sendInApp) {
+          const { error: insertError } = await sb
+            .from('in_app_notifications')
+            .insert({
+              user_id: userId,
+              title: title,
+              message: message,
+            });
+
+          inAppSent = !insertError;
+          if (insertError) {
+            console.error('Error creating in-app notification:', insertError);
+          }
+
+          if (hasVapid) {
+            const { data: subscriptions } = await sb
+              .from('push_subscriptions')
+              .select('*')
+              .eq('user_id', userId);
+
+            if (subscriptions && subscriptions.length > 0) {
+              const pushPayload = JSON.stringify({
+                title: title,
+                body: message,
+                url: '/dashboard',
+              });
+
+              for (const subRecord of subscriptions) {
+                try {
+                  await webpush.sendNotification(subRecord.subscription, pushPayload);
+                  pushSent = true;
+                } catch (pushErr) {
+                  const statusCode = (pushErr as any).statusCode;
+                  if (statusCode === 404 || statusCode === 410) {
+                    await sb
+                      .from('push_subscriptions')
+                      .delete()
+                      .eq('id', subRecord.id);
+                  }
+                  console.error(`Web Push failed for subscription ${subRecord.id}:`, pushErr);
+                }
+              }
+            }
+          }
+        }
+
+        results.push({
+          email,
+          reminder_title: title,
+          hour: localHour,
+          email_sent: emailSent,
+          in_app_sent: inAppSent,
+          push_sent: pushSent,
+        });
+      }
+    }
+
+    return NextResponse.json({ ok: true, processed: results });
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ ok: false, error: errorMsg }, { status: 500 });
+  }
+}
+
+function getReminderEmailHtml(
+  title: string,
+  message: string,
+  streak: number,
+  todayDay: number,
+  todayTopics: any,
+  yesterdayDay: number,
+  yesterdayTopics: any,
+  yesterdayComplete: boolean,
+  siteUrl: string
+): string {
+  return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>LEF OS Daily Study Reminder</title>
+  <title>${title}</title>
   <style>
     body {
       background-color: #0D0D0D;
@@ -235,7 +399,7 @@ export async function GET(request: Request) {
       </div>
 
       <p style="font-size: 14px; line-height: 1.6; color: #8A8070; margin-bottom: 20px;">
-        Hi there! Don't let your learning slide. Here are your topics for today:
+        ${message}
       </p>
 
       <div class="section-title">Today's Topics (Day ${todayDay})</div>
@@ -286,35 +450,5 @@ export async function GET(request: Request) {
   </div>
 </body>
 </html>
-      `;
-
-      // Make Resend API request
-      const emailRes = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${resendApiKey}`,
-        },
-        body: JSON.stringify({
-          from: 'LEF OS Reminder <onboarding@resend.dev>',
-          to: email,
-          subject: `LEF OS · Day ${todayDay} Study Reminder`,
-          html: emailHtml,
-        }),
-      });
-
-      if (emailRes.ok) {
-        results.push({ email, status: 'sent' });
-      } else {
-        const errorText = await emailRes.text();
-        console.error(`Failed to send email to ${email}:`, errorText);
-        results.push({ email, status: 'failed', error: errorText });
-      }
-    }
-
-    return NextResponse.json({ ok: true, processed: results });
-  } catch (err) {
-    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-    return NextResponse.json({ ok: false, error: errorMsg }, { status: 500 });
-  }
+  `;
 }

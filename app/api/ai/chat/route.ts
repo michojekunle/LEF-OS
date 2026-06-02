@@ -1,0 +1,85 @@
+import { NextResponse } from 'next/server';
+import { supabaseServer } from '@/lib/supabase-server';
+
+export async function POST(request: Request) {
+  try {
+    const sb = await supabaseServer();
+    const { data: { user } } = await sb.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({
+        error: 'LEF Counsel: GEMINI_API_KEY environment variable is not configured on this server.'
+      }, { status: 500 });
+    }
+
+    const { messages, day, topics } = await request.json();
+
+    if (!messages || !Array.isArray(messages)) {
+      return NextResponse.json({ error: 'Missing or invalid messages history' }, { status: 400 });
+    }
+
+    // Format chat history for Gemini contents array:
+    // Gemini roles: "user" or "model"
+    const contents = messages.map((m: any) => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }],
+    }));
+
+    const topicsContext = topics
+      ? `Law: "${topics.law || 'Review buffer'}", Economics: "${topics.economics || 'Review buffer'}", Finance: "${topics.finance || 'Review buffer'}"`
+      : 'Review day topics';
+
+    const systemInstruction = `You are "LEF Counsel", an elite academic advisor, tutor, and accountability partner for the Law · Economics · Finance (LEF) 4-month curriculum.
+Your goal is to help the student understand and apply concepts in Nigerian and global Law, Economics, and Finance.
+
+Context:
+- The student is currently studying Day ${day || 'unknown'} topics.
+- Active Day topics: ${topicsContext}.
+
+Instructions:
+1. Maintain an authoritative, sharp, yet encouraging tone. You are an expert counselor.
+2. Provide practical Nigerian context (e.g. referencing CAMA 2020, FIRS tax codes, CBN monetary policy, local informal markets) alongside global principles.
+3. Be concise and structured. Use Markdown tables, bullet points, and clean lists. Keep explanations under 3-4 paragraphs unless a deep dive is explicitly requested.
+4. Always identify yourself as "LEF Counsel".
+5. If the user asks for a quiz, generate a quick 3-question multiple-choice quiz based on the current day's topics, and wait for their answers.`;
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents,
+          systemInstruction: {
+            parts: [{ text: systemInstruction }],
+          },
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 1024,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('Gemini API request failed:', errText);
+      return NextResponse.json({ error: 'Gemini service returned an error.' }, { status: response.status });
+    }
+
+    const resJson = await response.json();
+    const text = resJson.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.';
+
+    return NextResponse.json({ text });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}

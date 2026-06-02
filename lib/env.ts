@@ -4,6 +4,8 @@
 type EnvShape = {
   NEXT_PUBLIC_SUPABASE_URL: string;
   NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
+  NEXT_PUBLIC_SITE_URL?: string;
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY?: string;
 };
 
 function read(name: keyof EnvShape): string | undefined {
@@ -12,15 +14,29 @@ function read(name: keyof EnvShape): string | undefined {
     v = process.env.NEXT_PUBLIC_SUPABASE_URL;
   } else if (name === 'NEXT_PUBLIC_SUPABASE_ANON_KEY') {
     v = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  } else if (name === 'NEXT_PUBLIC_SITE_URL') {
+    v = process.env.NEXT_PUBLIC_SITE_URL;
+  } else if (name === 'NEXT_PUBLIC_VAPID_PUBLIC_KEY') {
+    v = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   }
   return v && v.length > 0 ? v : undefined;
 }
 
-export function getPublicEnv(): EnvShape | null {
+export function getPublicEnv(): {
+  NEXT_PUBLIC_SUPABASE_URL: string;
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
+  NEXT_PUBLIC_SITE_URL?: string;
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY?: string;
+} | null {
   const url = read('NEXT_PUBLIC_SUPABASE_URL');
   const anon = read('NEXT_PUBLIC_SUPABASE_ANON_KEY');
   if (!url || !anon) return null;
-  return { NEXT_PUBLIC_SUPABASE_URL: url, NEXT_PUBLIC_SUPABASE_ANON_KEY: anon };
+  return {
+    NEXT_PUBLIC_SUPABASE_URL: url,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: anon,
+    NEXT_PUBLIC_SITE_URL: read('NEXT_PUBLIC_SITE_URL'),
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY: read('NEXT_PUBLIC_VAPID_PUBLIC_KEY'),
+  };
 }
 
 export function requirePublicEnv(): EnvShape {

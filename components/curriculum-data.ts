@@ -1043,3 +1043,54 @@ export function findDayMeta(
 export function getMonthByCurriculumDay(day: number): MonthCurriculum | null {
   return CURRICULUM.find((m) => day >= m.startDay && day <= m.endDay) ?? null;
 }
+
+export const RESOURCE_URLS: Record<string, string> = {
+  // Law
+  '1999 Constitution of Nigeria': 'https://www.constituteproject.org/constitution/Nigeria_1999.pdf',
+  'CAMA 2020 (CAC website)': 'https://www.cac.gov.ng/wp-content/uploads/2020/12/CAMA-2020-ACT.pdf',
+  'Nigeria Data Protection Act 2023': 'https://ndpc.gov.ng/Files/ndpact.pdf',
+  "Afe Babalola's Nigerian Law of Contract": 'https://www.lawyard.ng/wp-content/uploads/2016/01/THE-NIGERIAN-LAW-OF-CONTRACT.pdf',
+  'Lawyard.ng': 'https://www.lawyard.ng/',
+  'SPA Ajibade & Co legal insights': 'https://www.spaajibade.com/resources/',
+  'Cybercrimes (Prohibition, Prevention etc.) Act 2015': 'https://cert.gov.ng/storage/library/Cybercrimes__Prohibition,_Prevention,_etc__Act,_2015.pdf',
+  'NIPC Act': 'https://www.nipc.gov.ng/wp-content/uploads/2019/02/NIPC-Act.pdf',
+  'Lagos Court of Arbitration rules': 'https://www.lca.org.ng/',
+  'EU AI Act primer': 'https://artificialintelligenceact.eu/',
+  'UDHR & ICCPR full texts (OHCHR)': 'https://www.ohchr.org/en/instruments-mechanisms/instruments/universal-declaration-human-rights',
+  "African Charter on Human and Peoples' Rights": 'https://www.achpr.org/legalinstruments/detail?id=49',
+  'GDPR text (EUR-Lex)': 'https://gdpr-info.eu/',
+  'FATF Mutual Evaluation reports (Nigeria)': 'https://www.fatf-gafi.org/en/publications/Mutualevaluations/Mutualevaluationofnigeria.html',
+  'MiCA Regulation (EU)': 'https://www.esma.europa.eu/rules-regulation/mifid-ii-and-mica/markets-crypto-assets-regulation-mica',
+  'Nigeria Startup Act 2022': 'https://www.startupbill.ng/',
+  'EU Digital Services Act (DSA)': 'https://commission.europa.eu/strategy-and-policy/priorities-2019-2024/europe-fit-digital-age/digital-services-act_en',
+  'YC SAFE & post-money templates': 'https://www.ycombinator.com/documents/',
+
+  // Economics
+  'Economics — Paul Samuelson': 'https://archive.org/details/economics0000samu_r8o3',
+  'Poor Economics — Banerjee & Duflo': 'https://www.pooreconomics.com/',
+  'CBN Annual Reports': 'https://www.cbn.gov.ng/documents/annualreports.asp',
+  'NBS Nigeria data': 'https://nigerianstat.gov.ng/',
+  'African Development Bank reports': 'https://www.afdb.org/en/documents',
+  "Nonso Obikili's Nigerian Economy blog": 'https://nonsoobikili.com/',
+  'Why Nations Fail — Acemoglu & Robinson': 'https://archive.org/details/whynationsfailor0000acem',
+  'Thinking, Fast and Slow — Kahneman': 'https://archive.org/details/thinkingfastslow0000kahn',
+  'IMF Article IV consultations (Nigeria)': 'https://www.imf.org/en/Countries/NGA#country-data',
+  'WTO trade policy reviews': 'https://www.wto.org/english/tratop_e/tpr_e/tpr_e.htm',
+  'This Time Is Different — Reinhart & Rogoff': 'https://archive.org/details/thistimeisdiffer00reinhart',
+  'Doughnut Economics — Kate Raworth': 'https://www.kateraworth.com/doughnut/',
+  'How Asia Works — Joe Studwell': 'https://archive.org/details/howasiaworks0000stud',
+
+  // Finance
+  'Rich Dad Poor Dad — Robert Kiyosaki': 'https://archive.org/details/RichDadPoorDadRobertKiyosaki',
+  'The Psychology of Money — Morgan Housel': 'https://archive.org/details/the-psychology-of-money',
+  'Investopedia': 'https://www.investopedia.com/',
+  'Nairametrics': 'https://nairametrics.com/',
+  'SEC Nigeria': 'https://sec.gov.ng/',
+  'CBN consumer finance guides': 'https://www.cbn.gov.ng/documents/consumerprotection.asp',
+  'Corporate Finance — Berk & DeMarzo': 'https://archive.org/details/corporatefinance0000berk',
+  'Financial Statement Analysis — Subramanyam': 'https://archive.org/details/financialstateme0000subr',
+  'NGX annual reports': 'https://ngxgroup.com/',
+  'Dangote Cement & MTN Nigeria annual reports': 'https://ngxgroup.com/',
+  'A Random Walk Down Wall Street — Burton Malkiel': 'https://archive.org/details/randomwalkdownwa00malk_0',
+  'Principles — Ray Dalio': 'https://www.principles.com/',
+};

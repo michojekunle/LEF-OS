@@ -7,6 +7,10 @@ import { MobileTabBar } from '@/components/MobileTabBar';
 import { ToastProvider } from '@/components/Toast';
 import { CommandPaletteProvider } from '@/components/CommandPalette';
 import { InstallPrompt } from '@/components/InstallPrompt';
+import { hasSupabaseConfig } from '@/lib/supabase';
+import { supabaseServer } from '@/lib/supabase-server';
+import { getDayNumber, clampDay } from '@/lib/utils';
+import { LEFCounselPanel } from '@/components/LEFCounselPanel';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -40,11 +44,20 @@ export const metadata: Metadata = {
     title: 'Law · Economics · Finance',
     description: 'A Founder\'s 4-Month Curriculum. Learned in public.',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 1200,
+        alt: 'Law Economics Finance Curriculum',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Law · Economics · Finance',
     description: 'A Founder\'s 4-Month Curriculum. Learned in public.',
+    images: ['/og-image.png'],
   },
 };
 
@@ -56,9 +69,43 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  let activeDay = 1;
+  let userId: string | undefined = undefined;
+
+  if (hasSupabaseConfig()) {
+    try {
+      const sb = await supabaseServer();
+      const { data } = await sb.auth.getUser();
+      if (data.user) {
+        userId = data.user.id;
+        activeDay = clampDay(getDayNumber(new Date()));
+      }
+    } catch {
+      // Ignored
+    }
+  }
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    'name': 'Law · Economics · Finance',
+    'description': "A 4-month personal learning OS for studying Nigerian and global Law, Economics, and Finance. Learned in public.",
+    'provider': {
+      '@type': 'Organization',
+      'name': 'LEF OS',
+      'sameAs': 'https://github.com/michojekunle/LEF'
+    }
+  };
+
   return (
     <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body>
         <ToastProvider>
           <CommandPaletteProvider>
@@ -67,6 +114,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
             <MobileTabBar />
             <InstallPrompt />
+            <LEFCounselPanel day={activeDay} isFloating={true} userId={userId} />
           </CommandPaletteProvider>
         </ToastProvider>
       </body>
