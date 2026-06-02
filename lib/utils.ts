@@ -4,28 +4,15 @@ import {
   TOTAL_CALENDAR_DAYS,
   type Domain,
 } from '@/components/curriculum-data';
+import type { DailyEntry } from './database.types';
+
+export type { DailyEntry };
 
 // Course window — Jun 1, 2026 (00:00 local) to Sep 30, 2026 inclusive.
 // Use UTC date math to be deterministic across timezones; treat dates as date-only.
 const START_DATE = new Date(Date.UTC(2026, 5, 1)); // June is month index 5
 const END_DATE = new Date(Date.UTC(2026, 8, 30)); // September 30
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
-
-export type DailyEntry = {
-  id: string;
-  user_id: string;
-  entry_date: string; // YYYY-MM-DD
-  day_number: number;
-  law_completed: boolean;
-  economics_completed: boolean;
-  finance_completed: boolean;
-  study_rating: number | null;
-  journal_text: string | null;
-  share_insight: string | null;
-  is_public: boolean;
-  created_at: string;
-  updated_at: string;
-};
 
 export function toUTCDateOnly(d: Date): Date {
   return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
