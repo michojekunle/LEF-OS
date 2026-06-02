@@ -190,37 +190,61 @@ export function SettingsClient({
     }
 
     setRegisteringPush(true);
+    
     try {
-      // 1. Request notification permission
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') {
-        throw new Error('Notification permission was denied.');
-      }
+      const doRegister = async () => {
+        // 1. Request notification permission
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          throw new Error('Notification permission was denied.');
+        }
 
-      // 2. Fetch VAPID Key from environment
-      const env = getPublicEnv();
-      const vapidKey = env?.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-      if (!vapidKey) {
-        throw new Error('Web Push is currently missing environment keys on this server.');
-      }
+        // 2. Fetch VAPID Key from environment
+        const env = getPublicEnv();
+        const vapidKey = env?.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+        if (!vapidKey) {
+          throw new Error('Web Push is currently missing environment keys on this server.');
+        }
 
-      // 3. Register push subscription via service worker
-      const registration = await navigator.serviceWorker.ready;
-      const applicationServerKey = urlBase64ToUint8Array(vapidKey);
+        // 3. Register push subscription via service worker
+        const existingRegistration = await navigator.serviceWorker.getRegistration();
+        if (!existingRegistration) {
+          throw new Error(
+            'No active Service Worker found. Push notifications may not work in local development mode without a valid PWA setup. Try refreshing.',
+          );
+        }
 
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: applicationServerKey,
+        const registration = await navigator.serviceWorker.ready;
+        const applicationServerKey = urlBase64ToUint8Array(vapidKey);
+
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: applicationServerKey,
+        });
+
+        // 4. Save to Supabase
+        const sb = supabaseBrowser();
+        const { error } = await sb.from('push_subscriptions').insert({
+          user_id: userId,
+          subscription: subscription.toJSON(),
+        });
+
+        if (error) throw error;
+      };
+
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(
+          () =>
+            reject(
+              new Error(
+                'Registration timed out (10s). Your browser might be silently blocking the request, or your connection dropped.',
+              ),
+            ),
+          10000,
+        );
       });
 
-      // 4. Save to Supabase
-      const sb = supabaseBrowser();
-      const { error } = await sb.from('push_subscriptions').insert({
-        user_id: userId,
-        subscription: subscription.toJSON(),
-      });
-
-      if (error) throw error;
+      await Promise.race([doRegister(), timeoutPromise]);
 
       setPushRegistered(true);
       toast.success('Push notifications successfully registered to this device.');
