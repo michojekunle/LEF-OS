@@ -24,8 +24,8 @@ export async function Nav() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--border-subtle)] bg-[var(--bg-nav)] backdrop-blur-md">
-      <nav className="mx-auto flex h-16 max-w-content items-center justify-between gap-2 px-4 md:h-[4.5rem] md:gap-4 md:px-6">
+    <header className="sticky top-3 z-40 mx-auto w-full max-w-content px-4 md:top-5 md:px-6">
+      <nav className="flex h-14 w-full items-center justify-between gap-2 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-nav)]/90 px-4 shadow-sm backdrop-blur-md md:h-16 md:gap-4 md:px-6">
         {/* Logo */}
         <Link href="/" className="group flex shrink-0 items-center gap-2">
           <span className="font-display text-xl tracking-tight text-gold transition-opacity group-hover:opacity-80 md:text-2xl">
