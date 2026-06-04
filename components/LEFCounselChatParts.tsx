@@ -348,34 +348,49 @@ export function ChatBody({
           </div>
         </div>
       ) : (
-        messages.map((m, idx) => (
-          <div
-            key={idx}
-            className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
-          >
-            <span className="mb-0.5 px-1 text-xs uppercase tracking-wider text-text-muted">
-              {m.role === 'user' ? 'You' : 'LEF Counsel'}
-            </span>
-            <div
-              className={`max-w-[88%] rounded-lg p-3 text-xs leading-relaxed ${
-                m.role === 'user'
-                  ? 'bg-gold/10 border-gold/20 whitespace-pre-wrap border text-text-primary'
-                  : 'w-full border border-border bg-surface-2 text-text-primary'
-              }`}
-            >
-              {m.role === 'user' ? (
-                m.content
-              ) : (
-                <AssistantMessage
-                  content={m.content}
-                  isLatest={idx === messages.length - 1 && !animatedIndices.includes(idx)}
-                  onWordAdded={onWordAdded}
-                  onFinished={() => onMessageAnimated(idx)}
-                />
-              )}
-            </div>
+        <>
+          {/* Small horizontal helper actions row at the top of the chat log */}
+          <div className="flex flex-wrap gap-2 border-b border-border/40 pb-3">
+            {starterPills.map((pill) => (
+              <button
+                key={pill.label}
+                onClick={() => onPillClick(pill.query)}
+                className="bg-surface-2/60 rounded-full border border-border px-2.5 py-1.5 text-[10px] font-medium leading-normal text-text-secondary transition-all hover:border-gold hover:text-text-primary"
+              >
+                {pill.label}
+              </button>
+            ))}
           </div>
-        ))
+
+          {messages.map((m, idx) => (
+            <div
+              key={idx}
+              className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
+            >
+              <span className="mb-0.5 px-1 text-xs uppercase tracking-wider text-text-muted">
+                {m.role === 'user' ? 'You' : 'LEF Counsel'}
+              </span>
+              <div
+                className={`max-w-[88%] rounded-lg p-3 text-xs leading-relaxed ${
+                  m.role === 'user'
+                    ? 'bg-gold/10 border-gold/20 whitespace-pre-wrap border text-text-primary'
+                    : 'w-full border border-border bg-surface-2 text-text-primary'
+                }`}
+              >
+                {m.role === 'user' ? (
+                  m.content
+                ) : (
+                  <AssistantMessage
+                    content={m.content}
+                    isLatest={idx === messages.length - 1 && !animatedIndices.includes(idx)}
+                    onWordAdded={onWordAdded}
+                    onFinished={() => onMessageAnimated(idx)}
+                  />
+                )}
+              </div>
+            </div>
+          ))}
+        </>
       )}
 
       {loading && (
