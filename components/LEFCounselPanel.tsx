@@ -123,17 +123,27 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
     setLastQuery(textToSend); // Save query for manual retries
     didUserInteract.current = true;
     setError(null);
+
+    const isRetryAttempt = messages.length > 0 && 
+                           messages[messages.length - 1].role === 'user' && 
+                           messages[messages.length - 1].content === textToSend;
+
     const userMessage: Message = { role: 'user', content: textToSend };
-    setMessages((prev) => [...prev, userMessage]);
+    
+    if (!isRetryAttempt) {
+      setMessages((prev) => [...prev, userMessage]);
+    }
+    
     setInput('');
     setLoading(true);
 
     try {
+      const payloadMessages = isRetryAttempt ? messages : [...messages, userMessage];
       const res = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [...messages, userMessage],
+          messages: payloadMessages,
           day,
           topics,
         }),
