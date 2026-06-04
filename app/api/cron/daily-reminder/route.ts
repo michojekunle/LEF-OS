@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { getDayNumber, getTodayTopics, getCurrentStreak, clampDay, isoDate } from '@/lib/utils';
+import {
+  getDayNumber,
+  getTodayTopics,
+  getCurrentStreak,
+  clampDay,
+  isoDate,
+  isEntryComplete,
+} from '@/lib/utils';
 import webpush from 'web-push';
+import { buildEmailLayout, sanitizeHtmlText, sendEmail as dispatchEmail } from '@/lib/email';
+import { calculateLocalHour, matchCustomReminders, shouldSendReminder } from '@/lib/reminders';
+import { getSiteUrl } from '@/lib/env';
 
 export async function GET(request: Request) {
   // ── Auth: CRON_SECRET must be set and must match the Authorization header ──
@@ -71,23 +81,7 @@ export async function GET(request: Request) {
       const timezone = setting.timezone || 'Africa/Lagos';
 
       // 1. Calculate user's current hour in their timezone
-      let localHourStr = '';
-      try {
-        localHourStr = new Intl.DateTimeFormat('en-US', {
-          hour: '2-digit',
-          hour12: false,
-          timeZone: timezone,
-        }).format(todayDate);
-      } catch {
-        // Invalid timezone string — fall back to UTC
-        localHourStr = new Intl.DateTimeFormat('en-US', {
-          hour: '2-digit',
-          hour12: false,
-          timeZone: 'UTC',
-        }).format(todayDate);
-      }
-
-      const localHour = parseInt(localHourStr, 10);
+      const localHour = calculateLocalHour(todayDate, timezone);
 
       // 2. Fetch custom reminders for this user
       const { data: customReminders, error: remindersError } = await sb
@@ -102,10 +96,7 @@ export async function GET(request: Request) {
       }
 
       // Filter reminders matching the current hour
-      const matchingReminders = (customReminders || []).filter((r) => {
-        const reminderHour = parseInt(r.reminder_time.split(':')[0], 10);
-        return reminderHour === localHour;
-      });
+      const matchingReminders = matchCustomReminders(customReminders || [], localHour);
 
       if (matchingReminders.length === 0) {
         continue;
@@ -126,17 +117,13 @@ export async function GET(request: Request) {
       const todayLog = logs?.find((l) => l.entry_date === todayIso);
       const yesterdayLog = logs?.find((l) => l.entry_date === yesterdayIso);
 
-      const todayComplete =
-        todayLog &&
-        (todayLog.law_completed || todayLog.economics_completed || todayLog.finance_completed);
-      const yesterdayComplete =
-        yesterdayLog &&
-        (yesterdayLog.law_completed ||
-          yesterdayLog.economics_completed ||
-          yesterdayLog.finance_completed);
+      const todayComplete = !!(todayLog && isEntryComplete(todayLog));
+      const yesterdayComplete = !!(yesterdayLog && isEntryComplete(yesterdayLog));
 
       // Do not send reminders if today is already logged/complete
-      if (todayComplete) {
+      if (
+        !shouldSendReminder({ todayComplete, matchingRemindersCount: matchingReminders.length })
+      ) {
         continue;
       }
 
@@ -162,16 +149,7 @@ export async function GET(request: Request) {
 
         // --- EMAIL NOTIFICATION ---
         if (sendEmail) {
-          const reqUrl = new URL(request.url);
-          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-            ? process.env.NEXT_PUBLIC_SITE_URL.includes('http')
-              ? process.env.NEXT_PUBLIC_SITE_URL
-              : `https://${process.env.NEXT_PUBLIC_SITE_URL}`
-            : process.env.VERCEL_URL
-              ? `https://${process.env.VERCEL_URL}`
-              : reqUrl.origin.includes('localhost')
-                ? reqUrl.origin
-                : 'http://localhost:3001';
+          const siteUrl = getSiteUrl(new URL(request.url).origin);
 
           const emailHtml = getReminderEmailHtml(
             title,
@@ -185,24 +163,12 @@ export async function GET(request: Request) {
             siteUrl,
           );
 
-          const emailRes = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${resendApiKey}`,
-            },
-            body: JSON.stringify({
-              from: 'LEF OS Reminder <onboarding@resend.dev>',
-              to: email,
-              subject: `LEF OS · ${title} (Day ${todayDay})`,
-              html: emailHtml,
-            }),
+          emailSent = await dispatchEmail({
+            to: email,
+            subject: `LEF OS · ${title} (Day ${todayDay})`,
+            html: emailHtml,
+            from: 'LEF OS Reminder <onboarding@resend.dev>',
           });
-
-          emailSent = emailRes.ok;
-          if (!emailRes.ok) {
-            console.error(`Failed to send email to ${email}:`, await emailRes.text());
-          }
         }
 
         // --- IN-APP & DEVICE PUSH NOTIFICATION ---
@@ -282,198 +248,70 @@ function getReminderEmailHtml(
   yesterdayComplete: boolean,
   siteUrl: string,
 ): string {
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>${title}</title>
-  <style>
-    body {
-      background-color: #0D0D0D;
-      color: #F0EAE0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      -webkit-font-smoothing: antialiased;
-    }
-    .wrapper {
-      background-color: #0D0D0D;
-      padding: 32px 16px;
-    }
-    .container {
-      max-width: 580px;
-      margin: 0 auto;
-      background-color: #141414;
-      border: 1px solid #262626;
-      border-radius: 8px;
-      padding: 32px;
-    }
-    .header {
-      border-bottom: 1px solid #262626;
-      padding-bottom: 20px;
-      margin-bottom: 24px;
-      text-align: center;
-    }
-    .title {
-      font-family: Georgia, serif;
-      font-size: 24px;
-      color: #C8A96E;
-      letter-spacing: -0.01em;
-      margin: 0;
-    }
-    .subtitle {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: #8A8070;
-      margin-top: 4px;
-    }
-    .streak-box {
-      background-color: #1C1C1C;
-      border: 1px solid #262626;
-      border-radius: 6px;
-      padding: 12px;
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    .streak-val {
-      font-size: 20px;
-      font-weight: bold;
-      color: #C8A96E;
-      margin: 0;
-    }
-    .section-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: #8A8070;
-      margin-top: 24px;
-      margin-bottom: 12px;
-    }
-    .topic-card {
-      background-color: #1C1C1C;
-      border-left: 3px solid #C8A96E;
-      padding: 12px 16px;
-      margin-bottom: 12px;
-      border-radius: 0 6px 6px 0;
-    }
-    .topic-card.law { border-left-color: #C8A96E; }
-    .topic-card.econ { border-left-color: #7C9E8F; }
-    .topic-card.fin { border-left-color: #8B9ECC; }
-    .domain-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #8A8070;
-      margin-bottom: 4px;
-    }
-    .topic-text {
-      font-size: 14px;
-      margin: 0;
-      color: #F0EAE0;
-    }
-    .btn {
-      display: inline-block;
-      background-color: #C8A96E;
-      color: #1a1308;
-      font-weight: 500;
-      font-size: 13px;
-      text-decoration: none;
-      padding: 10px 18px;
-      border-radius: 6px;
-      margin-top: 16px;
-      text-align: center;
-    }
-    .btn-secondary {
-      display: inline-block;
-      background-color: transparent;
-      border: 1px solid #262626;
-      color: #F0EAE0;
-      font-weight: 500;
-      font-size: 13px;
-      text-decoration: none;
-      padding: 10px 18px;
-      border-radius: 6px;
-      margin-top: 16px;
-      text-align: center;
-      margin-left: 10px;
-    }
-    .footer {
-      text-align: center;
-      margin-top: 32px;
-      font-size: 11px;
-      color: #444444;
-    }
-  </style>
-</head>
-<body>
-  <div class="wrapper">
-    <div class="container">
-      <div class="header">
-        <h1 class="title">Law · Economics · Finance</h1>
-        <div class="subtitle">Founder's 4-Month Curriculum</div>
-      </div>
-      
-      <div class="streak-box">
-        <p class="streak-val">${streak > 0 ? `🔥 Current Streak: ${streak} Days` : '🌱 Start your study streak today!'}</p>
-      </div>
+  const todayLaw = todayTopics.law
+    ? sanitizeHtmlText(todayTopics.law)
+    : 'Integration & sharing buffer';
+  const todayEcon = todayTopics.economics
+    ? sanitizeHtmlText(todayTopics.economics)
+    : 'Integration & sharing buffer';
+  const todayFin = todayTopics.finance
+    ? sanitizeHtmlText(todayTopics.finance)
+    : 'Integration & sharing buffer';
 
-      <p style="font-size: 14px; line-height: 1.6; color: #8A8070; margin-bottom: 20px;">
-        ${message}
-      </p>
-
-      <div class="section-title">Today's Topics (Day ${todayDay})</div>
-      <div class="topic-card law">
-        <div class="domain-label">⚖️ Law</div>
-        <p class="topic-text">${todayTopics.law ?? 'Integration & sharing buffer'}</p>
-      </div>
-      <div class="topic-card econ">
-        <div class="domain-label">📊 Economics</div>
-        <p class="topic-text">${todayTopics.economics ?? 'Integration & sharing buffer'}</p>
-      </div>
-      <div class="topic-card fin">
-        <div class="domain-label">💰 Finance</div>
-        <p class="topic-text">${todayTopics.finance ?? 'Integration & sharing buffer'}</p>
-      </div>
-
-      <div style="text-align: center;">
-        <a href="${siteUrl}/dashboard" class="btn">Log Today's Progress</a>
-      </div>
-
-      ${
-        !yesterdayComplete
-          ? `
-      <div style="border-top: 1px solid #262626; margin-top: 32px; padding-top: 24px;">
-        <div class="section-title" style="color: #C86E6E;">Yesterday was waiting (Day ${yesterdayDay})</div>
-        <p style="font-size: 13px; color: #8A8070; margin-bottom: 12px;">You haven't logged yesterday's study yet. Here is what you were to do:</p>
-        <div class="topic-card law">
-          <div class="domain-label">⚖️ Law</div>
-          <p class="topic-text">${yesterdayTopics.law ?? 'Integration & sharing buffer'}</p>
+  const yesterdayHtml = !yesterdayComplete
+    ? `
+      <div style="border-top: 1px solid #2a2a2a; margin-top: 32px; padding-top: 24px;">
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: #cc7272; margin-bottom: 12px;">Yesterday was waiting (Day ${yesterdayDay})</div>
+        <p style="font-size: 13px; color: #857e76; margin-bottom: 12px;">You haven't logged yesterday's study yet. Here is what you were to do:</p>
+        <div class="card" style="border-left: 3px solid #c9ab70; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">⚖️ Law</div>
+          <p style="font-size: 14px; margin: 0; color: #ede8e0;">${yesterdayTopics.law ? sanitizeHtmlText(yesterdayTopics.law) : 'Integration & sharing buffer'}</p>
         </div>
-        <div class="topic-card econ">
-          <div class="domain-label">📊 Economics</div>
-          <p class="topic-text">${yesterdayTopics.economics ?? 'Integration & sharing buffer'}</p>
+        <div class="card" style="border-left: 3px solid #7C9E8F; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">📊 Economics</div>
+          <p style="font-size: 14px; margin: 0; color: #ede8e0;">${yesterdayTopics.economics ? sanitizeHtmlText(yesterdayTopics.economics) : 'Integration & sharing buffer'}</p>
         </div>
-        <div class="topic-card fin">
-          <div class="domain-label">💰 Finance</div>
-          <p class="topic-text">${yesterdayTopics.finance ?? 'Integration & sharing buffer'}</p>
+        <div class="card" style="border-left: 3px solid #8B9ECC; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">💰 Finance</div>
+          <p style="font-size: 14px; margin: 0; color: #ede8e0;">${yesterdayTopics.finance ? sanitizeHtmlText(yesterdayTopics.finance) : 'Integration & sharing buffer'}</p>
         </div>
-        <div style="text-align: center;">
-          <a href="${siteUrl}/dashboard" class="btn btn-secondary">Log Yesterday's Progress</a>
-        </div>
-      </div>
-      `
-          : ''
-      }
+      </div>`
+    : '';
 
-      <div class="footer">
-        This is an automated reminder from your LEF OS accountability companion.<br>
-        To unsubscribe, edit your settings in the app.
-      </div>
+  const cardHtml = `
+  <div class="card" style="text-align: center; padding: 16px;">
+    <div style="font-size: 16px; font-weight: bold; color: #c9ab70;">
+      ${streak > 0 ? `🔥 Current Streak: ${streak} Days` : '🌱 Start your study streak today!'}
     </div>
   </div>
-</body>
-</html>
+
+  <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: #857e76; margin-top: 24px; margin-bottom: 12px;">Today's Topics (Day ${todayDay})</div>
+  
+  <div class="card" style="border-left: 3px solid #c9ab70; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
+    <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">⚖️ Law</div>
+    <p style="font-size: 14px; margin: 0; color: #ede8e0;">${todayLaw}</p>
+  </div>
+  <div class="card" style="border-left: 3px solid #7C9E8F; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
+    <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">📊 Economics</div>
+    <p style="font-size: 14px; margin: 0; color: #ede8e0;">${todayEcon}</p>
+  </div>
+  <div class="card" style="border-left: 3px solid #8B9ECC; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
+    <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">💰 Finance</div>
+    <p style="font-size: 14px; margin: 0; color: #ede8e0;">${todayFin}</p>
+  </div>
+
+  ${yesterdayHtml}
   `;
+
+  return buildEmailLayout({
+    title: sanitizeHtmlText(title),
+    badgeText: `Day ${todayDay} Study Reminder`,
+    subTitle: sanitizeHtmlText(message),
+    cardHtml,
+    actionButton: {
+      text: "Log Today's Progress",
+      url: `${siteUrl}/dashboard`,
+    },
+    footerText: `This is an automated reminder from your LEF OS accountability companion.<br />To unsubscribe, edit your settings in the app.`,
+  });
 }
