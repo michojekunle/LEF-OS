@@ -184,7 +184,7 @@ h5 {
 /* All-caps labels in Montserrat look excellent with wider tracking */
 .label-caps {
   font-family: var(--font-display), system-ui, sans-serif;
-  font-size: 0.75rem;      /* 12px — was 11px, now one step up */
+  font-size: 0.75rem; /* 12px — was 11px, now one step up */
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -193,7 +193,7 @@ h5 {
 
 /* ── Prose — use on content-heavy reading sections ───────────────── */
 .prose {
-  font-size: 0.9375rem;   /* 15px — slightly above base, comfortable reading */
+  font-size: 0.9375rem; /* 15px — slightly above base, comfortable reading */
   line-height: var(--leading-prose);
   color: var(--text-primary);
 }
@@ -223,20 +223,20 @@ h5 {
 }
 
 .label-sm {
-  font-size: 0.8125rem;   /* 13px */
+  font-size: 0.8125rem; /* 13px */
   font-weight: 500;
   line-height: var(--leading-ui);
 }
 
 /* Body copy for cards / panels */
 .body-sm {
-  font-size: 0.875rem;    /* 14px */
+  font-size: 0.875rem; /* 14px */
   line-height: 1.65;
   color: var(--text-secondary);
 }
 
 .body-base {
-  font-size: 1rem;        /* 16px */
+  font-size: 1rem; /* 16px */
   line-height: var(--leading-prose);
 }
 

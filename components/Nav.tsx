@@ -37,13 +37,13 @@ export async function Nav() {
             LEF
           </span>
           <div className="flex flex-col justify-center gap-1 xl:gap-[3px]">
-            <span className="font-display text-[8px] md:text-[10px] leading-none tracking-[0.2em] text-gold">
+            <span className="font-display text-[8px] leading-none tracking-[0.2em] text-gold md:text-[10px]">
               LAW
             </span>
-            <span className="font-sans text-[8px] md:text-[10px] font-bold leading-none tracking-[0.2em] text-sage">
+            <span className="font-sans text-[8px] font-bold leading-none tracking-[0.2em] text-sage md:text-[10px]">
               ECONOMICS
             </span>
-            <span className="font-mono text-[8px] md:text-[10px] leading-none tracking-[0.2em] text-slate-blue">
+            <span className="font-mono text-[8px] leading-none tracking-[0.2em] text-slate-blue md:text-[10px]">
               FINANCE
             </span>
           </div>

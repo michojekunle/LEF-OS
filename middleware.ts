@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import type { Database } from '@/lib/database.types';
 import { getPublicEnv } from '@/lib/env';
 
@@ -19,7 +19,7 @@ export async function middleware(req: NextRequest) {
         getAll() {
           return req.cookies.getAll();
         },
-        setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           cookiesToSet.forEach(({ name, value }) => {
             req.cookies.set(name, value);
           });

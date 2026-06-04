@@ -122,7 +122,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   };
 
   return (
-    <html lang="en" className={`${montserrat.variable} ${lexend.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${montserrat.variable} ${lexend.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         {/* Prevent flash of wrong theme — must run synchronously before paint */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

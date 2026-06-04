@@ -1,15 +1,10 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
 import { findDayMeta } from '@/data/curriculum-data';
+import { DOMAIN_LABELS } from '@/lib/domain';
 import type { DailyEntry, DayNote, LefDomain, Question } from '@/lib/database.types';
 
 export const dynamic = 'force-dynamic';
-
-const DOMAIN_LABEL: Record<LefDomain, string> = {
-  law: '⚖️ Law',
-  economics: '📊 Economics',
-  finance: '💰 Finance',
-};
 
 export async function GET() {
   const sb = await supabaseServer();
@@ -91,7 +86,7 @@ export async function GET() {
     const topics: string[] = [];
     for (const d of ['law', 'economics', 'finance'] as LefDomain[]) {
       const meta = findDayMeta(d, e.day_number);
-      if (meta) topics.push(`- _${DOMAIN_LABEL[d]}_: ${meta.topic}`);
+      if (meta) topics.push(`- _${DOMAIN_LABELS[d]}_: ${meta.topic}`);
     }
     if (topics.length) {
       lines.push('**Topics**');
@@ -112,7 +107,7 @@ export async function GET() {
       for (const d of ['law', 'economics', 'finance'] as LefDomain[]) {
         const note = dayNotes.find((x) => x.domain === d);
         if (note) {
-          lines.push(`**${DOMAIN_LABEL[d]}**`);
+          lines.push(`**${DOMAIN_LABELS[d]}**`);
           lines.push('');
           lines.push(note.body);
           lines.push('');
@@ -140,7 +135,7 @@ export async function GET() {
     lines.push('## Notes without a logged entry');
     lines.push('');
     for (const n of orphanNotes) {
-      lines.push(`### Day ${n.day_number} — ${DOMAIN_LABEL[n.domain]}`);
+      lines.push(`### Day ${n.day_number} — ${DOMAIN_LABELS[n.domain]}`);
       lines.push('');
       lines.push(n.body);
       lines.push('');

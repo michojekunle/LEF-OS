@@ -19,9 +19,7 @@ export default function OfflinePage() {
             <WifiOff size={24} className="text-text-muted" />
           </div>
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.32em] text-text-secondary">
-              No connection
-            </p>
+            <p className="text-xs uppercase tracking-[0.32em] text-text-secondary">No connection</p>
             <h1 className="font-display text-3xl tracking-tight md:text-4xl">
               You&apos;re offline.
             </h1>

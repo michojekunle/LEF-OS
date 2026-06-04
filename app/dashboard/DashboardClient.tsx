@@ -11,6 +11,7 @@ import {
   getDomainProgress,
   isBeforeCourse,
   isAfterCourse,
+  isEntryComplete,
   isoDate,
   getAllThursdays,
   clampDay,
@@ -21,6 +22,7 @@ import { DailyLogForm } from '@/components/DailyLogForm';
 import { CalendarHeatmap } from '@/components/CalendarHeatmap';
 import { ProgressBar } from '@/components/ProgressBar';
 import { EntryCard } from '@/components/EntryCard';
+import { StatCard } from '@/components/StatCard';
 import { TOTAL_CALENDAR_DAYS, getMonthByCurriculumDay } from '@/data/curriculum-data';
 
 type Props = {
@@ -195,19 +197,19 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
 
       {/* PROGRESS */}
       <section className="grid gap-3 md:grid-cols-3" data-tour="streak-stats">
-        <Stat
+        <StatCard
           icon={<CheckCircle2 size={14} className="text-success" />}
           label="Days completed"
           value={`${completedDays}`}
           sub={`/ ${TOTAL_CALENDAR_DAYS}`}
         />
-        <Stat
+        <StatCard
           icon={<Flame size={14} className="text-gold" />}
           label="Current streak"
           value={`${streak}`}
           sub="day(s)"
         />
-        <Stat
+        <StatCard
           icon={<Calendar size={14} className="text-slate-blue" />}
           label="Days remaining"
           value={`${Math.max(0, TOTAL_CALENDAR_DAYS - day)}`}
@@ -232,9 +234,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
       <ThursdayTracker entries={entries} />
 
       <section className="space-y-3">
-        <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">
-          Entry history
-        </h2>
+        <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">Entry history</h2>
         {entries.length === 0 ? (
           <div className="card p-6 text-center text-sm text-text-secondary">
             No entries yet. Start your streak today.
@@ -253,38 +253,13 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
   );
 }
 
-function Stat({
-  icon,
-  label,
-  value,
-  sub,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  sub?: string;
-}) {
-  return (
-    <div className="card p-4">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-text-secondary">
-        {icon}
-        {label}
-      </div>
-      <p className="mt-2 text-3xl font-bold tabular-nums">
-        {value}
-        {sub && <span className="text-base font-normal text-text-muted"> {sub}</span>}
-      </p>
-    </div>
-  );
-}
-
 function StreakBadge({ streak }: { streak: number }) {
   return (
     <div className="card-2 inline-flex items-center gap-3 px-4 py-3">
       <Flame size={18} className={streak > 0 ? 'text-gold' : 'text-text-muted'} />
       <div>
         <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">Streak</p>
-        <p className="text-xl font-bold leading-none tabular-nums">
+        <p className="text-xl font-bold tabular-nums leading-none">
           {streak > 0 ? `${streak} days` : 'Start today'}
         </p>
       </div>
@@ -297,13 +272,13 @@ function ThursdayTracker({ entries }: { entries: DailyEntry[] }) {
   const byDate = new Map(entries.map((e) => [e.entry_date, e]));
   return (
     <section className="card p-5">
-      <h3 className="mb-3 text-sm font-semibold text-text-primary">Weekly video review · Thursdays</h3>
+      <h3 className="mb-3 text-sm font-semibold text-text-primary">
+        Weekly video review · Thursdays
+      </h3>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(96px,1fr))] gap-2">
         {thursdays.map((t) => {
           const e = byDate.get(isoDate(t.date));
-          const done = Boolean(
-            e && (e.law_completed || e.economics_completed || e.finance_completed),
-          );
+          const done = Boolean(e && isEntryComplete(e));
           return (
             <div
               key={t.day}

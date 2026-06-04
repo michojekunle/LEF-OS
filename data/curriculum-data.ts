@@ -998,6 +998,11 @@ export const DOMAIN_META: Record<
   },
 };
 
+// DOMAIN_LABELS moved to lib/domain.ts — import from there.
+
+/** Ordered tuple of all LEF domains — use this instead of inline literals. */
+export const LEF_DOMAINS = ['law', 'economics', 'finance'] as const satisfies readonly Domain[];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Lookup helpers
 // ─────────────────────────────────────────────────────────────────────────────

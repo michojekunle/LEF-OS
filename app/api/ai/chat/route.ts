@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
 
 // ── GET History ─────────────────────────────────────────────────────────────
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   try {
     const sb = await supabaseServer();
     const {
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 }
 
 // ── DELETE History ──────────────────────────────────────────────────────────
-export async function DELETE(request: Request) {
+export async function DELETE(_request: Request) {
   try {
     const sb = await supabaseServer();
     const {
@@ -192,12 +192,12 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
       { name: 'Groq Llama 3.1 8B', type: 'groq', modelId: 'llama-3.1-8b-instant' },
       { name: 'Groq Mixtral 8x7B', type: 'groq', modelId: 'mixtral-8x7b-32768' },
       { name: 'Groq Gemma 2 9B', type: 'groq', modelId: 'gemma2-9b-it' },
-      { name: 'Groq DeepSeek R1 70B', type: 'groq', modelId: 'deepseek-r1-distill-llama-70b' }
+      { name: 'Groq DeepSeek R1 70B', type: 'groq', modelId: 'deepseek-r1-distill-llama-70b' },
     ];
 
     let text = '';
     let success = false;
-    let lastError: any = null;
+    let lastError: Error | unknown | null = null;
     let isRateLimit = false;
     let retryAfterSecs: number | null = null;
 
@@ -237,8 +237,11 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
           } else {
             const errText = await response.text();
             console.warn(`${provider.name} failed with status ${response.status}:`, errText);
-            isRateLimit = response.status === 429 || errText.includes('RESOURCE_EXHAUSTED') || errText.includes('429');
-            
+            isRateLimit =
+              response.status === 429 ||
+              errText.includes('RESOURCE_EXHAUSTED') ||
+              errText.includes('429');
+
             // Try to extract retry delay if rate limited
             if (isRateLimit) {
               const headerVal = response.headers.get('retry-after');
@@ -248,7 +251,8 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
                 try {
                   const errJson = JSON.parse(errText);
                   const retryInfo = errJson.error?.details?.find(
-                    (d: any) => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo'
+                    (d: Record<string, unknown>) =>
+                      d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo',
                   );
                   if (retryInfo?.retryDelay) {
                     retryAfterSecs = Math.ceil(parseFloat(retryInfo.retryDelay.replace('s', '')));
@@ -265,7 +269,9 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
       } else if (provider.type === 'groq') {
         const groqKey = process.env.GROQ_API_KEY;
         if (!groqKey) continue;
-        console.log(`Attempting chat generation fallback using ${provider.name} (${provider.modelId})...`);
+        console.log(
+          `Attempting chat generation fallback using ${provider.name} (${provider.modelId})...`,
+        );
         try {
           const groqMessages = [
             { role: 'system', content: systemInstruction },
@@ -299,7 +305,10 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
             }
           } else {
             const errText = await groqRes.text();
-            console.warn(`${provider.name} fallback failed with status ${groqRes.status}:`, errText);
+            console.warn(
+              `${provider.name} fallback failed with status ${groqRes.status}:`,
+              errText,
+            );
             lastError = new Error(`${provider.name} error: ${errText}`);
           }
         } catch (err) {
@@ -312,12 +321,14 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
     if (!success) {
       console.error('All model providers in the chain failed.');
       return NextResponse.json(
-        { 
+        {
           error: isRateLimit ? 'rate_limit' : 'AI Service is currently unavailable.',
-          message: isRateLimit 
-            ? 'LEF Counsel is currently receiving extremely high traffic. Please try again shortly.' 
-            : (lastError instanceof Error ? lastError.message : 'All model providers failed.'),
-          retryAfter: retryAfterSecs || 15
+          message: isRateLimit
+            ? 'LEF Counsel is currently receiving extremely high traffic. Please try again shortly.'
+            : lastError instanceof Error
+              ? lastError.message
+              : 'All model providers failed.',
+          retryAfter: retryAfterSecs || 15,
         },
         { status: isRateLimit ? 429 : 500 },
       );

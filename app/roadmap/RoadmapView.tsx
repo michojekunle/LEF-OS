@@ -3,11 +3,16 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Github, GitFork } from 'lucide-react';
-import { CURRICULUM, DOMAIN_META, RESOURCE_URLS, type Domain } from '@/data/curriculum-data';
+import {
+  CURRICULUM,
+  DOMAIN_META,
+  RESOURCE_URLS,
+  LEF_DOMAINS,
+  type Domain,
+} from '@/data/curriculum-data';
 import { WeekAccordion } from '@/components/WeekAccordion';
 import { LevelBadge } from '@/components/DomainBadge';
-
-const DOMAINS: Domain[] = ['law', 'economics', 'finance'];
+import { DOMAIN_ACCENT_TEXT } from '@/lib/domain';
 
 export function RoadmapView() {
   const params = useSearchParams();
@@ -18,7 +23,7 @@ export function RoadmapView() {
   const initialMonth = Number(params.get('month') ?? 1) as 1 | 2 | 3 | 4;
 
   const [domain, setDomain] = useState<Domain>(
-    DOMAINS.includes(initialDomain) ? initialDomain : 'law',
+    LEF_DOMAINS.includes(initialDomain) ? initialDomain : 'law',
   );
   const [month, setMonth] = useState<1 | 2 | 3 | 4>(
     [1, 2, 3, 4].includes(initialMonth) ? initialMonth : 1,
@@ -75,11 +80,11 @@ export function RoadmapView() {
 
       {/* Domain tabs */}
       <div role="tablist" aria-label="Syllabus domains" className="flex gap-2">
-        {DOMAINS.map((d) => {
+        {LEF_DOMAINS.map((d) => {
           const meta = DOMAIN_META[d];
           const isActive = domain === d;
           const accentText =
-            d === 'law' ? 'accent-law' : d === 'economics' ? 'accent-econ' : 'accent-finance';
+            DOMAIN_ACCENT_TEXT[d];
           return (
             <button
               key={d}
@@ -121,7 +126,9 @@ export function RoadmapView() {
               {monthData.dateRange}
             </span>
           </div>
-          <h2 className="font-display text-xl font-bold tracking-tight md:text-2xl">{track.theme}</h2>
+          <h2 className="font-display text-xl font-bold tracking-tight md:text-2xl">
+            {track.theme}
+          </h2>
           <p className="mt-2 max-w-2xl text-sm text-text-secondary md:text-base">{track.focus}</p>
         </div>
 

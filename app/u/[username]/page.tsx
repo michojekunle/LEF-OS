@@ -94,9 +94,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<Pa
       </Link>
 
       <header className="space-y-3">
-        <p className="text-xs uppercase tracking-[0.32em] text-text-secondary">
-          Public profile
-        </p>
+        <p className="text-xs uppercase tracking-[0.32em] text-text-secondary">Public profile</p>
         <h1 className="font-display text-4xl tracking-tight md:text-5xl">
           {p.display_name ?? `@${p.username}`}
         </h1>
