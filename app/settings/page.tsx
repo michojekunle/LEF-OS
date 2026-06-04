@@ -37,6 +37,8 @@ export default async function SettingsPage() {
       email={userData.user.email ?? ''}
       username={profile?.username ?? null}
       displayName={profile?.display_name ?? null}
+      bio={profile?.bio ?? null}
+      defaultPublic={profile?.default_public ?? false}
       initialSettings={settings ?? { daily_reminder_enabled: true, timezone: 'Africa/Lagos' }}
       initialReminders={reminders ?? []}
       hasActivePush={Boolean(subscriptions && subscriptions.length > 0)}
