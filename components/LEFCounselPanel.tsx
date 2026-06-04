@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Sparkles, X, ChevronDown, ChevronUp, RefreshCw, MessageSquareIcon } from 'lucide-react';
-import { Message, ChatBody, ChatInput } from './LEFCounselChatParts';
+import { type Message, ChatBody, ChatInput } from './counsel';
 
 type Props = {
   day: number;
@@ -14,6 +14,10 @@ type Props = {
   isFloating?: boolean;
   userId?: string;
 };
+
+interface CounselError extends Error {
+  retryAfter?: number | null;
+}
 
 export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -95,7 +99,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
     return () => {
       isMounted = false;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, isOpen]);
 
   // Scroll inside the panel whenever a live interaction adds messages, loading status, or error messages change.
@@ -127,16 +131,17 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
     didUserInteract.current = true;
     setError(null);
 
-    const isRetryAttempt = messages.length > 0 && 
-                           messages[messages.length - 1].role === 'user' && 
-                           messages[messages.length - 1].content === textToSend;
+    const isRetryAttempt =
+      messages.length > 0 &&
+      messages[messages.length - 1].role === 'user' &&
+      messages[messages.length - 1].content === textToSend;
 
     const userMessage: Message = { role: 'user', content: textToSend };
-    
+
     if (!isRetryAttempt) {
       setMessages((prev) => [...prev, userMessage]);
     }
-    
+
     setInput('');
     setLoading(true);
 
@@ -160,9 +165,10 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
           const data = await res.json();
           if (!res.ok) {
             if (data && typeof data.error === 'object' && data.error !== null) {
-              errorMessage = (data.error as { message?: string; error?: string }).message || 
-                             (data.error as { message?: string; error?: string }).error || 
-                             JSON.stringify(data.error);
+              errorMessage =
+                (data.error as { message?: string; error?: string }).message ||
+                (data.error as { message?: string; error?: string }).error ||
+                JSON.stringify(data.error);
             } else if (data && typeof data.error === 'string') {
               errorMessage = data.error;
             } else if (data && typeof data.message === 'string') {
@@ -171,8 +177,8 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
             if (data && typeof data.retryAfter === 'number') {
               serverRetryAfter = data.retryAfter;
             }
-            const err = new Error(errorMessage);
-            (err as any).retryAfter = serverRetryAfter;
+            const err = new Error(errorMessage) as CounselError;
+            err.retryAfter = serverRetryAfter;
             throw err;
           }
           setMessages((prev) => [...prev, { role: 'assistant', content: data.text }]);
@@ -189,9 +195,14 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
       }
     } catch (err) {
       console.error(err);
-      const isRate = err instanceof Error && (err.message === 'rate_limit' || err.message.includes('rate_limit') || err.message.includes('Resource has been exhausted') || (err as any).retryAfter);
+      const isRate =
+        err instanceof Error &&
+        (err.message === 'rate_limit' ||
+          err.message.includes('rate_limit') ||
+          err.message.includes('Resource has been exhausted') ||
+          (err as CounselError).retryAfter);
       if (isRate) {
-        const seconds = (err as any).retryAfter || 15;
+        const seconds = (err as CounselError).retryAfter || 15;
         setRetryCountdown(seconds);
         setError(`Rate limit hit. Please wait ${seconds}s before trying again.`);
         setLoading(true); // keep loading spin active
@@ -298,7 +309,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
             )}
           </div>
         ) : (
-          <div className="group relative">
+          <div className="group relative" data-tour="lef-counsel-btn">
             {/* Tooltip */}
             <div className="pointer-events-none absolute bottom-full right-0 mb-2 hidden whitespace-nowrap rounded border border-border bg-surface-2 px-2.5 py-1 text-xs uppercase tracking-wider text-gold shadow-lg group-hover:block">
               Ask LEF Counsel
@@ -309,7 +320,8 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
 
             <button
               onClick={() => setIsOpen(true)}
-              className="relative flex h-11 w-11 items-center justify-center rounded-full hover:bg-surface font-semibold hover:text-gold shadow-2xl transition-all duration-200 bg-gold text-bg md:h-12 md:w-12"
+              data-tour-action="lef-counsel-btn"
+              className="relative flex h-11 w-11 items-center justify-center rounded-full bg-gold font-semibold text-bg shadow-2xl transition-all duration-200 hover:bg-surface hover:text-gold md:h-12 md:w-12"
               title="Chat with LEF Counsel"
               aria-label="Open LEF Counsel chat"
             >
