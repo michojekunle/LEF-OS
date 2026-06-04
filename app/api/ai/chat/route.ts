@@ -198,53 +198,97 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
       },
     );
 
+    let text = '';
+    let usedFallback = false;
+
     if (!response.ok) {
-      const errText = await response.text();
-      console.error('Gemini API request failed:', errText);
-      const isRateLimit = response.status === 429 || errText.includes('RESOURCE_EXHAUSTED') || errText.includes('429');
-      
-      let retryAfter = response.headers.get('retry-after');
-      
-      // Try to parse the JSON error body to find type.googleapis.com/google.rpc.RetryInfo
-      try {
-        const errJson = JSON.parse(errText);
-        if (errJson && errJson.error && Array.isArray(errJson.error.details)) {
-          const retryInfo = errJson.error.details.find(
-            (d: any) => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo'
-          );
-          if (retryInfo && retryInfo.retryDelay) {
-            // Strip the 's' suffix from the string (e.g. "20s" -> "20")
-            const delayStr = retryInfo.retryDelay.replace('s', '');
-            if (delayStr) {
-              retryAfter = delayStr;
+      const groqKey = process.env.GROQ_API_KEY;
+      if (groqKey) {
+        console.log(`Gemini API call failed (status: ${response.status}). Attempting Groq fallback...`);
+        try {
+          const groqMessages = [
+            { role: 'system', content: systemInstruction },
+            ...safeMsgs.map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
+          ];
+
+          const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${groqKey}`,
+            },
+            body: JSON.stringify({
+              model: 'llama3-8b-8192',
+              messages: groqMessages,
+              temperature: 0.7,
+              max_tokens: 2048,
+            }),
+          });
+
+          if (groqRes.ok) {
+            const groqJson = await groqRes.json();
+            text = groqJson.choices?.[0]?.message?.content || '';
+            usedFallback = true;
+            console.log('Groq fallback response successfully received.');
+          } else {
+            console.error('Groq fallback call failed:', await groqRes.text());
+          }
+        } catch (groqErr) {
+          console.error('Error during Groq fallback fetch:', groqErr);
+        }
+      }
+
+      if (!usedFallback) {
+        const errText = await response.text();
+        console.error('Gemini API request failed:', errText);
+        const isRateLimit = response.status === 429 || errText.includes('RESOURCE_EXHAUSTED') || errText.includes('429');
+        
+        let retryAfter = response.headers.get('retry-after');
+        
+        // Try to parse the JSON error body to find type.googleapis.com/google.rpc.RetryInfo
+        try {
+          const errJson = JSON.parse(errText);
+          if (errJson && errJson.error && Array.isArray(errJson.error.details)) {
+            const retryInfo = errJson.error.details.find(
+              (d: any) => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo'
+            );
+            if (retryInfo && retryInfo.retryDelay) {
+              // Strip the 's' suffix from the string (e.g. "20s" -> "20")
+              const delayStr = retryInfo.retryDelay.replace('s', '');
+              if (delayStr) {
+                retryAfter = delayStr;
+              }
             }
           }
+        } catch (e) {
+          // Not valid JSON or failed to parse
         }
-      } catch (e) {
-        // Not valid JSON or failed to parse
-      }
 
-      if (!retryAfter && isRateLimit) {
-        const match = errText.match(/retry\s+after\s+(\d+)\s*s/i) || errText.match(/(\d+)\s*(?:seconds|sec|s)\b/i);
-        if (match) {
-          retryAfter = match[1];
+        if (!retryAfter && isRateLimit) {
+          const match = errText.match(/retry\s+after\s+(\d+)\s*s/i) || errText.match(/(\d+)\s*(?:seconds|sec|s)\b/i);
+          if (match) {
+            retryAfter = match[1];
+          }
         }
-      }
 
-      return NextResponse.json(
-        { 
-          error: isRateLimit ? 'rate_limit' : 'Gemini service returned an error.',
-          message: isRateLimit 
-            ? 'LEF Counsel is currently receiving high traffic. Please wait a moment.' 
-            : 'Gemini service returned an error.',
-          retryAfter: retryAfter ? Math.ceil(parseFloat(retryAfter)) : null
-        },
-        { status: response.status },
-      );
+        return NextResponse.json(
+          { 
+            error: isRateLimit ? 'rate_limit' : 'Gemini service returned an error.',
+            message: isRateLimit 
+              ? 'LEF Counsel is currently receiving high traffic. Please wait a moment.' 
+              : 'Gemini service returned an error.',
+            retryAfter: retryAfter ? Math.ceil(parseFloat(retryAfter)) : null
+          },
+          { status: response.status },
+        );
+      }
+    } else {
+      const resJson = await response.json();
+      text = resJson.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.';
     }
-
-    const resJson = await response.json();
-    const text = resJson.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.';
 
     // ── Database Persistence ───────────────────────────────────────────────
     // Save both the latest user message and the generated assistant reply into memory
