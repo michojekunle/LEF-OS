@@ -49,7 +49,7 @@ export async function GET(): Promise<NextResponse> {
 
     // Fetch flag counts for all flagged submissions
     const flaggedIds = (flagged ?? []).map((s) => s.id);
-    let flagCounts: Record<string, number> = {};
+    const flagCounts: Record<string, number> = {};
     if (flaggedIds.length > 0) {
       const { data: counts } = await sb
         .from('resource_flags')

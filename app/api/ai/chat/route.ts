@@ -176,35 +176,96 @@ Instructions:
 }
 Do not add any other text outside of the JSON block when a quiz is requested.`;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents,
-          systemInstruction: {
-            parts: [{ text: systemInstruction }],
-          },
-          generationConfig: {
-            temperature: 0.7,
-            // 4096 handles full quizzes (3 Qs + explanations ≈ 600–900 tokens)
-            // and rich markdown answers without cutting off
-            maxOutputTokens: 4096,
-          },
-        }),
-      },
-    );
+    interface ModelProvider {
+      name: string;
+      type: 'gemini' | 'groq';
+      modelId: string;
+    }
+
+    const PROVIDER_CHAIN: ModelProvider[] = [
+      { name: 'Gemini 2.5 Flash', type: 'gemini', modelId: 'gemini-2.5-flash' },
+      { name: 'Gemini 2.5 Pro', type: 'gemini', modelId: 'gemini-2.5-pro' },
+      { name: 'Gemini 2.0 Flash', type: 'gemini', modelId: 'gemini-2.0-flash' },
+      { name: 'Gemini 1.5 Flash', type: 'gemini', modelId: 'gemini-1.5-flash' },
+      { name: 'Gemini 1.5 Pro', type: 'gemini', modelId: 'gemini-1.5-pro' },
+      { name: 'Groq Llama 3.3 70B', type: 'groq', modelId: 'llama-3.3-70b-versatile' },
+      { name: 'Groq Llama 3.1 8B', type: 'groq', modelId: 'llama-3.1-8b-instant' },
+      { name: 'Groq Mixtral 8x7B', type: 'groq', modelId: 'mixtral-8x7b-32768' },
+      { name: 'Groq Gemma 2 9B', type: 'groq', modelId: 'gemma2-9b-it' },
+      { name: 'Groq DeepSeek R1 70B', type: 'groq', modelId: 'deepseek-r1-distill-llama-70b' }
+    ];
 
     let text = '';
-    let usedFallback = false;
+    let success = false;
+    let lastError: any = null;
+    let isRateLimit = false;
+    let retryAfterSecs: number | null = null;
 
-    if (!response.ok) {
-      const groqKey = process.env.GROQ_API_KEY;
-      if (groqKey) {
-        console.log(`Gemini API call failed (status: ${response.status}). Attempting Groq fallback...`);
+    for (const provider of PROVIDER_CHAIN) {
+      if (provider.type === 'gemini') {
+        if (!apiKey) continue;
+        console.log(`Attempting chat generation using ${provider.name} (${provider.modelId})...`);
+        try {
+          const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${provider.modelId}:generateContent?key=${apiKey}`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                contents,
+                systemInstruction: {
+                  parts: [{ text: systemInstruction }],
+                },
+                generationConfig: {
+                  temperature: 0.7,
+                  maxOutputTokens: 4096,
+                },
+              }),
+            },
+          );
+
+          if (response.ok) {
+            const resJson = await response.json();
+            text = resJson.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            if (text) {
+              success = true;
+              console.log(`Success with ${provider.name}!`);
+              break;
+            }
+          } else {
+            const errText = await response.text();
+            console.warn(`${provider.name} failed with status ${response.status}:`, errText);
+            isRateLimit = response.status === 429 || errText.includes('RESOURCE_EXHAUSTED') || errText.includes('429');
+            
+            // Try to extract retry delay if rate limited
+            if (isRateLimit) {
+              const headerVal = response.headers.get('retry-after');
+              if (headerVal) {
+                retryAfterSecs = parseInt(headerVal, 10);
+              } else {
+                try {
+                  const errJson = JSON.parse(errText);
+                  const retryInfo = errJson.error?.details?.find(
+                    (d: any) => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo'
+                  );
+                  if (retryInfo?.retryDelay) {
+                    retryAfterSecs = Math.ceil(parseFloat(retryInfo.retryDelay.replace('s', '')));
+                  }
+                } catch {}
+              }
+            }
+            lastError = new Error(`${provider.name} error: ${errText}`);
+          }
+        } catch (err) {
+          console.warn(`Exception during ${provider.name} request:`, err);
+          lastError = err;
+        }
+      } else if (provider.type === 'groq') {
+        const groqKey = process.env.GROQ_API_KEY;
+        if (!groqKey) continue;
+        console.log(`Attempting chat generation fallback using ${provider.name} (${provider.modelId})...`);
         try {
           const groqMessages = [
             { role: 'system', content: systemInstruction },
@@ -221,7 +282,7 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
               Authorization: `Bearer ${groqKey}`,
             },
             body: JSON.stringify({
-              model: 'llama-3.1-8b-instant',
+              model: provider.modelId,
               messages: groqMessages,
               temperature: 0.7,
               max_tokens: 2048,
@@ -231,63 +292,35 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
           if (groqRes.ok) {
             const groqJson = await groqRes.json();
             text = groqJson.choices?.[0]?.message?.content || '';
-            usedFallback = true;
-            console.log('Groq fallback response successfully received.');
-          } else {
-            console.error('Groq fallback call failed:', await groqRes.text());
-          }
-        } catch (groqErr) {
-          console.error('Error during Groq fallback fetch:', groqErr);
-        }
-      }
-
-      if (!usedFallback) {
-        const errText = await response.text();
-        console.error('Gemini API request failed:', errText);
-        const isRateLimit = response.status === 429 || errText.includes('RESOURCE_EXHAUSTED') || errText.includes('429');
-        
-        let retryAfter = response.headers.get('retry-after');
-        
-        // Try to parse the JSON error body to find type.googleapis.com/google.rpc.RetryInfo
-        try {
-          const errJson = JSON.parse(errText);
-          if (errJson && errJson.error && Array.isArray(errJson.error.details)) {
-            const retryInfo = errJson.error.details.find(
-              (d: any) => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo'
-            );
-            if (retryInfo && retryInfo.retryDelay) {
-              // Strip the 's' suffix from the string (e.g. "20s" -> "20")
-              const delayStr = retryInfo.retryDelay.replace('s', '');
-              if (delayStr) {
-                retryAfter = delayStr;
-              }
+            if (text) {
+              success = true;
+              console.log(`Success with ${provider.name} fallback!`);
+              break;
             }
+          } else {
+            const errText = await groqRes.text();
+            console.warn(`${provider.name} fallback failed with status ${groqRes.status}:`, errText);
+            lastError = new Error(`${provider.name} error: ${errText}`);
           }
-        } catch (e) {
-          // Not valid JSON or failed to parse
+        } catch (err) {
+          console.warn(`Exception during ${provider.name} request:`, err);
+          lastError = err;
         }
-
-        if (!retryAfter && isRateLimit) {
-          const match = errText.match(/retry\s+after\s+(\d+)\s*s/i) || errText.match(/(\d+)\s*(?:seconds|sec|s)\b/i);
-          if (match) {
-            retryAfter = match[1];
-          }
-        }
-
-        return NextResponse.json(
-          { 
-            error: isRateLimit ? 'rate_limit' : 'Gemini service returned an error.',
-            message: isRateLimit 
-              ? 'LEF Counsel is currently receiving high traffic. Please wait a moment.' 
-              : 'Gemini service returned an error.',
-            retryAfter: retryAfter ? Math.ceil(parseFloat(retryAfter)) : null
-          },
-          { status: response.status },
-        );
       }
-    } else {
-      const resJson = await response.json();
-      text = resJson.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.';
+    }
+
+    if (!success) {
+      console.error('All model providers in the chain failed.');
+      return NextResponse.json(
+        { 
+          error: isRateLimit ? 'rate_limit' : 'AI Service is currently unavailable.',
+          message: isRateLimit 
+            ? 'LEF Counsel is currently receiving extremely high traffic. Please try again shortly.' 
+            : (lastError instanceof Error ? lastError.message : 'All model providers failed.'),
+          retryAfter: retryAfterSecs || 15
+        },
+        { status: isRateLimit ? 429 : 500 },
+      );
     }
 
     // ── Database Persistence ───────────────────────────────────────────────

@@ -92,6 +92,9 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
     if (messages.length === 0) {
       fetchHistory();
     }
+    return () => {
+      isMounted = false;
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, isOpen]);
 

@@ -44,7 +44,7 @@ export default async function AdminResourcesPage() {
 
   // Attach flag counts to flagged submissions
   const flaggedIds = (flagged ?? []).map((s) => s.id);
-  let flagCounts: Record<string, number> = {};
+  const flagCounts: Record<string, number> = {};
   if (flaggedIds.length > 0) {
     const { data: counts } = await sb
       .from('resource_flags')
