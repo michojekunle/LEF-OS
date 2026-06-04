@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Map, LayoutDashboard, BookOpen, BarChart3, Search } from 'lucide-react';
-import { useCommandPalette } from './CommandPalette';
+import { Home, Map, LayoutDashboard, BookOpen, BarChart3 } from 'lucide-react';
 
 const tabs = [
   { href: '/', label: 'Home', Icon: Home, exact: true },
@@ -15,14 +14,13 @@ const tabs = [
 
 export function MobileTabBar() {
   const pathname = usePathname();
-  const { open } = useCommandPalette();
 
   return (
     <nav
       aria-label="Primary mobile navigation"
       className="tabbar fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--bg-tabbar)] backdrop-blur-md md:hidden"
     >
-      <ul className="grid h-[3.75rem] grid-cols-6">
+      <ul className="grid h-[3.75rem] grid-cols-5">
         {tabs.map(({ href, label, Icon, exact }) => {
           const active = exact
             ? pathname === href
@@ -46,17 +44,6 @@ export function MobileTabBar() {
             </li>
           );
         })}
-        <li className="flex">
-          <button
-            type="button"
-            onClick={open}
-            aria-label="Open command palette"
-            className="mx-0.5 flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-md text-text-secondary transition-colors active:text-text-primary"
-          >
-            <Search size={20} strokeWidth={1.75} />
-            <span className="text-xs font-medium tracking-wide">Search</span>
-          </button>
-        </li>
       </ul>
     </nav>
   );
