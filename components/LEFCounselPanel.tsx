@@ -94,12 +94,12 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, isOpen]);
 
-  // Scroll inside the panel whenever a live interaction adds messages or loading changes.
+  // Scroll inside the panel whenever a live interaction adds messages, loading status, or error messages change.
   // Guard with didUserInteract so the initial history load doesn't trigger page scroll.
   useEffect(() => {
     if (!didUserInteract.current) return;
     scrollChatToBottom();
-  }, [messages, loading, scrollChatToBottom]);
+  }, [messages, loading, error, scrollChatToBottom]);
 
   const starterPills = [
     {
