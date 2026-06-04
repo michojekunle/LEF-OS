@@ -116,12 +116,34 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to fetch response');
+      let errorMessage = 'Failed to fetch response';
+      try {
+        const contentType = res.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await res.json();
+          if (!res.ok) {
+            if (data && typeof data.error === 'object' && data.error !== null) {
+              errorMessage = (data.error as { message?: string; error?: string }).message || 
+                             (data.error as { message?: string; error?: string }).error || 
+                             JSON.stringify(data.error);
+            } else if (data && typeof data.error === 'string') {
+              errorMessage = data.error;
+            } else if (data && typeof data.message === 'string') {
+              errorMessage = data.message;
+            }
+            throw new Error(errorMessage);
+          }
+          setMessages((prev) => [...prev, { role: 'assistant', content: data.text }]);
+        } else {
+          const text = await res.text();
+          throw new Error(text.slice(0, 150) || `HTTP error ${res.status}`);
+        }
+      } catch (parseErr) {
+        if (parseErr instanceof Error) {
+          throw parseErr;
+        }
+        throw new Error('An unexpected error occurred while communicating with LEF Counsel.');
       }
-
-      setMessages((prev) => [...prev, { role: 'assistant', content: data.text }]);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Something went wrong.');
