@@ -22,6 +22,27 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
   const [isOpen, setIsOpen] = useState(!isFloating);
   const [error, setError] = useState<string | null>(null);
   const [animatedIndices, setAnimatedIndices] = useState<number[]>([]);
+  const [retryCountdown, setRetryCountdown] = useState<number | null>(null);
+
+  // Rate limit / retry countdown timer
+  useEffect(() => {
+    if (retryCountdown === null) return;
+    if (retryCountdown <= 0) {
+      setRetryCountdown(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setRetryCountdown((prev) => {
+        if (prev === null) return null;
+        const next = prev - 1;
+        setError(`Rate limit hit. Please wait ${next}s before trying again.`);
+        return next;
+      });
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [retryCountdown]);
 
   // Ref to the scrollable chat container div (not the sentinel at the bottom).
   // We scroll the container itself, not the page, to avoid the page jumping.
@@ -59,7 +80,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
           // Scroll to bottom inside the panel after history renders,
           // but only if this is a re-open (not a fresh page load).
           if (didUserInteract.current) {
-            requestAnimationFrame(() => scrollChatToBottom(true));
+            setTimeout(() => scrollChatToBottom(true), 50);
           }
         }
       } catch (err) {
@@ -96,7 +117,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
   ];
 
   async function handleSend(textToSend: string) {
-    if (!textToSend.trim() || loading || !userId) return;
+    if (!textToSend.trim() || loading || !userId || retryCountdown !== null) return;
 
     didUserInteract.current = true;
     setError(null);
@@ -134,6 +155,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
             throw new Error(errorMessage);
           }
           setMessages((prev) => [...prev, { role: 'assistant', content: data.text }]);
+          setLoading(false);
         } else {
           const text = await res.text();
           throw new Error(text.slice(0, 150) || `HTTP error ${res.status}`);
@@ -146,9 +168,15 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
       }
     } catch (err) {
       console.error(err);
-      setError(err instanceof Error ? err.message : 'Something went wrong.');
-    } finally {
-      setLoading(false);
+      const isRate = err instanceof Error && (err.message === 'rate_limit' || err.message.includes('rate_limit') || err.message.includes('Resource has been exhausted'));
+      if (isRate) {
+        setRetryCountdown(15);
+        setError('Rate limit hit. Please wait 15s before trying again.');
+        setLoading(true); // keep loading spin active
+      } else {
+        setError(err instanceof Error ? err.message : 'Something went wrong.');
+        setLoading(false);
+      }
     }
   }
 

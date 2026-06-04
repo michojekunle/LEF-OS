@@ -201,8 +201,14 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
     if (!response.ok) {
       const errText = await response.text();
       console.error('Gemini API request failed:', errText);
+      const isRateLimit = response.status === 429 || errText.includes('RESOURCE_EXHAUSTED') || errText.includes('429');
       return NextResponse.json(
-        { error: 'Gemini service returned an error.' },
+        { 
+          error: isRateLimit ? 'rate_limit' : 'Gemini service returned an error.',
+          message: isRateLimit 
+            ? 'LEF Counsel is currently receiving high traffic. Please wait a moment.' 
+            : 'Gemini service returned an error.'
+        },
         { status: response.status },
       );
     }
