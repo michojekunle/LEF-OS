@@ -2,16 +2,17 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, Settings, LogOut, Search, Moon, Sun, Monitor, Download } from 'lucide-react';
+import { Menu, Settings, LogOut, Search, Moon, Sun, Monitor, Download, User } from 'lucide-react';
 import { SignOutButton } from './SignOutButton';
 import { useTheme } from './ThemeProvider';
 import { CommandPaletteTrigger } from './CommandPalette';
 
 type Props = {
   isAuthed: boolean;
+  username?: string | null;
 };
 
-export function UserMenu({ isAuthed }: Props) {
+export function UserMenu({ isAuthed, username }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
@@ -87,6 +88,24 @@ export function UserMenu({ isAuthed }: Props) {
 
           {isAuthed ? (
             <>
+              {username ? (
+                <Link
+                  href={`/u/${username}`}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary"
+                >
+                  <User size={15} /> Public Profile
+                </Link>
+              ) : (
+                <Link
+                  href="/settings"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary"
+                >
+                  <User size={15} /> Setup Profile
+                </Link>
+              )}
+
               <Link
                 href="/settings"
                 onClick={() => setIsOpen(false)}

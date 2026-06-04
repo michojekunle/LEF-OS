@@ -8,6 +8,7 @@ import { UserMenu } from './UserMenu';
 export async function Nav() {
   let isAuthed = false;
   let userId = '';
+  let username: string | null = null;
   if (hasSupabaseConfig()) {
     try {
       const sb = await supabaseServer();
@@ -15,6 +16,12 @@ export async function Nav() {
       isAuthed = Boolean(data.user);
       if (data.user) {
         userId = data.user.id;
+        const { data: profile } = await sb
+          .from('profiles')
+          .select('username')
+          .eq('id', userId)
+          .single();
+        username = profile?.username || null;
       }
     } catch {
       isAuthed = false;
@@ -48,7 +55,7 @@ export async function Nav() {
         {/* Right-side actions */}
         <div className="flex items-center gap-1.5 md:gap-2.5">
           {isAuthed && <NotificationCenter userId={userId} />}
-          <UserMenu isAuthed={isAuthed} />
+          <UserMenu isAuthed={isAuthed} username={username} />
         </div>
       </nav>
     </header>
