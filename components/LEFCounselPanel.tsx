@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { Sparkles, X, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Sparkles, X, ChevronDown, ChevronUp, RefreshCw, MessageSquareIcon } from 'lucide-react';
 import { Message, ChatBody, ChatInput } from './LEFCounselChatParts';
 
 type Props = {
@@ -19,20 +19,66 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(!isFloating); // Floating starts closed, inline starts open
+  const [isOpen, setIsOpen] = useState(!isFloating);
   const [error, setError] = useState<string | null>(null);
   const [animatedIndices, setAnimatedIndices] = useState<number[]>([]);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  // Ref to the scrollable chat container div (not the sentinel at the bottom).
+  // We scroll the container itself, not the page, to avoid the page jumping.
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom helper
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  // Track whether the last message update came from a live interaction
+  // (user send / AI reply) vs. the initial history fetch.
+  // We must NOT page-scroll on history load.
+  const didUserInteract = useRef(false);
 
+  // Scroll only the chat panel's own overflow container — never the page.
+  const scrollChatToBottom = useCallback((instant = false) => {
+    const el = chatContainerRef.current;
+    if (!el) return;
+    if (instant) {
+      el.scrollTop = el.scrollHeight;
+    } else {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    }
+  }, []);
+
+  // Fetch persisted conversation on first render
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, loading]);
+    if (!userId || !isOpen) return;
+
+    let isMounted = true;
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch('/api/ai/chat');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (isMounted && data.messages) {
+          // Load history silently — do NOT scroll the page
+          setMessages(data.messages);
+          // Scroll to bottom inside the panel after history renders,
+          // but only if this is a re-open (not a fresh page load).
+          if (didUserInteract.current) {
+            requestAnimationFrame(() => scrollChatToBottom(true));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load chat history:', err);
+      }
+    };
+
+    if (messages.length === 0) {
+      fetchHistory();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, isOpen]);
+
+  // Scroll inside the panel whenever a live interaction adds messages or loading changes.
+  // Guard with didUserInteract so the initial history load doesn't trigger page scroll.
+  useEffect(() => {
+    if (!didUserInteract.current) return;
+    scrollChatToBottom();
+  }, [messages, loading, scrollChatToBottom]);
 
   const starterPills = [
     {
@@ -52,6 +98,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
   async function handleSend(textToSend: string) {
     if (!textToSend.trim() || loading || !userId) return;
 
+    didUserInteract.current = true;
     setError(null);
     const userMessage: Message = { role: 'user', content: textToSend };
     setMessages((prev) => [...prev, userMessage]);
@@ -83,10 +130,18 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
     }
   }
 
-  function handleReset() {
+  async function handleReset() {
     setMessages([]);
     setError(null);
     setAnimatedIndices([]);
+
+    if (!userId) return;
+
+    try {
+      await fetch('/api/ai/chat', { method: 'DELETE' });
+    } catch (err) {
+      console.error('Failed to clear chat history from server', err);
+    }
   }
 
   // --- FLOATING WIDGET TRIGGER ---
@@ -94,7 +149,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
     return (
       <div className="fixed bottom-24 right-4 z-40 select-none md:bottom-6 md:right-6">
         {isOpen ? (
-          <div className="card-2 bg-surface/95 reveal flex h-[460px] max-h-[75vh] w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-xl border-border shadow-2xl sm:w-80 md:w-96">
+          <div className="card-2 bg-surface/95 reveal flex h-[460px] max-h-[75vh] w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-xl bg-white shadow-2xl sm:w-80 md:w-96">
             {/* Header */}
             <header className="flex items-center justify-between border-b border-border bg-surface-2 px-4 py-3">
               <div className="flex items-center gap-2">
@@ -102,14 +157,22 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
                 <span className="text-xs font-semibold uppercase tracking-wider text-text-primary">
                   LEF Counsel
                 </span>
+                {messages.length > 0 && (
+                  <span
+                    className="bg-gold/10 rounded px-1.5 py-0.5 font-mono text-xs text-gold"
+                    title="Messages in memory — resets when you clear"
+                  >
+                    {messages.length} msg{messages.length !== 1 ? 's' : ''}
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 {userId && (
                   <button
                     onClick={handleReset}
                     className="p-0.5 text-text-muted transition-colors hover:text-text-secondary"
-                    title="Reset conversation"
-                    aria-label="Reset conversation"
+                    title="Clear conversation memory"
+                    aria-label="Clear conversation memory"
                   >
                     <RefreshCw size={11} />
                   </button>
@@ -132,9 +195,9 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
               loading={loading}
               error={error}
               onPillClick={handleSend}
-              messagesEndRef={messagesEndRef}
+              containerRef={chatContainerRef}
               userId={userId}
-              onWordAdded={scrollToBottom}
+              onWordAdded={() => scrollChatToBottom()}
               animatedIndices={animatedIndices}
               onMessageAnimated={(idx) => {
                 setAnimatedIndices((prev) => [...prev, idx]);
@@ -154,7 +217,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
         ) : (
           <div className="group relative">
             {/* Tooltip */}
-            <div className="pointer-events-none absolute bottom-full right-0 mb-2 hidden whitespace-nowrap rounded border border-border bg-surface-2 px-2.5 py-1 text-[10px] uppercase tracking-wider text-gold shadow-lg group-hover:block">
+            <div className="pointer-events-none absolute bottom-full right-0 mb-2 hidden whitespace-nowrap rounded border border-border bg-surface-2 px-2.5 py-1 text-xs uppercase tracking-wider text-gold shadow-lg group-hover:block">
               Ask LEF Counsel
             </div>
 
@@ -163,11 +226,11 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
 
             <button
               onClick={() => setIsOpen(true)}
-              className="relative flex h-11 w-11 items-center justify-center rounded-full border border-gold bg-surface font-semibold text-gold shadow-2xl transition-all duration-200 hover:bg-gold hover:text-bg md:h-12 md:w-12"
+              className="relative flex h-11 w-11 items-center justify-center rounded-full hover:bg-surface font-semibold hover:text-gold shadow-2xl transition-all duration-200 bg-gold text-bg md:h-12 md:w-12"
               title="Chat with LEF Counsel"
               aria-label="Open LEF Counsel chat"
             >
-              <Sparkles size={18} className="animate-pulse" />
+              <MessageSquareIcon size={18} className="animate-pulse" />
             </button>
           </div>
         )}
@@ -190,7 +253,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
           <h2 className="text-xs font-semibold uppercase tracking-wider text-text-primary">
             Ask LEF Counsel
           </h2>
-          <span className="text-[10px] font-normal text-text-muted">· AI Syllabus Assistant</span>
+          <span className="text-xs font-normal text-text-muted">· AI Syllabus Assistant</span>
         </div>
         {isOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
       </button>
@@ -204,9 +267,9 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
             loading={loading}
             error={error}
             onPillClick={handleSend}
-            messagesEndRef={messagesEndRef}
+            containerRef={chatContainerRef}
             userId={userId}
-            onWordAdded={scrollToBottom}
+            onWordAdded={() => scrollChatToBottom()}
             animatedIndices={animatedIndices}
             onMessageAnimated={(idx) => {
               setAnimatedIndices((prev) => [...prev, idx]);

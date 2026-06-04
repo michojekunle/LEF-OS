@@ -1,6 +1,64 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
 
+// ── GET History ─────────────────────────────────────────────────────────────
+export async function GET(request: Request) {
+  try {
+    const sb = await supabaseServer();
+    const {
+      data: { user },
+    } = await sb.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Fetch the last 40-50 messages
+    const { data, error } = await sb
+      .from('ai_chat_memory')
+      .select('id, role, content, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+
+    // Supabase sorts desc, so we reverse it to chronological order for the UI
+    const history = (data || []).reverse().map((row) => ({
+      role: row.role,
+      content: row.content,
+    }));
+
+    return NextResponse.json({ messages: history });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
+
+// ── DELETE History ──────────────────────────────────────────────────────────
+export async function DELETE(request: Request) {
+  try {
+    const sb = await supabaseServer();
+    const {
+      data: { user },
+    } = await sb.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { error } = await sb.from('ai_chat_memory').delete().eq('user_id', user.id);
+    if (error) throw error;
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
+
+// ── POST Chat ───────────────────────────────────────────────────────────────
 export async function POST(request: Request) {
   try {
     const sb = await supabaseServer();
@@ -31,7 +89,7 @@ export async function POST(request: Request) {
     }
 
     // ── Input validation & sanitization ────────────────────────────────────
-    const MAX_MESSAGES = 40; // prevent API cost abuse
+    const MAX_MESSAGES = 50; // clamp context window to avoid API cost abuse
     const MAX_MSG_CHARS = 8_000; // per message
 
     // Clamp message history length
@@ -59,6 +117,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No valid messages' }, { status: 400 });
     }
 
+    // The LAST message in the array is the new user input
+    const latestUserMessage = safeMsgs[safeMsgs.length - 1];
+
     // Validate day is a safe integer 1-122 to prevent prompt injection
     const safeDay: number | null =
       typeof day === 'number' && Number.isInteger(day) && day >= 1 && day <= 122 ? day : null;
@@ -66,7 +127,7 @@ export async function POST(request: Request) {
     // Strip non-printable chars and limit length from topic strings
     function safeTopic(t: unknown): string {
       if (typeof t !== 'string') return '';
-      return t.replace(/[^\x20-\x7E -￿]/g, '').slice(0, 200);
+      return t.replace(/[^\x20-\x7E -]/g, '').slice(0, 200);
     }
 
     const safeTopics =
@@ -148,6 +209,25 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
 
     const resJson = await response.json();
     const text = resJson.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.';
+
+    // ── Database Persistence ───────────────────────────────────────────────
+    // Save both the latest user message and the generated assistant reply into memory
+    if (latestUserMessage && latestUserMessage.role === 'user') {
+      await sb.from('ai_chat_memory').insert([
+        {
+          user_id: user.id,
+          role: 'user',
+          content: latestUserMessage.content,
+          day_context: safeDay,
+        },
+        {
+          user_id: user.id,
+          role: 'assistant',
+          content: text,
+          day_context: safeDay,
+        },
+      ]);
+    }
 
     return NextResponse.json({ text });
   } catch (err) {

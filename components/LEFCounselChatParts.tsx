@@ -77,7 +77,7 @@ function QuizBlock({ quiz }: { quiz: QuizData }) {
           <div key={qIdx} className="space-y-2.5">
             {/* Question */}
             <p className="text-xs font-semibold leading-snug text-text-primary">
-              <span className="mr-1.5 text-[10px] uppercase tracking-wider text-text-muted">
+              <span className="mr-1.5 text-xs uppercase tracking-wider text-text-muted">
                 Q{qIdx + 1}.
               </span>
               {q.question}
@@ -90,7 +90,7 @@ function QuizBlock({ quiz }: { quiz: QuizData }) {
                 const isChosen = chosen === optIdx;
 
                 let optClass =
-                  'w-full text-left px-3 py-2 rounded-md border text-[11px] leading-snug transition-all ';
+                  'w-full text-left px-3 py-2 rounded-md border text-sm leading-snug transition-all ';
 
                 if (!isAnswered) {
                   optClass +=
@@ -114,7 +114,7 @@ function QuizBlock({ quiz }: { quiz: QuizData }) {
                     className={optClass}
                   >
                     <span className="flex items-start gap-2">
-                      <span className="mt-px shrink-0 text-[10px] font-bold uppercase text-text-muted">
+                      <span className="mt-px shrink-0 text-xs font-bold uppercase text-text-muted">
                         {String.fromCharCode(65 + optIdx)}.
                       </span>
                       <span className="flex-1">{opt}</span>
@@ -132,7 +132,7 @@ function QuizBlock({ quiz }: { quiz: QuizData }) {
 
             {/* Explanation after answering */}
             {isAnswered && (
-              <div className="rounded-md border border-[var(--border-subtle)] bg-[var(--surface-2-overlay)] px-3 py-2 text-[10px] leading-relaxed text-text-secondary">
+              <div className="rounded-md border border-[var(--border-subtle)] bg-[var(--surface-2-overlay)] px-3 py-2 text-xs leading-relaxed text-text-secondary">
                 <span className="font-semibold text-text-primary">Explanation: </span>
                 {q.explanation}
               </div>
@@ -144,14 +144,14 @@ function QuizBlock({ quiz }: { quiz: QuizData }) {
       {/* Score summary when all answered */}
       {totalAnswered === quiz.questions.length && (
         <div className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-2">
-          <p className="text-[11px] text-text-secondary">
+          <p className="text-sm text-text-secondary">
             Score:{' '}
             <span className="font-bold text-text-primary">
               {totalCorrect}/{quiz.questions.length}
             </span>
           </p>
           <span
-            className={`text-[10px] font-semibold uppercase tracking-wide ${
+            className={`text-xs font-semibold uppercase tracking-wide ${
               totalCorrect === quiz.questions.length
                 ? 'text-success'
                 : totalCorrect >= quiz.questions.length / 2
@@ -275,7 +275,7 @@ export function GuestOnboarding() {
         <h3 className="text-xs font-semibold uppercase tracking-wider text-text-primary">
           Consult LEF Counsel
         </h3>
-        <p className="mt-2 max-w-[220px] text-[11px] leading-relaxed text-text-secondary">
+        <p className="mt-2 max-w-[220px] text-sm leading-relaxed text-text-secondary">
           Sign in to consult LEF Counsel, get personalised study help, practice with interactive
           quizzes, and save your academic notes.
         </p>
@@ -297,7 +297,9 @@ type BodyProps = {
   loading: boolean;
   error: string | null;
   onPillClick: (q: string) => void;
-  messagesEndRef: React.RefObject<HTMLDivElement>;
+  /** Ref to the overflow-y-auto container — parent scrolls this div,
+   *  never the page viewport. */
+  containerRef: React.RefObject<HTMLDivElement>;
   userId?: string;
   onWordAdded?: () => void;
   animatedIndices: number[];
@@ -310,7 +312,7 @@ export function ChatBody({
   loading,
   error,
   onPillClick,
-  messagesEndRef,
+  containerRef,
   userId,
   onWordAdded,
   animatedIndices,
@@ -321,7 +323,7 @@ export function ChatBody({
   }
 
   return (
-    <div className="flex-1 space-y-4 overflow-y-auto p-4">
+    <div ref={containerRef} className="flex-1 space-y-4 overflow-y-auto p-4">
       {messages.length === 0 ? (
         <div className="flex h-full flex-col items-center justify-center space-y-4 text-center">
           <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface-2">
@@ -329,7 +331,7 @@ export function ChatBody({
           </div>
           <div>
             <p className="text-xs font-medium text-text-primary">Chat with LEF Counsel</p>
-            <p className="mt-1 max-w-[240px] text-[11px] leading-relaxed text-text-secondary">
+            <p className="mt-1 max-w-[240px] text-sm leading-relaxed text-text-secondary">
               Ask questions, request examples, or take a quick quiz based on your curriculum.
             </p>
           </div>
@@ -338,7 +340,7 @@ export function ChatBody({
               <button
                 key={pill.label}
                 onClick={() => onPillClick(pill.query)}
-                className="bg-surface-2/40 rounded-lg border border-border px-3 py-2 text-left text-[10px] leading-normal text-text-secondary transition-all hover:border-gold hover:text-text-primary"
+                className="bg-surface-2/40 rounded-lg border border-border px-3 py-2 text-left text-xs leading-normal text-text-secondary transition-all hover:border-gold hover:text-text-primary"
               >
                 {pill.label}
               </button>
@@ -351,7 +353,7 @@ export function ChatBody({
             key={idx}
             className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
           >
-            <span className="mb-0.5 px-1 text-[9px] uppercase tracking-wider text-text-muted">
+            <span className="mb-0.5 px-1 text-xs uppercase tracking-wider text-text-muted">
               {m.role === 'user' ? 'You' : 'LEF Counsel'}
             </span>
             <div
@@ -378,7 +380,7 @@ export function ChatBody({
 
       {loading && (
         <div className="flex flex-col items-start">
-          <span className="mb-0.5 px-1 text-[9px] uppercase tracking-wider text-text-muted">
+          <span className="mb-0.5 px-1 text-xs uppercase tracking-wider text-text-muted">
             LEF Counsel
           </span>
           <div className="flex items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-3 py-2.5">
@@ -390,12 +392,10 @@ export function ChatBody({
       )}
 
       {error && (
-        <div className="bg-accent-synthesis/20 rounded-md border border-border p-2.5 text-[10px] leading-relaxed text-red">
+        <div className="bg-accent-synthesis/20 rounded-md border border-border p-2.5 text-xs leading-relaxed text-red">
           {error}
         </div>
       )}
-
-      <div ref={messagesEndRef} />
     </div>
   );
 }
