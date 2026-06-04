@@ -46,7 +46,7 @@ export function DayLogPanel({
     <div className="space-y-8">
       {/* ── Log form ───────────────────────────────────────────────── */}
       <section className="space-y-3">
-        <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+        <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">
           {entry ? 'Edit log' : 'Log this day'}
         </h2>
         <DailyLogForm userId={userId} day={day} date={date} existing={entry} onSaved={setEntry} />
@@ -56,7 +56,7 @@ export function DayLogPanel({
       <section className="space-y-3">
         <div className="flex items-center gap-2">
           <BookOpen size={14} className="text-text-secondary" />
-          <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+          <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">
             Per-domain notes · private
           </h2>
         </div>
@@ -118,7 +118,7 @@ export function DayLogPanel({
       <section className="space-y-3">
         <div className="flex items-center gap-2">
           <HelpCircle size={14} className="text-text-secondary" />
-          <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+          <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">
             Questions to research
           </h2>
         </div>
@@ -163,8 +163,8 @@ function NoteEditor({
         <span className="flex items-center gap-1.5 text-sm font-medium">
           <span>{meta.icon}</span> {meta.label}
         </span>
-        {saved && <span className="accent-econ text-[10px]">✓ saved</span>}
-        {pending && <span className="text-[10px] text-text-muted">Saving…</span>}
+        {saved && <span className="accent-econ text-xs">✓ saved</span>}
+        {pending && <span className="text-xs text-text-muted">Saving…</span>}
       </div>
       <textarea
         value={value}
@@ -174,7 +174,7 @@ function NoteEditor({
         rows={6}
         placeholder={`What landed today on ${meta.label.toLowerCase()}?`}
       />
-      <div className="flex items-center justify-between text-[10px] tabular-nums text-text-muted">
+      <div className="flex items-center justify-between text-xs tabular-nums text-text-muted">
         <span>Autosaves on blur</span>
         <span>{value.length} / 8000</span>
       </div>

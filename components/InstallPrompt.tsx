@@ -117,7 +117,7 @@ export function InstallPrompt() {
               Install LEF OS
             </h4>
           </div>
-          <p className="mt-1.5 text-[11px] leading-relaxed text-text-secondary">
+          <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
             Add LEF to your home screen for quick offline access, full-screen study, and streak
             protection.
           </p>
@@ -141,7 +141,7 @@ export function InstallPrompt() {
           <Download size={12} /> Install Web App
         </button>
       ) : isIOS ? (
-        <div className="bg-surface-2/50 flex items-start gap-2 rounded-md border border-[var(--border-dim)] p-2.5 text-[10px] text-text-secondary">
+        <div className="bg-surface-2/50 flex items-start gap-2 rounded-md border border-[var(--border-dim)] p-2.5 text-xs text-text-secondary">
           <Share size={14} className="mt-0.5 shrink-0 text-gold" />
           <div className="leading-normal">
             To install: tap <span className="font-semibold text-text-primary">Share</span> in
@@ -150,7 +150,7 @@ export function InstallPrompt() {
           </div>
         </div>
       ) : (
-        <div className="bg-surface-2/50 rounded-md border border-[var(--border-dim)] p-2.5 text-[10px] leading-normal text-text-secondary">
+        <div className="bg-surface-2/50 rounded-md border border-[var(--border-dim)] p-2.5 text-xs leading-normal text-text-secondary">
           To install: tap your browser menu (usually{' '}
           <span className="font-semibold text-text-primary">⋮</span> or{' '}
           <span className="font-semibold text-text-primary">⋯</span>) and select{' '}

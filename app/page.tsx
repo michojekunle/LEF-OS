@@ -15,7 +15,7 @@ export default function LandingPage() {
     <div className="mx-auto max-w-content px-5 md:px-6">
       {/* HERO */}
       <section className="pb-12 pt-12 md:pb-16 md:pt-20">
-        <div className="reveal mb-6 flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-text-secondary">
+        <div className="reveal mb-6 flex items-center gap-2 text-xs uppercase tracking-[0.32em] text-text-secondary">
           <Sparkles size={12} className="text-gold" />
           <span>Founder's Learning OS</span>
         </div>
@@ -77,7 +77,7 @@ export default function LandingPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-2xl">{meta.icon}</span>
-                  <span className={`font-display text-xl ${accent}`}>{meta.label}</span>
+                  <span className={`text-base font-semibold ${accent}`}>{meta.label}</span>
                 </div>
                 <p className="text-sm leading-relaxed text-text-secondary">{meta.description}</p>
                 <Link
@@ -100,14 +100,14 @@ export default function LandingPage() {
         <ol className="space-y-3">
           {CURRICULUM.map((m) => (
             <li key={m.month} className="card flex items-baseline gap-4 p-5">
-              <span className="w-20 shrink-0 font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted">
+              <span className="w-20 shrink-0 font-mono text-xs uppercase tracking-[0.18em] text-text-muted">
                 Month {m.month}
               </span>
               <div className="flex-1">
-                <p className="font-display text-lg leading-snug">{m.name}</p>
+                <p className="text-base font-semibold leading-snug text-text-primary">{m.name}</p>
                 <p className="mt-0.5 text-xs text-text-secondary">{m.dateRange}</p>
               </div>
-              <span className="text-[10px] text-text-muted">
+              <span className="text-xs text-text-muted">
                 D{m.startDay}–D{m.endDay}
               </span>
             </li>
@@ -148,8 +148,8 @@ export default function LandingPage() {
             { n: '16', l: 'weekly reviews' },
           ].map((s) => (
             <div key={s.l} className="card-2 p-6">
-              <p className="font-display text-3xl text-gold">{s.n}</p>
-              <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+              <p className="text-3xl font-bold text-gold">{s.n}</p>
+              <p className="mt-1 text-xs uppercase tracking-[0.18em] text-text-secondary">
                 {s.l}
               </p>
             </div>

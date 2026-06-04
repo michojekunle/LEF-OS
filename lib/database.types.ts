@@ -137,7 +137,7 @@ export type InAppNotificationRow = {
 };
 
 export type ResourceType = 'video' | 'article' | 'tool' | 'other';
-export type SubmissionStatus = 'pending' | 'approved' | 'rejected';
+export type SubmissionStatus = 'pending' | 'approved' | 'rejected' | 'flagged';
 
 export type ResourceSubmission = {
   id: string;
@@ -151,6 +151,15 @@ export type ResourceSubmission = {
   status: SubmissionStatus;
   reviewed_by: string | null;
   reviewed_at: string | null;
+  created_at: string;
+};
+
+export type ResourceFlag = {
+  id: string;
+  submission_id: string;
+  flagged_by: string | null;
+  fingerprint: string | null;
+  reason: string | null;
   created_at: string;
 };
 
@@ -263,6 +272,12 @@ export type Database = {
         Row: AiChatMemoryRow;
         Insert: Omit<Insertable<AiChatMemoryRow, 'day_context'>, 'updated_at'>;
         Update: Partial<AiChatMemoryRow>;
+        Relationships: [];
+      };
+      resource_flags: {
+        Row: ResourceFlag;
+        Insert: Omit<Insertable<ResourceFlag, 'flagged_by' | 'fingerprint' | 'reason'>, 'updated_at'>;
+        Update: never;
         Relationships: [];
       };
       resource_submissions: {

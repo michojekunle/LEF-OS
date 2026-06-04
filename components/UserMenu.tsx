@@ -53,7 +53,7 @@ export function UserMenu({ isAuthed }: Props) {
         <div className="flex flex-col gap-1">
           {/* Theme Toggle (Inline) */}
           <div className="px-3 py-2">
-            <p className="mb-2 text-[10px] uppercase tracking-widest text-text-muted">Theme</p>
+            <p className="mb-2 text-xs uppercase tracking-widest text-text-muted">Theme</p>
             <div className="flex rounded-md border border-[var(--border-subtle)] bg-surface p-0.5">
               <button
                 onClick={() => setTheme('light')}

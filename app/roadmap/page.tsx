@@ -10,7 +10,7 @@ export default function RoadmapPage() {
   return (
     <div className="mx-auto max-w-content px-5 py-10 md:px-6">
       <header className="mb-8">
-        <p className="mb-3 text-[10px] uppercase tracking-[0.32em] text-text-secondary">
+        <p className="mb-3 text-xs uppercase tracking-[0.32em] text-text-secondary">
           The Curriculum
         </p>
         <h1 className="font-display text-3xl tracking-tight md:text-4xl">

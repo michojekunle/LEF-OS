@@ -68,7 +68,7 @@ export function EntryCard({
         <div className="flex items-baseline gap-3">
           <Link
             href={`/day/${entry.day_number}`}
-            className="font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted transition-colors hover:text-gold"
+            className="font-mono text-xs uppercase tracking-[0.18em] text-text-muted transition-colors hover:text-gold"
           >
             Day {entry.day_number}
           </Link>
@@ -96,7 +96,7 @@ export function EntryCard({
       </div>
 
       {entry.share_insight && (
-        <p className="mb-3 font-display text-[17px] leading-snug text-text-primary">
+        <p className="mb-3 text-base font-medium leading-snug text-text-primary">
           “{entry.share_insight}”
         </p>
       )}

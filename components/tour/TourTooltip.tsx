@@ -181,7 +181,7 @@ export function TourTooltip({
       {/* Header row */}
       <div className="flex items-center justify-between gap-2 px-4 pb-2 pt-3">
         <span
-          className="font-mono text-[10px] uppercase tracking-[0.22em]"
+          className="font-mono text-xs uppercase tracking-[0.22em]"
           style={{ color: accentColor }}
         >
           Step {stepIndex + 1} of {totalSteps - 1}
@@ -265,7 +265,7 @@ export function TourTooltip({
           </button>
           {showDisabledTooltip && nextDisabled && (
             <div
-              className="absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-md px-2 py-1 text-[10px] text-text-primary shadow-md"
+              className="absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-md px-2 py-1 text-xs text-text-primary shadow-md"
               style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--border)' }}
             >
               Complete the step above first

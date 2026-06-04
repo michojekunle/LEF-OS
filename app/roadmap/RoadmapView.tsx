@@ -64,8 +64,8 @@ export function RoadmapView() {
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              <span className="block font-display leading-tight">{m.monthName}</span>
-              <span className="mt-0.5 block text-[9px] uppercase tracking-[0.18em] text-text-muted">
+              <span className="block font-semibold leading-tight">{m.monthName}</span>
+              <span className="mt-0.5 block text-xs uppercase tracking-[0.18em] text-text-muted">
                 M{m.month}
               </span>
             </button>
@@ -97,7 +97,7 @@ export function RoadmapView() {
             >
               <span>{meta.icon}</span>
               <span
-                className={`font-display text-sm ${isActive ? accentText : 'text-text-primary'}`}
+                className={`text-sm font-medium ${isActive ? accentText : 'text-text-primary'}`}
               >
                 {meta.label}
               </span>
@@ -117,11 +117,11 @@ export function RoadmapView() {
         <div className="card reveal p-6">
           <div className="mb-3 flex flex-wrap items-center gap-3">
             <LevelBadge level={track.level} />
-            <span className="text-[10px] uppercase tracking-[0.22em] text-text-muted">
+            <span className="text-xs uppercase tracking-[0.22em] text-text-muted">
               {monthData.dateRange}
             </span>
           </div>
-          <h2 className="font-display text-2xl tracking-tight md:text-3xl">{track.theme}</h2>
+          <h2 className="font-display text-xl font-bold tracking-tight md:text-2xl">{track.theme}</h2>
           <p className="mt-2 max-w-2xl text-sm text-text-secondary md:text-base">{track.focus}</p>
         </div>
 
@@ -138,7 +138,7 @@ export function RoadmapView() {
         {/* Resources + content ideas */}
         <div className="grid gap-4 md:grid-cols-2">
           <div className="card p-5">
-            <h3 className="mb-3 font-display text-lg">Resources</h3>
+            <h3 className="mb-3 text-sm font-semibold text-text-primary">Resources</h3>
             <ul className="space-y-2.5 text-xs text-text-secondary">
               {track.resources.map((r) => {
                 const url = RESOURCE_URLS[r];
@@ -153,7 +153,7 @@ export function RoadmapView() {
                         className="hover:text-gold/80 inline-flex items-center gap-0.5 leading-normal text-gold transition-colors hover:underline"
                       >
                         {r}
-                        <span className="select-none text-[9px] opacity-75">↗</span>
+                        <span className="select-none text-xs opacity-75">↗</span>
                       </a>
                     ) : (
                       <span>{r}</span>
@@ -164,7 +164,7 @@ export function RoadmapView() {
             </ul>
           </div>
           <div className="card p-5">
-            <h3 className="mb-3 font-display text-lg">Content & share ideas</h3>
+            <h3 className="mb-3 text-sm font-semibold text-text-primary">Content & share ideas</h3>
             <ul className="space-y-1.5 text-xs text-text-secondary">
               {track.contentIdeas.map((c) => (
                 <li key={c} className="flex items-baseline gap-2">

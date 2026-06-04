@@ -24,7 +24,7 @@ type Props = {
 export function DomainBadge({ domain, size = 'md', className = '' }: Props) {
   const meta = DOMAIN_META[domain];
   const a = accentMap[meta.accent];
-  const sz = size === 'sm' ? 'text-[11px] px-2 py-0.5' : 'text-xs px-2.5 py-1';
+  const sz = size === 'sm' ? 'text-sm px-2 py-0.5' : 'text-xs px-2.5 py-1';
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full border ${a.bg} ${a.border} ${a.text} ${sz} font-medium tracking-wide ${className}`}
@@ -53,7 +53,7 @@ export function LevelBadge({
   const a = accentMap[key];
   return (
     <span
-      className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] ${a.border} ${a.text} ${className}`}
+      className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs uppercase tracking-[0.15em] ${a.border} ${a.text} ${className}`}
     >
       {level}
     </span>

@@ -8,7 +8,7 @@ export default function NotFound() {
     <div className="flex min-h-[75dvh] flex-col items-center justify-center px-6 py-12 text-center">
       <div className="max-w-md space-y-6">
         {/* Error code badge */}
-        <div className="border-gold/30 bg-gold/5 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-gold">
+        <div className="border-gold/30 bg-gold/5 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gold">
           <HelpCircle size={12} />
           Error 404
         </div>
@@ -25,7 +25,7 @@ export default function NotFound() {
             all three, the enterprise cannot walk. If you wander off the path, return to the first
             principles.&rdquo;
           </p>
-          <cite className="mt-1.5 block text-[10px] uppercase not-italic tracking-wider text-text-muted">
+          <cite className="mt-1.5 block text-xs uppercase not-italic tracking-wider text-text-muted">
             &mdash; LEF Counsel Instruction
           </cite>
         </blockquote>

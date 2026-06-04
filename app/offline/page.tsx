@@ -19,7 +19,7 @@ export default function OfflinePage() {
             <WifiOff size={24} className="text-text-muted" />
           </div>
           <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary">
+            <p className="text-xs uppercase tracking-[0.32em] text-text-secondary">
               No connection
             </p>
             <h1 className="font-display text-3xl tracking-tight md:text-4xl">
@@ -36,7 +36,7 @@ export default function OfflinePage() {
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2">
             <CheckCircle2 size={13} className="shrink-0 text-success" />
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-secondary">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-text-secondary">
               Always available — no prior visit needed
             </p>
           </div>
@@ -71,7 +71,7 @@ export default function OfflinePage() {
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2">
             <Clock size={13} className="shrink-0 text-gold" />
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-secondary">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-text-secondary">
               Available if visited before
             </p>
           </div>

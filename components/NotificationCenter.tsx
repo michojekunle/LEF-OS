@@ -145,7 +145,7 @@ export function NotificationCenter({ userId }: Props) {
       >
         <Bell size={14} className={unreadCount > 0 ? 'animate-wiggle text-gold' : ''} />
         {unreadCount > 0 && (
-          <span className="bg-accent-synthesis absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full border border-border text-[9px] font-bold text-red">
+          <span className="bg-accent-synthesis absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full border border-border text-xs font-bold text-red">
             {unreadCount}
           </span>
         )}
@@ -160,7 +160,7 @@ export function NotificationCenter({ userId }: Props) {
                 Notifications
               </span>
               {unreadCount > 0 && (
-                <span className="rounded border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] text-text-muted">
+                <span className="rounded border border-border bg-surface-2 px-1.5 py-0.5 text-xs text-text-muted">
                   {unreadCount} new
                 </span>
               )}
@@ -169,7 +169,7 @@ export function NotificationCenter({ userId }: Props) {
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllRead}
-                  className="flex items-center gap-1 text-[10px] text-text-secondary transition-colors hover:text-gold"
+                  className="flex items-center gap-1 text-xs text-text-secondary transition-colors hover:text-gold"
                   title="Mark all as read"
                 >
                   <CheckCheck size={12} />
@@ -179,7 +179,7 @@ export function NotificationCenter({ userId }: Props) {
               {notifications.length > 0 && (
                 <button
                   onClick={handleClearAll}
-                  className="text-[10px] text-text-muted transition-colors hover:text-red"
+                  className="text-xs text-text-muted transition-colors hover:text-red"
                 >
                   Clear all
                 </button>
@@ -219,9 +219,9 @@ export function NotificationCenter({ userId }: Props) {
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-xs font-semibold text-text-primary">{n.title}</span>
-                        <span className="font-mono text-[9px] text-text-muted">{timeStr}</span>
+                        <span className="font-mono text-xs text-text-muted">{timeStr}</span>
                       </div>
-                      <p className="text-[11px] leading-relaxed text-text-secondary">{n.message}</p>
+                      <p className="text-sm leading-relaxed text-text-secondary">{n.message}</p>
                     </div>
                   </li>
                 );

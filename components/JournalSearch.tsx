@@ -46,7 +46,7 @@ export function JournalSearch() {
           <X size={14} />
         </button>
       )}
-      {pending && <span className="font-mono text-[10px] tracking-wider text-text-muted">…</span>}
+      {pending && <span className="font-mono text-xs tracking-wider text-text-muted">…</span>}
     </div>
   );
 }

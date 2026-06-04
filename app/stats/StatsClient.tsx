@@ -102,7 +102,7 @@ export function StatsClient({ initialEntries }: Props) {
     <div className="mx-auto max-w-content animate-fade-in space-y-8 px-5 py-8 md:px-6">
       {/* HEADER */}
       <header>
-        <p className="mb-1 text-[10px] uppercase tracking-[0.32em] text-text-secondary">
+        <p className="mb-1 text-xs uppercase tracking-[0.32em] text-text-secondary">
           Academic Progress
         </p>
         <h1 className="font-display text-3xl tracking-tight md:text-4xl">Curriculum Statistics</h1>
@@ -174,7 +174,7 @@ export function StatsClient({ initialEntries }: Props) {
             />
           </div>
 
-          <div className="flex items-center justify-between border-t border-[var(--border-dim)] pt-4 text-[11px] text-text-secondary">
+          <div className="flex items-center justify-between border-t border-[var(--border-dim)] pt-4 text-sm text-text-secondary">
             <span>Minimum domain target: 122 completions</span>
             <span className="font-semibold text-gold">Learning in public</span>
           </div>
@@ -193,10 +193,10 @@ export function StatsClient({ initialEntries }: Props) {
           </div>
 
           <div className="space-y-2 py-6 text-center">
-            <p className="font-display text-5xl font-bold text-text-primary">
-              {thursdaysDone} <span className="text-lg text-text-muted">/ {thursdayCount}</span>
+            <p className="text-5xl font-bold tabular-nums text-text-primary">
+              {thursdaysDone} <span className="text-lg font-normal text-text-muted">/ {thursdayCount}</span>
             </p>
-            <p className="text-[10px] uppercase tracking-wider text-text-muted">
+            <p className="text-xs uppercase tracking-wider text-text-muted">
               Weekly Reviews Completed
             </p>
           </div>
@@ -272,13 +272,13 @@ function StatCard({
 }) {
   return (
     <div className="card space-y-2.5 p-5">
-      <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-text-secondary">
         {icon}
         {label}
       </div>
       <div>
-        <p className="font-display text-3xl font-semibold text-text-primary">{value}</p>
-        <p className="mt-0.5 text-[10px] text-text-muted">{sub}</p>
+        <p className="text-3xl font-bold tabular-nums text-text-primary">{value}</p>
+        <p className="mt-0.5 text-xs text-text-muted">{sub}</p>
       </div>
     </div>
   );
@@ -303,11 +303,11 @@ function MonthMetric({
       className={`bg-surface-2/20 flex flex-col justify-between gap-3 rounded-lg border p-4 ${color}`}
     >
       <div>
-        <p className="font-display text-xs font-semibold text-text-primary">{title}</p>
-        <p className="mt-0.5 text-[10px] text-text-muted">{days} syllabus days</p>
+        <p className="text-xs font-semibold text-text-primary">{title}</p>
+        <p className="mt-0.5 text-xs text-text-muted">{days} syllabus days</p>
       </div>
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-[10px] tracking-wide text-text-secondary">
+        <div className="flex items-center justify-between text-xs tracking-wide text-text-secondary">
           <span>
             Logged: {logged} / {days}
           </span>

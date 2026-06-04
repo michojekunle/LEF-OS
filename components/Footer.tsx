@@ -14,7 +14,7 @@ export function Footer() {
               <GitFork size={16} className="text-gold" />
             </div>
             <div>
-              <p className="font-display text-base leading-snug text-text-primary">
+              <p className="text-sm font-semibold leading-snug text-text-primary">
                 Contribute to this curriculum
               </p>
               <p className="mt-1 max-w-sm text-xs leading-relaxed text-text-secondary">
@@ -25,7 +25,7 @@ export function Footer() {
                 href={GITHUB_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-flex items-center gap-1.5 font-mono text-[11px] text-text-muted transition-colors hover:text-gold"
+                className="mt-2 inline-flex items-center gap-1.5 font-mono text-sm text-text-muted transition-colors hover:text-gold"
               >
                 github.com/michojekunle/lef-os
                 <ArrowUpRight size={11} />
@@ -116,10 +116,10 @@ export function Footer() {
         </div>
 
         <div className="mt-6 flex flex-col gap-2 border-t border-[var(--border-dim)] pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[11px] text-text-muted">
+          <p className="text-sm text-text-muted">
             © 2026 — built for personal use. Learned in public, shared without ego.
           </p>
-          <p className="text-[11px] text-text-muted">Code MIT licensed.</p>
+          <p className="text-sm text-text-muted">Code MIT licensed.</p>
         </div>
       </div>
     </footer>

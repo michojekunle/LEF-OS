@@ -17,3 +17,7 @@ public/worker-*.js.map
 public/fallback-*.js
 
 .npm-cache
+
+# Scratch directory
+scratch/
+

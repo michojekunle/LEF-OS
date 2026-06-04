@@ -16,7 +16,7 @@ export default async function ExportPage() {
   return (
     <div className="mx-auto max-w-content space-y-8 px-5 py-10 md:px-6">
       <header className="space-y-3">
-        <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary">Your archive</p>
+        <p className="text-xs uppercase tracking-[0.32em] text-text-secondary">Your archive</p>
         <h1 className="font-display text-3xl tracking-tight md:text-4xl">
           Export everything you've written.
         </h1>
@@ -82,7 +82,7 @@ function ExportCard({
           className="text-text-muted transition-colors group-hover:text-text-primary"
         />
       </div>
-      <h2 className="font-display text-lg">{title}</h2>
+      <h2 className="text-sm font-semibold text-text-primary">{title}</h2>
       <p className="text-sm leading-relaxed text-text-secondary">{description}</p>
     </a>
   );
