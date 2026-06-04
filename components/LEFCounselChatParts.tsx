@@ -304,6 +304,7 @@ type BodyProps = {
   onWordAdded?: () => void;
   animatedIndices: number[];
   onMessageAnimated: (idx: number) => void;
+  onRetry?: () => void;
 };
 
 export function ChatBody({
@@ -317,6 +318,7 @@ export function ChatBody({
   onWordAdded,
   animatedIndices,
   onMessageAnimated,
+  onRetry,
 }: BodyProps) {
   if (!userId) {
     return <GuestOnboarding />;
@@ -407,8 +409,17 @@ export function ChatBody({
       )}
 
       {error && (
-        <div className="bg-accent-synthesis/20 rounded-md border border-border p-2.5 text-xs leading-relaxed text-red">
-          {error}
+        <div className="bg-accent-synthesis/20 border-red/20 rounded-md border p-3 text-xs leading-relaxed text-red flex items-center justify-between gap-3">
+          <span className="flex-1">{error}</span>
+          {onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              className="bg-red/10 border-red/20 text-red hover:bg-red/20 rounded border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition-all shrink-0"
+            >
+              Retry
+            </button>
+          )}
         </div>
       )}
     </div>

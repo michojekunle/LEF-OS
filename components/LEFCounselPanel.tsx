@@ -23,6 +23,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
   const [error, setError] = useState<string | null>(null);
   const [animatedIndices, setAnimatedIndices] = useState<number[]>([]);
   const [retryCountdown, setRetryCountdown] = useState<number | null>(null);
+  const [lastQuery, setLastQuery] = useState<string>('');
 
   // Rate limit / retry countdown timer
   useEffect(() => {
@@ -119,6 +120,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
   async function handleSend(textToSend: string) {
     if (!textToSend.trim() || loading || !userId || retryCountdown !== null) return;
 
+    setLastQuery(textToSend); // Save query for manual retries
     didUserInteract.current = true;
     setError(null);
     const userMessage: Message = { role: 'user', content: textToSend };
@@ -138,6 +140,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
       });
 
       let errorMessage = 'Failed to fetch response';
+      let serverRetryAfter: number | null = null;
       try {
         const contentType = res.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
@@ -152,7 +155,12 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
             } else if (data && typeof data.message === 'string') {
               errorMessage = data.message;
             }
-            throw new Error(errorMessage);
+            if (data && typeof data.retryAfter === 'number') {
+              serverRetryAfter = data.retryAfter;
+            }
+            const err = new Error(errorMessage);
+            (err as any).retryAfter = serverRetryAfter;
+            throw err;
           }
           setMessages((prev) => [...prev, { role: 'assistant', content: data.text }]);
           setLoading(false);
@@ -168,10 +176,11 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
       }
     } catch (err) {
       console.error(err);
-      const isRate = err instanceof Error && (err.message === 'rate_limit' || err.message.includes('rate_limit') || err.message.includes('Resource has been exhausted'));
+      const isRate = err instanceof Error && (err.message === 'rate_limit' || err.message.includes('rate_limit') || err.message.includes('Resource has been exhausted') || (err as any).retryAfter);
       if (isRate) {
-        setRetryCountdown(15);
-        setError('Rate limit hit. Please wait 15s before trying again.');
+        const seconds = (err as any).retryAfter || 15;
+        setRetryCountdown(seconds);
+        setError(`Rate limit hit. Please wait ${seconds}s before trying again.`);
         setLoading(true); // keep loading spin active
       } else {
         setError(err instanceof Error ? err.message : 'Something went wrong.');
@@ -179,6 +188,17 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
       }
     }
   }
+
+  const handleRetry = () => {
+    if (!lastQuery) return;
+    setRetryCountdown(null);
+    setError(null);
+    setLoading(false);
+    // Execute on next tick to bypass early-return guards
+    setTimeout(() => {
+      handleSend(lastQuery);
+    }, 0);
+  };
 
   async function handleReset() {
     setMessages([]);
@@ -238,7 +258,6 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
               </div>
             </header>
 
-            {/* Chat Body */}
             <ChatBody
               messages={messages}
               starterPills={starterPills}
@@ -252,6 +271,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
               onMessageAnimated={(idx) => {
                 setAnimatedIndices((prev) => [...prev, idx]);
               }}
+              onRetry={lastQuery ? handleRetry : undefined}
             />
 
             {/* Input Bar */}
@@ -324,6 +344,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
             onMessageAnimated={(idx) => {
               setAnimatedIndices((prev) => [...prev, idx]);
             }}
+            onRetry={lastQuery ? handleRetry : undefined}
           />
           {userId && (
             <ChatInput
