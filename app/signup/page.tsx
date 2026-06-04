@@ -7,7 +7,7 @@ export const metadata = { title: 'Sign up — LEF' };
 export default function SignUpPage() {
   return (
     <div className="mx-auto max-w-md px-5 py-16">
-      <p className="mb-3 text-[10px] uppercase tracking-[0.32em] text-text-secondary">
+      <p className="mb-3 text-xs uppercase tracking-[0.32em] text-text-secondary">
         Begin in public
       </p>
       <h1 className="mb-6 font-display text-3xl tracking-tight md:text-4xl">Sign up</h1>

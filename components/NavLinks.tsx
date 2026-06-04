@@ -96,7 +96,7 @@ export function NavLinks() {
                   }`}
                 >
                   <span className="font-medium">{l.label}</span>
-                  <span className="text-[11px] text-text-muted">{l.desc}</span>
+                  <span className="text-sm text-text-muted">{l.desc}</span>
                 </Link>
               );
             })}

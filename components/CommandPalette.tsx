@@ -327,7 +327,7 @@ function Palette({ onClose }: { onClose: () => void }) {
               <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 1 1 1.06 1.06L9.06 8l3.22 3.22a.749.749 0 1 1-1.06 1.06L8 9.06l-3.22 3.22a.749.749 0 1 1-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06z" />
             </svg>
           </button>
-          <kbd className="hidden rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-text-muted md:inline">
+          <kbd className="hidden rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-xs text-text-muted md:inline">
             ESC
           </kbd>
         </div>
@@ -335,7 +335,7 @@ function Palette({ onClose }: { onClose: () => void }) {
         <ul ref={listRef} className="max-h-[45vh] overflow-y-auto py-1 md:max-h-[60vh]">
           {grouped.map((g) => (
             <li key={g.group}>
-              <div className="px-4 py-1.5 text-[10px] uppercase tracking-[0.18em] text-text-muted">
+              <div className="px-4 py-1.5 text-xs uppercase tracking-[0.18em] text-text-muted">
                 {g.group}
               </div>
               <ul>
@@ -360,7 +360,7 @@ function Palette({ onClose }: { onClose: () => void }) {
                         />
                         <span className="flex-1">{cmd.label}</span>
                         {cmd.hint && (
-                          <span className="hidden text-[10px] text-text-muted sm:inline">
+                          <span className="hidden text-xs text-text-muted sm:inline">
                             {cmd.hint}
                           </span>
                         )}
@@ -375,7 +375,7 @@ function Palette({ onClose }: { onClose: () => void }) {
             <li className="px-4 py-8 text-center text-sm text-text-secondary">Nothing matches.</li>
           )}
         </ul>
-        <div className="flex items-center justify-between border-t border-border px-4 py-2 text-[10px] text-text-muted">
+        <div className="flex items-center justify-between border-t border-border px-4 py-2 text-xs text-text-muted">
           <span className="hidden md:inline">↑↓ navigate · ↵ run · ESC close</span>
           <span className="md:hidden">Tap to run a command</span>
           <span className="hidden md:inline">⌘K to toggle</span>
@@ -408,7 +408,7 @@ export function CommandPaletteTrigger({
         <>
           <Search size={14} className="lg:h-3 lg:w-3" />
           <span className="hidden lg:inline">Search · </span>
-          <kbd className="hidden font-mono text-[10px] text-text-muted lg:inline">⌘K</kbd>
+          <kbd className="hidden font-mono text-xs text-text-muted lg:inline">⌘K</kbd>
         </>
       )}
     </button>

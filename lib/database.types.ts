@@ -136,6 +136,68 @@ export type InAppNotificationRow = {
   created_at: string;
 };
 
+export type ResourceType = 'video' | 'article' | 'tool' | 'other';
+export type SubmissionStatus = 'pending' | 'approved' | 'rejected' | 'flagged';
+
+export type ResourceSubmission = {
+  id: string;
+  day_number: number;
+  domain: LefDomain;
+  type: ResourceType;
+  title: string;
+  url: string;
+  note: string | null;
+  submitted_by: string | null;
+  status: SubmissionStatus;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+};
+
+export type QuestionAnswer = {
+  id: string;
+  user_id: string;
+  day_number: number;
+  domain: LefDomain;
+  question_index: number;
+  answer: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ContentFlag = {
+  id: string;
+  url: string;
+  title: string;
+  day_number: number | null;
+  domain: LefDomain | null;
+  content_type: 'video' | 'article';
+  flagged_by: string | null;
+  reason: string | null;
+  resolved: boolean;
+  resolved_by: string | null;
+  resolved_at: string | null;
+  created_at: string;
+};
+
+export type ResourceFlag = {
+  id: string;
+  submission_id: string;
+  flagged_by: string | null;
+  fingerprint: string | null;
+  reason: string | null;
+  created_at: string;
+};
+
+export type AiChatMemoryRow = {
+  id: string;
+  user_id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  day_context: number | null;
+  created_at: string;
+};
+
 /**
  * The subscription JSONB column stores the output of PushSubscription.toJSON().
  * The browser's own type (PushSubscriptionJSON) uses optional fields, so we
@@ -232,6 +294,45 @@ export type Database = {
         Update: Partial<PushSubscriptionRow>;
         Relationships: [];
       };
+      ai_chat_memory: {
+        Row: AiChatMemoryRow;
+        Insert: Omit<Insertable<AiChatMemoryRow, 'day_context'>, 'updated_at'>;
+        Update: Partial<AiChatMemoryRow>;
+        Relationships: [];
+      };
+      question_answers: {
+        Row: QuestionAnswer;
+        Insert: Insertable<QuestionAnswer>;
+        Update: Partial<QuestionAnswer>;
+        Relationships: [];
+      };
+      content_flags: {
+        Row: ContentFlag;
+        Insert: Omit<
+          Insertable<ContentFlag, 'day_number' | 'domain' | 'flagged_by' | 'reason' | 'resolved' | 'resolved_by' | 'resolved_at'>,
+          'updated_at'
+        >;
+        Update: Partial<ContentFlag>;
+        Relationships: [];
+      };
+      resource_flags: {
+        Row: ResourceFlag;
+        Insert: Omit<Insertable<ResourceFlag, 'flagged_by' | 'fingerprint' | 'reason'>, 'updated_at'>;
+        Update: never;
+        Relationships: [];
+      };
+      resource_submissions: {
+        Row: ResourceSubmission;
+        Insert: Omit<
+          Insertable<
+            ResourceSubmission,
+            'type' | 'note' | 'submitted_by' | 'status' | 'reviewed_by' | 'reviewed_at'
+          >,
+          'updated_at'
+        >;
+        Update: Partial<ResourceSubmission>;
+        Relationships: [];
+      };
     };
     Views: {
       journal_reaction_counts: {
@@ -254,6 +355,8 @@ export type Database = {
     Enums: {
       lef_domain: LefDomain;
       reaction_kind: ReactionKind;
+      resource_type: ResourceType;
+      submission_status: SubmissionStatus;
     };
   };
 };

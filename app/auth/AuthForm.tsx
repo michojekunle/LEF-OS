@@ -97,7 +97,7 @@ export function AuthForm({ mode }: Props) {
         <div>
           <label
             htmlFor="name"
-            className="mb-1.5 block text-[10px] uppercase tracking-[0.18em] text-text-secondary"
+            className="mb-1.5 block text-xs uppercase tracking-[0.18em] text-text-secondary"
           >
             Display name
           </label>
@@ -114,7 +114,7 @@ export function AuthForm({ mode }: Props) {
       <div>
         <label
           htmlFor="email"
-          className="mb-1.5 block text-[10px] uppercase tracking-[0.18em] text-text-secondary"
+          className="mb-1.5 block text-xs uppercase tracking-[0.18em] text-text-secondary"
         >
           Email
         </label>
@@ -131,7 +131,7 @@ export function AuthForm({ mode }: Props) {
       <div>
         <label
           htmlFor="password"
-          className="mb-1.5 block text-[10px] uppercase tracking-[0.18em] text-text-secondary"
+          className="mb-1.5 block text-xs uppercase tracking-[0.18em] text-text-secondary"
         >
           Password
         </label>
@@ -172,7 +172,7 @@ export function AuthForm({ mode }: Props) {
 
       <div className="relative flex items-center py-2">
         <div className="flex-grow border-t border-border"></div>
-        <span className="mx-4 flex-shrink text-[10px] uppercase tracking-[0.18em] text-text-muted">
+        <span className="mx-4 flex-shrink text-xs uppercase tracking-[0.18em] text-text-muted">
           or
         </span>
         <div className="flex-grow border-t border-border"></div>

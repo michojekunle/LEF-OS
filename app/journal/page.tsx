@@ -146,7 +146,7 @@ export default async function JournalPage({
   return (
     <div className="mx-auto max-w-content px-5 py-10 md:px-6">
       <header className="mb-8 space-y-3">
-        <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary">The Journal</p>
+        <p className="text-xs uppercase tracking-[0.32em] text-text-secondary">The Journal</p>
         <h1 className="font-display text-3xl tracking-tight md:text-4xl">
           Public insights, one day at a time.
         </h1>
@@ -204,7 +204,7 @@ export default async function JournalPage({
           ) : (
             <span />
           )}
-          <span className="text-[10px] uppercase tracking-[0.18em] text-text-muted">
+          <span className="text-xs uppercase tracking-[0.18em] text-text-muted">
             Page {page + 1}
           </span>
           {hasNext ? (

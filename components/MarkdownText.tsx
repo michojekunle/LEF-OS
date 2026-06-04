@@ -31,7 +31,7 @@ export function MarkdownText({ text }: Props) {
         return (
           <code
             key={i}
-            className="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-gold"
+            className="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-xs text-gold"
           >
             {token.slice(1, -1)}
           </code>
@@ -94,7 +94,7 @@ export function MarkdownText({ text }: Props) {
           key={`table-wrapper-${blocks.length}`}
           className="bg-surface-2/20 my-3 w-full overflow-x-auto rounded-lg border border-border"
         >
-          <table className="w-full border-collapse text-left text-[11px] text-text-secondary">
+          <table className="w-full border-collapse text-left text-sm text-text-secondary">
             <thead>
               <tr className="bg-surface-2/50 border-b border-border">
                 {currentTable.headers.map((h, idx) => (
@@ -148,7 +148,7 @@ export function MarkdownText({ text }: Props) {
           ? 'text-sm font-semibold text-text-primary mt-4 mb-2 first:mt-0 font-display'
           : level === 2
             ? 'text-xs font-semibold text-text-primary mt-3 mb-2 first:mt-0 font-display border-b border-border pb-1'
-            : 'text-[11px] font-semibold text-gold mt-2 mb-1.5 first:mt-0 font-display';
+            : 'text-sm font-semibold text-gold mt-2 mb-1.5 first:mt-0 font-display';
 
       const HeadingTag = `h${Math.min(level, 6)}` as keyof JSX.IntrinsicElements;
       blocks.push(

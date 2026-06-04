@@ -48,7 +48,7 @@ export function TourProgress() {
           borderRadius: '8px',
         }}
       >
-        <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-text-secondary">
+        <p className="font-mono text-xs uppercase tracking-[0.22em] text-text-secondary">
           Step {currentIndex + 1} of {TOTAL_TOUR_STEPS - 1}
         </p>
         <div

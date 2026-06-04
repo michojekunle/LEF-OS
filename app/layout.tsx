@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Playfair_Display, DM_Sans } from 'next/font/google';
+import { Montserrat, Lexend } from 'next/font/google';
 import './globals.css';
 import { Nav } from '@/components/Nav';
 import { Footer } from '@/components/Footer';
@@ -15,15 +15,19 @@ import { supabaseServer } from '@/lib/supabase-server';
 import { getDayNumber, clampDay } from '@/lib/utils';
 import { LEFCounselPanel } from '@/components/LEFCounselPanel';
 
-const playfair = Playfair_Display({
+// Montserrat: geometric sans for display headings — authoritative, editorial, strong
+const montserrat = Montserrat({
   subsets: ['latin'],
-  variable: '--font-playfair',
+  variable: '--font-display',
+  weight: ['400', '500', '600', '700', '800', '900'],
   display: 'swap',
 });
 
-const dmSans = DM_Sans({
+// Lexend: designed by reading research to reduce visual stress — ideal for dense study content
+const lexend = Lexend({
   subsets: ['latin'],
-  variable: '--font-dm-sans',
+  variable: '--font-body',
+  weight: ['300', '400', '500', '600', '700'],
   display: 'swap',
 });
 
@@ -118,7 +122,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   };
 
   return (
-    <html lang="en" className={`${playfair.variable} ${dmSans.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${montserrat.variable} ${lexend.variable}`} suppressHydrationWarning>
       <head>
         {/* Prevent flash of wrong theme — must run synchronously before paint */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

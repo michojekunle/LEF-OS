@@ -211,7 +211,7 @@ export function TourComplete() {
         </p>
 
         <p
-          className="mb-6 font-mono text-[10px] uppercase tracking-[0.22em]"
+          className="mb-6 font-mono text-xs uppercase tracking-[0.22em]"
           style={{ color: 'var(--text-muted)' }}
         >
           Tour complete. Restart it anytime from the footer.

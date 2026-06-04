@@ -15,6 +15,12 @@ import { supabaseServer } from '@/lib/supabase-server';
 import type { DailyEntry, DayNote, Question } from '@/lib/database.types';
 import { DayLogPanel } from './DayLogPanel';
 import { LEFCounselPanel } from '@/components/LEFCounselPanel';
+import { EnrichedContentPanel } from '@/components/EnrichedContentPanel';
+import { CommunityResources } from '@/components/CommunityResources';
+import { ResourceSubmitForm } from '@/components/ResourceSubmitForm';
+import type { ResourceSubmission } from '@/lib/database.types';
+import fs from 'fs';
+import path from 'path';
 
 type Params = { n: string };
 
@@ -45,19 +51,46 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
     ReturnType<typeof findDayMeta>
   >;
 
+  let enrichedData = { law: null, economics: null, finance: null };
+  try {
+    const p = path.join(process.cwd(), 'data', 'enriched-content.json');
+    if (fs.existsSync(p)) {
+      const allData = JSON.parse(fs.readFileSync(p, 'utf-8'));
+      enrichedData = {
+        law: allData[`day_${day}_law`] || null,
+        economics: allData[`day_${day}_economics`] || null,
+        finance: allData[`day_${day}_finance`] || null,
+      };
+    }
+  } catch {
+    // ignore
+  }
+
   let userId: string | null = null;
   let existing: DailyEntry | null = null;
   let notes: DayNote[] = [];
   let questions: Question[] = [];
+  let communityResources: ResourceSubmission[] = [];
+  let savedAnswers: Record<string, string> = {};
 
   if (hasSupabaseConfig()) {
     try {
       const sb = await supabaseServer();
       const { data: u } = await sb.auth.getUser();
+
+      // Community resources visible to everyone (anon-safe via RLS)
+      const { data: cr } = await sb
+        .from('resource_submissions')
+        .select('*')
+        .eq('day_number', day)
+        .eq('status', 'approved')
+        .order('created_at', { ascending: true });
+      communityResources = (cr as ResourceSubmission[]) ?? [];
+
       if (u.user) {
         userId = u.user.id;
         const iso = date.toISOString().slice(0, 10);
-        const [{ data: e }, { data: n }, { data: q }] = await Promise.all([
+        const [{ data: e }, { data: n }, { data: q }, { data: qa }] = await Promise.all([
           sb
             .from('daily_entries')
             .select('*')
@@ -71,10 +104,21 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
             .eq('user_id', u.user.id)
             .eq('day_number', day)
             .order('created_at', { ascending: false }),
+          sb
+            .from('question_answers')
+            .select('domain, question_index, answer')
+            .eq('user_id', u.user.id)
+            .eq('day_number', day),
         ]);
         existing = (e as DailyEntry) ?? null;
         notes = (n as DayNote[]) ?? [];
         questions = (q as Question[]) ?? [];
+        // Build lookup map: `${domain}_${index}` → answer
+        savedAnswers = Object.fromEntries(
+          ((qa ?? []) as { domain: string; question_index: number; answer: string }[]).map(
+            (row) => [`${row.domain}_${row.question_index}`, row.answer],
+          ),
+        );
       }
     } catch {
       // anonymous view still works
@@ -108,7 +152,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
       <header className="space-y-3">
         <Link
           href="/roadmap"
-          className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-text-secondary hover:text-text-primary"
+          className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.18em] text-text-secondary hover:text-text-primary"
         >
           <ArrowLeft size={11} /> Roadmap
         </Link>
@@ -141,7 +185,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
               <DomainBadge domain={d} />
               {m ? (
                 <p
-                  className={`font-display text-lg leading-snug ${
+                  className={`text-base font-medium leading-snug ${
                     m.isReview ? 'review-day' : 'text-text-primary'
                   }`}
                 >
@@ -153,7 +197,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
                 </p>
               )}
               {m && (
-                <p className="mt-auto text-[10px] uppercase tracking-[0.18em] text-text-muted">
+                <p className="mt-auto text-xs uppercase tracking-[0.18em] text-text-muted">
                   {m.weekTitle}
                 </p>
               )}
@@ -161,6 +205,14 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
           );
         })}
       </section>
+
+      {/* ENRICHED CONTENT (Study Targets & Review) */}
+      <EnrichedContentPanel
+        day={day}
+        data={enrichedData}
+        userId={userId ?? undefined}
+        savedAnswers={savedAnswers}
+      />
 
       {/* RECOMMENDED RESOURCES */}
       {month && (
@@ -183,7 +235,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
 
               return (
                 <div key={d} className="space-y-2">
-                  <span className="block text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+                  <span className="block text-xs font-semibold uppercase tracking-wider text-text-muted">
                     {d === 'law' ? '⚖️ Law' : d === 'economics' ? '📊 Economics' : '💰 Finance'}{' '}
                     Resources
                   </span>
@@ -200,7 +252,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
                               className="hover:text-gold/80 inline-flex items-center gap-1 leading-normal text-gold transition-colors hover:underline"
                             >
                               {res}
-                              <span className="text-[9px] opacity-75">↗</span>
+                              <span className="text-xs opacity-75">↗</span>
                             </a>
                           ) : (
                             <span className="text-text-secondary">{res}</span>
@@ -213,6 +265,19 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
               );
             })}
           </div>
+        </section>
+      )}
+
+      {/* Community-submitted resources */}
+      <CommunityResources resources={communityResources} userId={userId ?? undefined} />
+
+      {/* Submit a resource */}
+      {hasSupabaseConfig() && (
+        <section className="flex items-center justify-between rounded-lg border border-dashed border-[var(--border-subtle)] px-5 py-4">
+          <p className="text-xs text-text-secondary">
+            Know a better resource for today's topics?
+          </p>
+          <ResourceSubmitForm day={day} userId={userId ?? undefined} />
         </section>
       )}
 

@@ -88,13 +88,13 @@ export default async function PublicProfilePage({ params }: { params: Promise<Pa
     <div className="mx-auto max-w-content space-y-8 px-5 py-10 md:px-6">
       <Link
         href="/journal"
-        className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-text-secondary hover:text-text-primary"
+        className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.18em] text-text-secondary hover:text-text-primary"
       >
         <ArrowLeft size={11} /> Journal
       </Link>
 
       <header className="space-y-3">
-        <p className="text-[10px] uppercase tracking-[0.32em] text-text-secondary">
+        <p className="text-xs uppercase tracking-[0.32em] text-text-secondary">
           Public profile
         </p>
         <h1 className="font-display text-4xl tracking-tight md:text-5xl">
@@ -118,7 +118,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<Pa
       )}
 
       <section className="space-y-4">
-        <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+        <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">
           Public insights · {entries.length}
         </h2>
         {entries.length === 0 ? (
@@ -159,13 +159,13 @@ function StatTile({
 }) {
   return (
     <div className="card p-4">
-      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+      <div className="flex items-center gap-1.5 text-xs uppercase tracking-[0.18em] text-text-secondary">
         {icon}
         {label}
       </div>
-      <p className="mt-2 font-display text-2xl">
+      <p className="mt-2 text-2xl font-bold tabular-nums">
         {value}
-        {hint && <span className="ml-1 text-xs text-text-muted">{hint}</span>}
+        {hint && <span className="ml-1 text-xs font-normal text-text-muted">{hint}</span>}
       </p>
     </div>
   );

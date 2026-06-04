@@ -25,14 +25,14 @@ export function DayCard({ domain, day, completed, onToggle }: Props) {
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <DomainBadge domain={domain} size="md" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted">
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-text-muted">
             {meta.weekNumber}
           </span>
         </div>
 
         <div>
           <p
-            className={`font-display text-[1.1rem] leading-snug ${meta.isReview ? 'review-day text-gold' : 'text-text-primary'}`}
+            className={`text-sm font-medium leading-snug ${meta.isReview ? 'review-day text-gold' : 'text-text-primary'}`}
           >
             {meta.topic}
           </p>

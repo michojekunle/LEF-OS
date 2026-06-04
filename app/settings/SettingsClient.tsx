@@ -270,7 +270,7 @@ export function SettingsClient({
   return (
     <div className="mx-auto max-w-content animate-fade-in space-y-8 px-5 py-8 md:px-6">
       <header>
-        <p className="mb-1 text-[10px] uppercase tracking-[0.32em] text-text-secondary">
+        <p className="mb-1 text-xs uppercase tracking-[0.32em] text-text-secondary">
           Account & Preferences
         </p>
         <h1 className="font-display text-3xl tracking-tight md:text-4xl">Settings</h1>
@@ -312,7 +312,7 @@ export function SettingsClient({
               <div className="space-y-1.5">
                 <label
                   htmlFor="timezone"
-                  className="block text-[10px] uppercase tracking-[0.18em] text-text-secondary"
+                  className="block text-xs uppercase tracking-[0.18em] text-text-secondary"
                 >
                   Timezone
                 </label>
@@ -376,7 +376,7 @@ export function SettingsClient({
                             {reminder.title}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider text-text-secondary">
+                        <div className="flex items-center gap-3 text-xs uppercase tracking-wider text-text-secondary">
                           <span className="flex items-center gap-1">
                             {reminder.delivery_type === 'email' ||
                             reminder.delivery_type === 'both' ? (
@@ -429,7 +429,7 @@ export function SettingsClient({
                 <div className="space-y-1">
                   <label
                     htmlFor="rem-title"
-                    className="text-[9px] uppercase tracking-wider text-text-secondary"
+                    className="text-xs uppercase tracking-wider text-text-secondary"
                   >
                     Alert Title
                   </label>
@@ -448,7 +448,7 @@ export function SettingsClient({
                 <div className="space-y-1">
                   <label
                     htmlFor="rem-time"
-                    className="text-[9px] uppercase tracking-wider text-text-secondary"
+                    className="text-xs uppercase tracking-wider text-text-secondary"
                   >
                     Trigger Time
                   </label>
@@ -466,7 +466,7 @@ export function SettingsClient({
                 <div className="space-y-1">
                   <label
                     htmlFor="rem-type"
-                    className="text-[9px] uppercase tracking-wider text-text-secondary"
+                    className="text-xs uppercase tracking-wider text-text-secondary"
                   >
                     Delivery Method
                   </label>
@@ -541,7 +541,7 @@ export function SettingsClient({
               </button>
             )}
 
-            <div className="space-y-2 border-t border-[var(--border-dim)] pt-4 text-[10px] text-text-muted">
+            <div className="space-y-2 border-t border-[var(--border-dim)] pt-4 text-xs text-text-muted">
               <p>
                 Web Push relies on browser service workers. If notifications are not displaying,
                 check:

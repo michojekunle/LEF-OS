@@ -20,10 +20,10 @@ export function WeekAccordion({ week, defaultOpen = false }: Props) {
         aria-expanded={open}
       >
         <span className="flex items-baseline gap-3">
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted">
+          <span className="font-mono text-xs uppercase tracking-[0.18em] text-text-muted">
             W{week.weekNumber}
           </span>
-          <span className="font-display text-base text-text-primary">{week.title}</span>
+          <span className="text-sm font-semibold text-text-primary">{week.title}</span>
         </span>
         <ChevronDown
           size={16}
@@ -37,7 +37,7 @@ export function WeekAccordion({ week, defaultOpen = false }: Props) {
               key={d.day}
               className="flex items-start gap-4 text-base leading-snug max-[320px]:mb-6 max-[320px]:flex-col max-[320px]:gap-2"
             >
-              <span className="inline-flex shrink-0 items-center justify-center rounded-md bg-surface-2 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-text-primary shadow-sm max-[320px]:justify-start">
+              <span className="inline-flex shrink-0 items-center justify-center rounded-md bg-surface-2 px-2 py-1 font-mono text-xs font-bold uppercase tracking-wider text-text-primary shadow-sm max-[320px]:justify-start">
                 Day {d.day}
               </span>
               <span

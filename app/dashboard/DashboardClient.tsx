@@ -126,7 +126,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
       {/* HEADER */}
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="mb-1 text-[10px] uppercase tracking-[0.32em] text-text-secondary">
+          <p className="mb-1 text-xs uppercase tracking-[0.32em] text-text-secondary">
             Hi {displayName ?? email.split('@')[0]}
           </p>
           <div className="mt-1 flex flex-wrap items-center gap-4">
@@ -139,13 +139,13 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
             <div className="flex max-w-[200px] gap-0.5 rounded-lg border border-border bg-surface-2 p-0.5">
               <button
                 onClick={() => setSelectedDayOffset(0)}
-                className={`rounded-md px-3 py-1 text-[11px] font-medium transition-all duration-150 ${selectedDayOffset === 0 ? 'border border-[var(--border-dim)] bg-surface text-gold shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
+                className={`rounded-md px-3 py-1 text-sm font-medium transition-all duration-150 ${selectedDayOffset === 0 ? 'border border-[var(--border-dim)] bg-surface text-gold shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
               >
                 Today
               </button>
               <button
                 onClick={() => setSelectedDayOffset(-1)}
-                className={`rounded-md px-3 py-1 text-[11px] font-medium transition-all duration-150 ${selectedDayOffset === -1 ? 'border border-[var(--border-dim)] bg-surface text-gold shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
+                className={`rounded-md px-3 py-1 text-sm font-medium transition-all duration-150 ${selectedDayOffset === -1 ? 'border border-[var(--border-dim)] bg-surface text-gold shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
               >
                 Yesterday
               </button>
@@ -162,7 +162,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
 
       {/* TODAY TOPICS */}
       <section className="space-y-3" data-tour="today-topics">
-        <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+        <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">
           {selectedDayOffset === 0 ? "Today's study" : "Yesterday's study"}
         </h2>
         <div className="grid gap-3 md:grid-cols-3">
@@ -179,7 +179,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
 
       {/* LOG FORM */}
       <section className="space-y-3" data-tour="daily-log-form">
-        <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+        <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">
           {existing
             ? `Edit ${selectedDayOffset === 0 ? "today's" : "yesterday's"} log`
             : `Day ${activeDay} is waiting. What did you study?`}
@@ -216,7 +216,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
       </section>
 
       <section className="card space-y-4 p-5" data-tour="domain-progress">
-        <h3 className="font-display text-base">Per-domain progress</h3>
+        <h3 className="text-sm font-semibold text-text-primary">Per-domain progress</h3>
         <ProgressBar value={lawDone} max={TOTAL_CALENDAR_DAYS} label="⚖️ Law" accent="gold" />
         <ProgressBar
           value={econDone}
@@ -232,7 +232,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
       <ThursdayTracker entries={entries} />
 
       <section className="space-y-3">
-        <h2 className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+        <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">
           Entry history
         </h2>
         {entries.length === 0 ? (
@@ -266,13 +266,13 @@ function Stat({
 }) {
   return (
     <div className="card p-4">
-      <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-text-secondary">
         {icon}
         {label}
       </div>
-      <p className="mt-2 font-display text-3xl">
+      <p className="mt-2 text-3xl font-bold tabular-nums">
         {value}
-        {sub && <span className="text-base text-text-muted"> {sub}</span>}
+        {sub && <span className="text-base font-normal text-text-muted"> {sub}</span>}
       </p>
     </div>
   );
@@ -283,8 +283,8 @@ function StreakBadge({ streak }: { streak: number }) {
     <div className="card-2 inline-flex items-center gap-3 px-4 py-3">
       <Flame size={18} className={streak > 0 ? 'text-gold' : 'text-text-muted'} />
       <div>
-        <p className="text-[10px] uppercase tracking-[0.18em] text-text-secondary">Streak</p>
-        <p className="font-display text-xl leading-none">
+        <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">Streak</p>
+        <p className="text-xl font-bold leading-none tabular-nums">
           {streak > 0 ? `${streak} days` : 'Start today'}
         </p>
       </div>
@@ -297,7 +297,7 @@ function ThursdayTracker({ entries }: { entries: DailyEntry[] }) {
   const byDate = new Map(entries.map((e) => [e.entry_date, e]));
   return (
     <section className="card p-5">
-      <h3 className="mb-3 font-display text-base">Weekly video review · Thursdays</h3>
+      <h3 className="mb-3 text-sm font-semibold text-text-primary">Weekly video review · Thursdays</h3>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(96px,1fr))] gap-2">
         {thursdays.map((t) => {
           const e = byDate.get(isoDate(t.date));
@@ -307,7 +307,7 @@ function ThursdayTracker({ entries }: { entries: DailyEntry[] }) {
           return (
             <div
               key={t.day}
-              className={`flex items-center justify-between gap-2 rounded-md border px-2.5 py-2 text-[11px] transition-colors ${
+              className={`flex items-center justify-between gap-2 rounded-md border px-2.5 py-2 text-sm transition-colors ${
                 done ? 'border-gold/40 bg-accent-law' : 'border-border bg-surface'
               }`}
             >

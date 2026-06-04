@@ -38,7 +38,7 @@ export function MobileTabBar() {
               >
                 <Icon size={20} strokeWidth={active ? 2 : 1.75} />
                 <span
-                  className={`text-[9px] font-medium tracking-wide ${active ? 'text-gold' : ''}`}
+                  className={`text-xs font-medium tracking-wide ${active ? 'text-gold' : ''}`}
                 >
                   {label}
                 </span>
@@ -54,7 +54,7 @@ export function MobileTabBar() {
             className="mx-0.5 flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-md text-text-secondary transition-colors active:text-text-primary"
           >
             <Search size={20} strokeWidth={1.75} />
-            <span className="text-[9px] font-medium tracking-wide">Search</span>
+            <span className="text-xs font-medium tracking-wide">Search</span>
           </button>
         </li>
       </ul>

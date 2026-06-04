@@ -94,14 +94,14 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
         <button
           type="button"
           onClick={markAll}
-          className="text-[10px] uppercase tracking-[0.18em] text-text-secondary transition-colors hover:text-gold"
+          className="text-xs uppercase tracking-[0.18em] text-text-secondary transition-colors hover:text-gold"
         >
           Mark all 3
         </button>
       </div>
 
       <fieldset disabled={!studied} className={!studied ? 'pointer-events-none opacity-50' : ''}>
-        <legend className="mb-2 text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+        <legend className="mb-2 text-xs uppercase tracking-[0.18em] text-text-secondary">
           Domains completed
         </legend>
         <div className="flex flex-wrap gap-3">
@@ -112,7 +112,7 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
       </fieldset>
 
       <div>
-        <div className="mb-2 text-[10px] uppercase tracking-[0.18em] text-text-secondary">
+        <div className="mb-2 text-xs uppercase tracking-[0.18em] text-text-secondary">
           Depth — how deeply did you study?
         </div>
         <div className="flex items-center gap-1">
@@ -134,7 +134,7 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
       <div>
         <label
           htmlFor="journal"
-          className="mb-2 block text-[10px] uppercase tracking-[0.18em] text-text-secondary"
+          className="mb-2 block text-xs uppercase tracking-[0.18em] text-text-secondary"
         >
           What did I learn today?
         </label>
@@ -146,7 +146,7 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
           rows={4}
           placeholder="Private. For your future self."
         />
-        <div className="mt-1 text-right text-[10px] tabular-nums text-text-muted">
+        <div className="mt-1 text-right text-xs tabular-nums text-text-muted">
           {journal.length} / {MAX_JOURNAL}
         </div>
       </div>
@@ -154,7 +154,7 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
       <div>
         <label
           htmlFor="insight"
-          className="mb-2 block text-[10px] uppercase tracking-[0.18em] text-text-secondary"
+          className="mb-2 block text-xs uppercase tracking-[0.18em] text-text-secondary"
         >
           My insight to share
         </label>
@@ -177,7 +177,7 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
             />
             Make public on /journal
           </label>
-          <div className="text-[10px] tabular-nums text-text-muted">
+          <div className="text-xs tabular-nums text-text-muted">
             {insight.length} / {MAX_INSIGHT}
           </div>
         </div>

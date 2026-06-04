@@ -105,7 +105,7 @@ export function TourWelcome() {
 
         {/* Note */}
         <p
-          className="mb-6 text-center font-mono text-[10px] uppercase tracking-[0.22em]"
+          className="mb-6 text-center font-mono text-xs uppercase tracking-[0.22em]"
           style={{ color: 'var(--text-muted)' }}
         >
           Takes about 90 seconds · You can stop anytime
