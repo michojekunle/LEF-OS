@@ -52,3 +52,21 @@ export function requirePublicEnv(): EnvShape {
 export function hasSupabaseConfig(): boolean {
   return getPublicEnv() !== null;
 }
+
+/**
+ * Derives the canonical site URL from environment variables.
+ * Handles NEXT_PUBLIC_SITE_URL (with or without protocol), VERCEL_URL,
+ * and falls back to the request origin (useful in API routes / cron jobs).
+ *
+ * @param requestOrigin - Optional request origin from `new URL(request.url).origin`
+ */
+export function getSiteUrl(requestOrigin?: string): string {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL;
+  if (configured) {
+    return configured.startsWith('http') ? configured : `https://${configured}`;
+  }
+  const vercel = process.env.VERCEL_URL;
+  if (vercel) return `https://${vercel}`;
+  if (requestOrigin) return requestOrigin;
+  return 'http://localhost:3001';
+}

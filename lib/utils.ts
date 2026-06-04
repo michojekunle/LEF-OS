@@ -69,10 +69,27 @@ export function dateFromDayNumber(day: number): Date {
   return new Date(START_DATE.getTime() + (day - 1) * MS_PER_DAY);
 }
 
-export function getOverallProgress(entries: DailyEntry[]): number {
-  return entries.filter((e) => e.law_completed || e.economics_completed || e.finance_completed)
-    .length;
+/**
+ * Returns true if at least one domain was completed on this entry.
+ * Single source of truth for the "any domain done" predicate.
+ */
+export function isEntryComplete(
+  e: Pick<DailyEntry, 'law_completed' | 'economics_completed' | 'finance_completed'>,
+): boolean {
+  return e.law_completed || e.economics_completed || e.finance_completed;
 }
+
+export function getOverallProgress(entries: DailyEntry[]): number {
+  return entries.filter(isEntryComplete).length;
+}
+
+/** Month day-number boundaries for the 4-month curriculum. */
+export const MONTH_BOUNDARIES = [
+  { month: 1 as const, start: 1, end: 28 },
+  { month: 2 as const, start: 29, end: 56 },
+  { month: 3 as const, start: 57, end: 84 },
+  { month: 4 as const, start: 85, end: TOTAL_CALENDAR_DAYS },
+] as const;
 
 export function getDomainProgress(entries: DailyEntry[], domain: Domain): number {
   const key =
@@ -88,7 +105,7 @@ export function getCurrentStreak(entries: DailyEntry[], today: Date = new Date()
   if (entries.length === 0) return 0;
   const byDate = new Map<string, DailyEntry>();
   for (const e of entries) {
-    if (e.law_completed || e.economics_completed || e.finance_completed) {
+    if (isEntryComplete(e)) {
       byDate.set(e.entry_date, e);
     }
   }
@@ -103,6 +120,38 @@ export function getCurrentStreak(entries: DailyEntry[], today: Date = new Date()
     cursor.setUTCDate(cursor.getUTCDate() - 1);
   }
   return streak;
+}
+
+/**
+ * Calculates the longest consecutive study streak across all logged entries.
+ * Extracted from StatsClient so it can be tested and reused.
+ */
+export function getLongestStreak(entries: DailyEntry[]): number {
+  if (entries.length === 0) return 0;
+  const loggedDates = new Set(entries.filter(isEntryComplete).map((e) => e.entry_date));
+  if (loggedDates.size === 0) return 0;
+
+  const dates = Array.from(loggedDates).sort();
+  let longest = 0;
+  let current = 0;
+  let prevDate: Date | null = null;
+
+  for (const dateStr of dates) {
+    const currentDate = new Date(dateStr + 'T00:00:00Z');
+    if (!prevDate) {
+      current = 1;
+    } else {
+      const diffDays = Math.round((currentDate.getTime() - prevDate.getTime()) / MS_PER_DAY);
+      if (diffDays === 1) {
+        current++;
+      } else if (diffDays > 1) {
+        longest = Math.max(longest, current);
+        current = 1;
+      }
+    }
+    prevDate = currentDate;
+  }
+  return Math.max(longest, current);
 }
 
 export function totalThursdays(): number {
