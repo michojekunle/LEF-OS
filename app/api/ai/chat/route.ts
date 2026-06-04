@@ -221,7 +221,7 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
               Authorization: `Bearer ${groqKey}`,
             },
             body: JSON.stringify({
-              model: 'llama3-8b-8192',
+              model: 'llama-3.1-8b-instant',
               messages: groqMessages,
               temperature: 0.7,
               max_tokens: 2048,
