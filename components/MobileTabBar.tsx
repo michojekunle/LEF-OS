@@ -35,9 +35,7 @@ export function MobileTabBar() {
                 }`}
               >
                 <Icon size={20} strokeWidth={active ? 2 : 1.75} />
-                <span
-                  className={`text-xs font-medium tracking-wide ${active ? 'text-gold' : ''}`}
-                >
+                <span className={`text-xs font-medium tracking-wide ${active ? 'text-gold' : ''}`}>
                   {label}
                 </span>
               </Link>

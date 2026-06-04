@@ -3,17 +3,12 @@
 import { useState } from 'react';
 import { Plus, Link2, X, ChevronDown, Send, CheckCircle2 } from 'lucide-react';
 import type { LefDomain, ResourceType } from '@/lib/database.types';
+import { DOMAIN_LABELS } from '@/lib/domain';
 
 type Props = {
   day: number;
   defaultDomain?: LefDomain;
   userId?: string;
-};
-
-const DOMAIN_LABELS: Record<LefDomain, string> = {
-  law: '⚖️ Law',
-  economics: '📊 Economics',
-  finance: '💰 Finance',
 };
 
 const TYPE_OPTIONS: { value: ResourceType; label: string }[] = [
@@ -44,7 +39,14 @@ export function ResourceSubmitForm({ day, defaultDomain = 'law', userId }: Props
       const res = await fetch('/api/resources', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ day_number: day, domain, type, title: title.trim(), url: url.trim(), note: note.trim() || undefined }),
+        body: JSON.stringify({
+          day_number: day,
+          domain,
+          type,
+          title: title.trim(),
+          url: url.trim(),
+          note: note.trim() || undefined,
+        }),
       });
 
       const data = (await res.json()) as { message?: string; error?: string };
@@ -86,7 +88,10 @@ export function ResourceSubmitForm({ day, defaultDomain = 'law', userId }: Props
           </span>
         </div>
         <button
-          onClick={() => { setIsOpen(false); setResult(null); }}
+          onClick={() => {
+            setIsOpen(false);
+            setResult(null);
+          }}
           className="text-text-muted hover:text-text-primary"
           aria-label="Close"
         >
@@ -99,7 +104,9 @@ export function ResourceSubmitForm({ day, defaultDomain = 'law', userId }: Props
           <CheckCircle2 size={28} className="text-success" />
           <p className="text-xs text-text-primary">{result.message}</p>
           <button
-            onClick={() => { setResult(null); }}
+            onClick={() => {
+              setResult(null);
+            }}
             className="text-xs uppercase tracking-wider text-gold hover:underline"
           >
             Submit another
@@ -118,10 +125,15 @@ export function ResourceSubmitForm({ day, defaultDomain = 'law', userId }: Props
                   className="w-full appearance-none rounded border border-[var(--border-subtle)] bg-surface-2 px-2.5 py-1.5 pr-7 text-xs text-text-primary outline-none focus:border-gold"
                 >
                   {(Object.keys(DOMAIN_LABELS) as LefDomain[]).map((d) => (
-                    <option key={d} value={d}>{DOMAIN_LABELS[d]}</option>
+                    <option key={d} value={d}>
+                      {DOMAIN_LABELS[d]}
+                    </option>
                   ))}
                 </select>
-                <ChevronDown size={11} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-muted" />
+                <ChevronDown
+                  size={11}
+                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-muted"
+                />
               </div>
             </div>
 
@@ -134,10 +146,15 @@ export function ResourceSubmitForm({ day, defaultDomain = 'law', userId }: Props
                   className="w-full appearance-none rounded border border-[var(--border-subtle)] bg-surface-2 px-2.5 py-1.5 pr-7 text-xs text-text-primary outline-none focus:border-gold"
                 >
                   {TYPE_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
                   ))}
                 </select>
-                <ChevronDown size={11} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-muted" />
+                <ChevronDown
+                  size={11}
+                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-muted"
+                />
               </div>
             </div>
           </div>
@@ -188,14 +205,16 @@ export function ResourceSubmitForm({ day, defaultDomain = 'law', userId }: Props
             />
           </div>
 
-          {result && !result.ok && (
-            <p className="text-sm text-red">{result.message}</p>
-          )}
+          {result && !result.ok && <p className="text-sm text-red">{result.message}</p>}
 
           <div className="flex items-center justify-between pt-1">
             {!userId && (
               <p className="text-xs text-text-muted">
-                Submitted anonymously — <a href="/login" className="text-gold hover:underline">sign in</a> to track yours.
+                Submitted anonymously —{' '}
+                <a href="/login" className="text-gold hover:underline">
+                  sign in
+                </a>{' '}
+                to track yours.
               </p>
             )}
             <button

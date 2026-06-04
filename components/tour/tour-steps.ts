@@ -128,8 +128,21 @@ export const TOUR_STEPS: TourStep[] = [
     accentColor: 'slate-blue',
   },
   {
-    id: 'streak-stats',
+    id: 'lef-counsel',
     index: 9,
+    page: '/dashboard',
+    target: 'lef-counsel-btn',
+    position: 'left',
+    title: 'LEF Counsel — your AI study partner.',
+    body: "That gold button is LEF Counsel. Ask it to explain today's topics, quiz you on what you've read, or apply the concepts to your Nigerian context. It knows exactly where you are in the curriculum.",
+    nudge: 'Try it: Tap the button to open a chat.',
+    interactionId: 'lef-counsel-btn',
+    actionLabel: 'Next →',
+    accentColor: 'gold',
+  },
+  {
+    id: 'streak-stats',
+    index: 10,
     page: '/dashboard',
     target: 'streak-stats',
     position: 'bottom',
@@ -140,12 +153,12 @@ export const TOUR_STEPS: TourStep[] = [
   },
   {
     id: 'complete',
-    index: 10,
+    index: 11,
     page: '*',
     target: null,
     position: 'auto',
     title: "You're ready.",
-    body: "You've seen the whole system. The roadmap is public. The tracker is yours. The journey is 122 days. **Day 1 is today.** Go log it.",
+    body: "You've seen the whole system. The roadmap is public. The tracker is yours. LEF Counsel is in your corner. The journey is 122 days. **Day 1 is today.** Go log it.",
     actionLabel: 'Log Day 1 →',
     accentColor: 'gold',
     fullscreen: true,
@@ -153,4 +166,4 @@ export const TOUR_STEPS: TourStep[] = [
   },
 ];
 
-export const TOTAL_TOUR_STEPS = TOUR_STEPS.length;
+export const TOTAL_TOUR_STEPS = TOUR_STEPS.length; // 12 steps (indices 0–11)

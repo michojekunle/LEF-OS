@@ -75,7 +75,7 @@ export function ContentFlagButton({ url, title, contentType, dayNumber, domain, 
           onClick={open}
           title="Flag this link as broken or incorrect"
           aria-label="Flag this resource"
-          className="rounded p-1 text-text-muted opacity-0 transition-all group-hover:opacity-100 hover:text-red focus:opacity-100"
+          className="rounded p-1 text-text-muted opacity-0 transition-all hover:text-red focus:opacity-100 group-hover:opacity-100"
         >
           <Flag size={12} />
         </button>
@@ -84,11 +84,7 @@ export function ContentFlagButton({ url, title, contentType, dayNumber, domain, 
       {(step === 'open' || step === 'submitting' || step === 'error') && (
         <>
           {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-10"
-            onClick={cancel}
-            aria-hidden="true"
-          />
+          <div className="fixed inset-0 z-10" onClick={cancel} aria-hidden="true" />
 
           {/* Popover */}
           <div className="absolute right-0 top-full z-20 mt-1 w-72 rounded-lg border border-[var(--border-subtle)] bg-surface shadow-2xl">
@@ -132,14 +128,12 @@ export function ContentFlagButton({ url, title, contentType, dayNumber, domain, 
                 </p>
               )}
 
-              {step === 'error' && (
-                <p className="text-xs text-red">{errorMsg}</p>
-              )}
+              {step === 'error' && <p className="text-xs text-red">{errorMsg}</p>}
 
               <button
                 type="submit"
                 disabled={step === 'submitting'}
-                className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-red/30 bg-red/10 px-3 py-1.5 text-xs font-semibold text-red transition-colors hover:bg-red/20 disabled:opacity-50"
+                className="border-red/30 bg-red/10 hover:bg-red/20 inline-flex w-full items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-semibold text-red transition-colors disabled:opacity-50"
               >
                 {step === 'submitting' ? (
                   'Submitting…'

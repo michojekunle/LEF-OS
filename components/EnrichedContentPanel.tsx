@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import React, { useState } from 'react';
 import {
@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { ContentFlagButton } from './ContentFlagButton';
 import { QuestionAnswerInput } from './QuestionAnswerInput';
+import { DOMAIN_LABELS, DOMAIN_ACCENT_CARD } from '@/lib/domain';
+import type { Domain } from '@/data/curriculum-data';
 
 type EnrichedData = {
   topic: string;
@@ -44,11 +46,10 @@ export function EnrichedContentPanel({ day, data, userId, savedAnswers = {} }: P
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="text-sm font-semibold text-text-primary md:text-base">
-          Study Targets
-        </h2>
+        <h2 className="text-sm font-semibold text-text-primary md:text-base">Study Targets</h2>
         <p className="mt-1 text-sm leading-relaxed text-text-secondary">
-          Summaries, objectives, study outlines, verified resources, and review questions for each domain today.
+          Summaries, objectives, study outlines, verified resources, and review questions for each
+          domain today.
         </p>
       </div>
 
@@ -88,19 +89,8 @@ function DomainAccordion({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const domainLabels = {
-    law: '⚖️ Law',
-    economics: '📊 Economics',
-    finance: '💰 Finance',
-  };
-
-  const label = domainLabels[domain as keyof typeof domainLabels];
-  const accentClass =
-    domain === 'law'
-      ? 'border-gold text-gold bg-gold/5'
-      : domain === 'economics'
-        ? 'border-sage text-sage bg-sage/5'
-        : 'border-slate-blue text-slate-blue bg-slate-blue/5';
+  const label = DOMAIN_LABELS[domain as keyof typeof DOMAIN_LABELS];
+  const accentClass = DOMAIN_ACCENT_CARD[domain as Domain];
 
   return (
     <div className={`overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-surface`}>
@@ -129,7 +119,7 @@ function DomainAccordion({
               <h4 className="label-caps flex items-center gap-1.5 text-text-muted">
                 <BookOpen size={13} /> Summary
               </h4>
-              <p className="body-base text-text-secondary leading-[1.75]">{content.summary}</p>
+              <p className="body-base leading-[1.75] text-text-secondary">{content.summary}</p>
             </div>
           )}
 

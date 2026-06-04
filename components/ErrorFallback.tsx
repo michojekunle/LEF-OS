@@ -27,9 +27,7 @@ export function ErrorFallback({ error, reset, title, back }: Props) {
         <p className="text-sm leading-relaxed text-text-secondary">
           {error.message || 'An unexpected error occurred while rendering this page.'}
         </p>
-        {error.digest && (
-          <p className="font-mono text-xs text-text-muted">ref: {error.digest}</p>
-        )}
+        {error.digest && <p className="font-mono text-xs text-text-muted">ref: {error.digest}</p>}
         <div className="flex items-center justify-center gap-3 pt-2">
           <button type="button" onClick={reset} className="btn btn-primary text-sm">
             <RotateCcw size={14} /> Try again

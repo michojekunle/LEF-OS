@@ -52,7 +52,7 @@ export function FlagButton({ submissionId, userId }: Props) {
       <button
         onClick={() => setStep('open')}
         title="Flag this resource as incorrect or inappropriate"
-        className="inline-flex items-center gap-1 text-xs text-text-muted opacity-0 transition-all group-hover:opacity-100 hover:text-red"
+        className="inline-flex items-center gap-1 text-xs text-text-muted opacity-0 transition-all hover:text-red group-hover:opacity-100"
       >
         <Flag size={11} />
         Flag
@@ -69,7 +69,11 @@ export function FlagButton({ submissionId, userId }: Props) {
           Flag resource
         </div>
         <button
-          onClick={() => { setStep('idle'); setReason(''); setErrorMsg(''); }}
+          onClick={() => {
+            setStep('idle');
+            setReason('');
+            setErrorMsg('');
+          }}
           className="text-text-muted hover:text-text-primary"
           aria-label="Cancel"
         >
@@ -81,7 +85,10 @@ export function FlagButton({ submissionId, userId }: Props) {
         {!userId && (
           <p className="text-xs text-text-muted">
             You're flagging anonymously.{' '}
-            <a href="/login" className="text-gold hover:underline">Sign in</a> to track your flags.
+            <a href="/login" className="text-gold hover:underline">
+              Sign in
+            </a>{' '}
+            to track your flags.
           </p>
         )}
 
@@ -94,14 +101,12 @@ export function FlagButton({ submissionId, userId }: Props) {
           className="w-full resize-none rounded border border-[var(--border-subtle)] bg-surface-2 px-2.5 py-2 text-xs text-text-primary outline-none placeholder:text-text-muted focus:border-red"
         />
 
-        {step === 'error' && (
-          <p className="text-xs text-red">{errorMsg}</p>
-        )}
+        {step === 'error' && <p className="text-xs text-red">{errorMsg}</p>}
 
         <button
           onClick={submit}
           disabled={step === 'submitting'}
-          className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-red/30 bg-red/10 px-3 py-1.5 text-xs font-semibold text-red transition-colors hover:bg-red/20 disabled:opacity-40"
+          className="border-red/30 bg-red/10 hover:bg-red/20 inline-flex w-full items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-semibold text-red transition-colors disabled:opacity-40"
         >
           {step === 'submitting' ? (
             'Submitting…'

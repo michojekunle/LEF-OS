@@ -156,9 +156,7 @@ export function QuestionAnswerInput({
               <Check size={11} /> Saved
             </span>
           )}
-          {saveState === 'error' && (
-            <span className="text-xs text-red">Save failed</span>
-          )}
+          {saveState === 'error' && <span className="text-xs text-red">Save failed</span>}
 
           {/* Collapse */}
           <button
@@ -193,7 +191,7 @@ export function QuestionAnswerInput({
         onChange={handleChange}
         placeholder="Write your answer here — it saves automatically…"
         rows={3}
-        className="w-full resize-none overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-surface px-3 py-2.5 text-sm leading-relaxed text-text-primary outline-none placeholder:text-text-muted focus:border-gold focus:ring-1 focus:ring-gold/30 transition-colors"
+        className="focus:ring-gold/30 w-full resize-none overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-surface px-3 py-2.5 text-sm leading-relaxed text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-gold focus:ring-1"
         style={{ minHeight: '80px' }}
       />
 
