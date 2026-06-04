@@ -32,22 +32,37 @@ type QuizData = {
 function extractQuiz(content: string): { quiz: QuizData | null; prose: string } {
   const fenceRe = /```json\s*([\s\S]*?)```/i;
   const match = fenceRe.exec(content);
-  if (!match) return { quiz: null, prose: content };
+  let jsonString = '';
+  let replacedMatch = '';
 
-  try {
-    const parsed = JSON.parse(match[1]) as unknown;
-    if (
-      parsed !== null &&
-      typeof parsed === 'object' &&
-      'type' in parsed &&
-      (parsed as Record<string, unknown>).type === 'quiz' &&
-      Array.isArray((parsed as Record<string, unknown>).questions)
-    ) {
-      const prose = content.replace(match[0], '').trim();
-      return { quiz: parsed as QuizData, prose };
+  if (match) {
+    jsonString = match[1];
+    replacedMatch = match[0];
+  } else {
+    const startIdx = content.indexOf('{');
+    const endIdx = content.lastIndexOf('}');
+    if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+      jsonString = content.slice(startIdx, endIdx + 1);
+      replacedMatch = jsonString;
     }
-  } catch {
-    // Not valid JSON — fall through
+  }
+
+  if (jsonString) {
+    try {
+      const parsed = JSON.parse(jsonString) as unknown;
+      if (
+        parsed !== null &&
+        typeof parsed === 'object' &&
+        'type' in parsed &&
+        (parsed as Record<string, unknown>).type === 'quiz' &&
+        Array.isArray((parsed as Record<string, unknown>).questions)
+      ) {
+        const prose = content.replace(replacedMatch, '').trim();
+        return { quiz: parsed as QuizData, prose };
+      }
+    } catch {
+      // Not valid JSON — fall through
+    }
   }
   return { quiz: null, prose: content };
 }
