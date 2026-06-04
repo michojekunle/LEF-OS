@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { CURRICULUM, DOMAIN_META } from '@/data/curriculum-data';
+import { DOMAIN_ACCENT_TEXT } from '@/lib/domain';
 import { ProgressBar } from '@/components/ProgressBar';
 import { getDayNumber, isBeforeCourse, isAfterCourse } from '@/lib/utils';
 
@@ -68,7 +69,7 @@ export default function LandingPage() {
           {(['law', 'economics', 'finance'] as const).map((d) => {
             const meta = DOMAIN_META[d];
             const accent =
-              d === 'law' ? 'accent-law' : d === 'economics' ? 'accent-econ' : 'accent-finance';
+              DOMAIN_ACCENT_TEXT[d];
             return (
               <div
                 key={d}
@@ -149,9 +150,7 @@ export default function LandingPage() {
           ].map((s) => (
             <div key={s.l} className="card-2 p-6">
               <p className="text-3xl font-bold text-gold">{s.n}</p>
-              <p className="mt-1 text-xs uppercase tracking-[0.18em] text-text-secondary">
-                {s.l}
-              </p>
+              <p className="mt-1 text-xs uppercase tracking-[0.18em] text-text-secondary">{s.l}</p>
             </div>
           ))}
         </div>

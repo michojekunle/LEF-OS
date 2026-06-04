@@ -309,7 +309,16 @@ export type Database = {
       content_flags: {
         Row: ContentFlag;
         Insert: Omit<
-          Insertable<ContentFlag, 'day_number' | 'domain' | 'flagged_by' | 'reason' | 'resolved' | 'resolved_by' | 'resolved_at'>,
+          Insertable<
+            ContentFlag,
+            | 'day_number'
+            | 'domain'
+            | 'flagged_by'
+            | 'reason'
+            | 'resolved'
+            | 'resolved_by'
+            | 'resolved_at'
+          >,
           'updated_at'
         >;
         Update: Partial<ContentFlag>;
@@ -317,7 +326,10 @@ export type Database = {
       };
       resource_flags: {
         Row: ResourceFlag;
-        Insert: Omit<Insertable<ResourceFlag, 'flagged_by' | 'fingerprint' | 'reason'>, 'updated_at'>;
+        Insert: Omit<
+          Insertable<ResourceFlag, 'flagged_by' | 'fingerprint' | 'reason'>,
+          'updated_at'
+        >;
         Update: never;
         Relationships: [];
       };

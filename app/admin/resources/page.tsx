@@ -84,12 +84,12 @@ export default async function AdminResourcesPage() {
         {(pendingCount > 0 || flaggedCount > 0) && (
           <div className="mt-3 flex flex-wrap gap-2">
             {flaggedCount > 0 && (
-              <span className="inline-flex items-center gap-1.5 rounded-md border border-red/30 bg-red/10 px-2.5 py-1 text-xs font-semibold text-red">
+              <span className="border-red/30 bg-red/10 inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold text-red">
                 ⚑ {flaggedCount} flagged
               </span>
             )}
             {pendingCount > 0 && (
-              <span className="inline-flex items-center gap-1.5 rounded-md border border-gold/30 bg-gold/10 px-2.5 py-1 text-xs font-semibold text-gold">
+              <span className="border-gold/30 bg-gold/10 inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold text-gold">
                 {pendingCount} pending
               </span>
             )}

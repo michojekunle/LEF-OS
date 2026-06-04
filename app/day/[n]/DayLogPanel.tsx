@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { Plus, Trash2, Check, Loader2, HelpCircle, BookOpen } from 'lucide-react';
 import type { DailyEntry, DayNote, LefDomain, Question } from '@/lib/database.types';
-import { DOMAIN_META } from '@/data/curriculum-data';
+import { DOMAIN_META, LEF_DOMAINS } from '@/data/curriculum-data';
 import { DailyLogForm } from '@/components/DailyLogForm';
 import { upsertDayNoteAction } from '@/app/actions/notes';
 import {
@@ -21,8 +21,6 @@ type Props = {
   initialNotes: DayNote[];
   initialQuestions: Question[];
 };
-
-const DOMAINS: LefDomain[] = ['law', 'economics', 'finance'];
 
 export function DayLogPanel({
   userId,
@@ -65,7 +63,7 @@ export function DayLogPanel({
         <div className="md:hidden">
           {/* Domain tabs */}
           <div className="mb-3 flex overflow-hidden rounded-lg border border-[var(--border-subtle)]">
-            {DOMAINS.map((d) => {
+            {LEF_DOMAINS.map((d) => {
               const meta = DOMAIN_META[d];
               const active = activeTab === d;
               const accentClass =
@@ -102,7 +100,7 @@ export function DayLogPanel({
 
         {/* Desktop: 3-column grid */}
         <div className="hidden gap-3 md:grid md:grid-cols-3">
-          {DOMAINS.map((d) => (
+          {LEF_DOMAINS.map((d) => (
             <NoteEditor
               key={d}
               day={day}

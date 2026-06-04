@@ -274,9 +274,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
       {/* Submit a resource */}
       {hasSupabaseConfig() && (
         <section className="flex items-center justify-between rounded-lg border border-dashed border-[var(--border-subtle)] px-5 py-4">
-          <p className="text-xs text-text-secondary">
-            Know a better resource for today's topics?
-          </p>
+          <p className="text-xs text-text-secondary">Know a better resource for today's topics?</p>
           <ResourceSubmitForm day={day} userId={userId ?? undefined} />
         </section>
       )}

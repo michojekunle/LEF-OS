@@ -56,7 +56,7 @@ export default async function AdminContentFlagsPage() {
           then mark the flag resolved.
         </p>
         {(open ?? []).length > 0 && (
-          <span className="inline-flex items-center gap-1.5 rounded-md border border-red/30 bg-red/10 px-2.5 py-1 text-xs font-semibold text-red">
+          <span className="border-red/30 bg-red/10 inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold text-red">
             ⚑ {(open ?? []).length} open
           </span>
         )}

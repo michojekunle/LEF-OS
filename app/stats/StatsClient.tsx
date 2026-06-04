@@ -6,12 +6,16 @@ import {
   getOverallProgress,
   getDomainProgress,
   getCurrentStreak,
+  getLongestStreak,
   getAllThursdays,
   getDayNumber,
+  isEntryComplete,
+  MONTH_BOUNDARIES,
   type DailyEntry,
 } from '@/lib/utils';
 import { TOTAL_CALENDAR_DAYS } from '@/data/curriculum-data';
 import { ProgressBar } from '@/components/ProgressBar';
+import { StatCard } from '@/components/StatCard';
 
 type Props = {
   userId: string;
@@ -26,39 +30,7 @@ export function StatsClient({ initialEntries }: Props) {
   const totalCompleted = useMemo(() => getOverallProgress(entries), [entries]);
   const currentStreak = useMemo(() => getCurrentStreak(entries), [entries]);
 
-  const longestStreak = useMemo(() => {
-    if (entries.length === 0) return 0;
-    const loggedDates = new Set(
-      entries
-        .filter((e) => e.law_completed || e.economics_completed || e.finance_completed)
-        .map((e) => e.entry_date),
-    );
-
-    if (loggedDates.size === 0) return 0;
-
-    const dates = Array.from(loggedDates).sort();
-    let longest = 0;
-    let current = 0;
-    let prevDate: Date | null = null;
-
-    for (const dateStr of dates) {
-      const currentDate = new Date(dateStr + 'T00:00:00Z');
-      if (!prevDate) {
-        current = 1;
-      } else {
-        const diffMs = currentDate.getTime() - prevDate.getTime();
-        const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-        if (diffDays === 1) {
-          current++;
-        } else if (diffDays > 1) {
-          longest = Math.max(longest, current);
-          current = 1;
-        }
-      }
-      prevDate = currentDate;
-    }
-    return Math.max(longest, current);
-  }, [entries]);
+  const longestStreak = useMemo(() => getLongestStreak(entries), [entries]);
 
   // Per-domain progress
   const lawDone = useMemo(() => getDomainProgress(entries, 'law'), [entries]);
@@ -73,21 +45,19 @@ export function StatsClient({ initialEntries }: Props) {
     return thursdays.filter((t) => {
       const dateStr = t.date.toISOString().slice(0, 10);
       const e = byDate.get(dateStr);
-      return Boolean(e && (e.law_completed || e.economics_completed || e.finance_completed));
+      return Boolean(e && isEntryComplete(e));
     }).length;
   }, [entries, thursdays]);
 
   // Month-by-month completions
   const monthStats = useMemo(() => {
-    const stats = { 1: 0, 2: 0, 3: 0, 4: 0 };
+    const stats: Record<1 | 2 | 3 | 4, number> = { 1: 0, 2: 0, 3: 0, 4: 0 };
     entries.forEach((e) => {
-      if (e.law_completed || e.economics_completed || e.finance_completed) {
+      if (isEntryComplete(e)) {
         const d = new Date(e.entry_date + 'T00:00:00Z');
         const dayNum = getDayNumber(d);
-        if (dayNum >= 1 && dayNum <= 28) stats[1]++;
-        else if (dayNum >= 29 && dayNum <= 56) stats[2]++;
-        else if (dayNum >= 57 && dayNum <= 84) stats[3]++;
-        else if (dayNum >= 85 && dayNum <= 122) stats[4]++;
+        const bucket = MONTH_BOUNDARIES.find((b) => dayNum >= b.start && dayNum <= b.end);
+        if (bucket) stats[bucket.month]++;
       }
     });
     return stats;
@@ -118,24 +88,28 @@ export function StatsClient({ initialEntries }: Props) {
           label="Total Logged Days"
           value={`${totalCompleted}`}
           sub={`/ ${TOTAL_CALENDAR_DAYS} days`}
+          padding="p-5"
         />
         <StatCard
           icon={<Flame size={16} className="text-gold" />}
           label="Current Streak"
           value={`${currentStreak}`}
           sub="active days"
+          padding="p-5"
         />
         <StatCard
           icon={<Award size={16} className="text-sage" />}
           label="Longest Streak"
           value={`${longestStreak}`}
           sub="best record"
+          padding="p-5"
         />
         <StatCard
           icon={<TrendingUp size={16} className="text-slate-blue" />}
           label="Completion Rate"
           value={`${completionPercentage}%`}
           sub="syllabus covered"
+          padding="p-5"
         />
       </section>
 
@@ -194,7 +168,8 @@ export function StatsClient({ initialEntries }: Props) {
 
           <div className="space-y-2 py-6 text-center">
             <p className="text-5xl font-bold tabular-nums text-text-primary">
-              {thursdaysDone} <span className="text-lg font-normal text-text-muted">/ {thursdayCount}</span>
+              {thursdaysDone}{' '}
+              <span className="text-lg font-normal text-text-muted">/ {thursdayCount}</span>
             </p>
             <p className="text-xs uppercase tracking-wider text-text-muted">
               Weekly Reviews Completed
@@ -258,31 +233,6 @@ export function StatsClient({ initialEntries }: Props) {
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
-
-function StatCard({
-  icon,
-  label,
-  value,
-  sub,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  sub: string;
-}) {
-  return (
-    <div className="card space-y-2.5 p-5">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-text-secondary">
-        {icon}
-        {label}
-      </div>
-      <div>
-        <p className="text-3xl font-bold tabular-nums text-text-primary">{value}</p>
-        <p className="mt-0.5 text-xs text-text-muted">{sub}</p>
-      </div>
-    </div>
-  );
-}
 
 function MonthMetric({
   title,

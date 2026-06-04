@@ -9,11 +9,7 @@ type Props = {
   resolved: ContentFlag[];
 };
 
-const DOMAIN_LABEL: Record<string, string> = {
-  law: '⚖️ Law',
-  economics: '📊 Econ',
-  finance: '💰 Finance',
-};
+import { DOMAIN_LABELS } from '@/lib/domain';
 
 function FlagRow({
   flag,
@@ -31,9 +27,7 @@ function FlagRow({
         <div className="flex flex-wrap items-center gap-2">
           <span
             className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wider ${
-              isVideo
-                ? 'bg-slate-blue/10 text-slate-blue'
-                : 'bg-sage/10 text-sage'
+              isVideo ? 'bg-slate-blue/10 text-slate-blue' : 'bg-sage/10 text-sage'
             }`}
           >
             {isVideo ? <PlayCircle size={10} /> : <ExternalLink size={10} />}
@@ -42,7 +36,9 @@ function FlagRow({
           {flag.day_number && (
             <span className="text-xs text-text-muted">
               Day {flag.day_number}
-              {flag.domain ? ` · ${DOMAIN_LABEL[flag.domain] ?? flag.domain}` : ''}
+              {flag.domain
+                ? ` · ${DOMAIN_LABELS[flag.domain as 'law' | 'economics' | 'finance'] ?? flag.domain}`
+                : ''}
             </span>
           )}
           <span className="text-xs text-text-muted">
@@ -77,7 +73,7 @@ function FlagRow({
         <button
           disabled={disabled}
           onClick={() => onResolve(flag.id)}
-          className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-md border border-success/40 bg-success/10 px-3 py-1.5 text-xs font-semibold text-success transition-colors hover:bg-success/20 disabled:opacity-40 sm:flex-col sm:text-center"
+          className="border-success/40 bg-success/10 hover:bg-success/20 inline-flex shrink-0 items-center gap-1.5 self-start rounded-md border px-3 py-1.5 text-xs font-semibold text-success transition-colors disabled:opacity-40 sm:flex-col sm:text-center"
         >
           <CheckCircle2 size={12} /> Mark resolved
         </button>
@@ -127,7 +123,7 @@ export function ContentFlagsPanel({ open: initialOpen, resolved: initialResolved
           <Flag size={14} className="text-red" />
           <h2 className="text-sm font-semibold text-text-primary">Open Flags</h2>
           {open.length > 0 && (
-            <span className="rounded bg-red/15 px-1.5 py-0.5 font-mono text-xs text-red">
+            <span className="bg-red/15 rounded px-1.5 py-0.5 font-mono text-xs text-red">
               {open.length}
             </span>
           )}
@@ -138,12 +134,7 @@ export function ContentFlagsPanel({ open: initialOpen, resolved: initialResolved
         ) : (
           <ul className="divide-y divide-[var(--border-subtle)]">
             {open.map((flag) => (
-              <FlagRow
-                key={flag.id}
-                flag={flag}
-                onResolve={resolve}
-                disabled={isPending}
-              />
+              <FlagRow key={flag.id} flag={flag} onResolve={resolve} disabled={isPending} />
             ))}
           </ul>
         )}
@@ -161,8 +152,10 @@ export function ContentFlagsPanel({ open: initialOpen, resolved: initialResolved
                   <p className="truncate text-sm text-text-primary">{flag.title}</p>
                   <p className="text-xs text-text-muted">
                     {flag.day_number ? `Day ${flag.day_number}` : ''}{' '}
-                    {flag.domain ? `· ${DOMAIN_LABEL[flag.domain]}` : ''} ·{' '}
-                    {flag.content_type}
+                    {flag.domain
+                      ? `· ${DOMAIN_LABELS[flag.domain as 'law' | 'economics' | 'finance']}`
+                      : ''}{' '}
+                    · {flag.content_type}
                     {flag.resolved_at
                       ? ` · Resolved ${new Date(flag.resolved_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`
                       : ''}

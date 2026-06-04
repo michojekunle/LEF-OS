@@ -42,7 +42,7 @@ async function validateUrl(url: string): Promise<boolean> {
 }
 
 // Ensure the file exists
-let enrichedData: Record<string, any> = {};
+let enrichedData: Record<string, { status?: string } & Record<string, unknown>> = {};
 if (fs.existsSync(OUTPUT_FILE)) {
   try {
     enrichedData = JSON.parse(fs.readFileSync(OUTPUT_FILE, 'utf-8'));
