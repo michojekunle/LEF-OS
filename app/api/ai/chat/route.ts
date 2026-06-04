@@ -213,18 +213,24 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
     // ── Database Persistence ───────────────────────────────────────────────
     // Save both the latest user message and the generated assistant reply into memory
     if (latestUserMessage && latestUserMessage.role === 'user') {
+      const now = new Date();
+      const userTime = now.toISOString();
+      const assistantTime = new Date(now.getTime() + 10).toISOString(); // 10ms later to guarantee distinct ordering
+
       await sb.from('ai_chat_memory').insert([
         {
           user_id: user.id,
           role: 'user',
           content: latestUserMessage.content,
           day_context: safeDay,
+          created_at: userTime,
         },
         {
           user_id: user.id,
           role: 'assistant',
           content: text,
           day_context: safeDay,
+          created_at: assistantTime,
         },
       ]);
     }
