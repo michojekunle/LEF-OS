@@ -30,7 +30,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
     if (retryCountdown === null) return;
     if (retryCountdown <= 0) {
       setRetryCountdown(null);
-      setError(null);
+      setError('Rate limit wait period complete. You can now retry your request.');
       setLoading(false);
       return;
     }

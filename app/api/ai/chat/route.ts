@@ -202,12 +202,42 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
       const errText = await response.text();
       console.error('Gemini API request failed:', errText);
       const isRateLimit = response.status === 429 || errText.includes('RESOURCE_EXHAUSTED') || errText.includes('429');
+      
+      let retryAfter = response.headers.get('retry-after');
+      
+      // Try to parse the JSON error body to find type.googleapis.com/google.rpc.RetryInfo
+      try {
+        const errJson = JSON.parse(errText);
+        if (errJson && errJson.error && Array.isArray(errJson.error.details)) {
+          const retryInfo = errJson.error.details.find(
+            (d: any) => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo'
+          );
+          if (retryInfo && retryInfo.retryDelay) {
+            // Strip the 's' suffix from the string (e.g. "20s" -> "20")
+            const delayStr = retryInfo.retryDelay.replace('s', '');
+            if (delayStr) {
+              retryAfter = delayStr;
+            }
+          }
+        }
+      } catch (e) {
+        // Not valid JSON or failed to parse
+      }
+
+      if (!retryAfter && isRateLimit) {
+        const match = errText.match(/retry\s+after\s+(\d+)\s*s/i) || errText.match(/(\d+)\s*(?:seconds|sec|s)\b/i);
+        if (match) {
+          retryAfter = match[1];
+        }
+      }
+
       return NextResponse.json(
         { 
           error: isRateLimit ? 'rate_limit' : 'Gemini service returned an error.',
           message: isRateLimit 
             ? 'LEF Counsel is currently receiving high traffic. Please wait a moment.' 
-            : 'Gemini service returned an error.'
+            : 'Gemini service returned an error.',
+          retryAfter: retryAfter ? Math.ceil(parseFloat(retryAfter)) : null
         },
         { status: response.status },
       );
