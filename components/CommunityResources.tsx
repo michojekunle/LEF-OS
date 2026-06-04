@@ -2,9 +2,11 @@
 
 import { ExternalLink, PlayCircle, Wrench, Link2 } from 'lucide-react';
 import type { ResourceSubmission, ResourceType, LefDomain } from '@/lib/database.types';
+import { FlagButton } from './FlagButton';
 
 type Props = {
   resources: ResourceSubmission[];
+  userId?: string;
 };
 
 const TYPE_ICON: Record<ResourceType, React.ReactNode> = {
@@ -20,10 +22,9 @@ const DOMAIN_LABELS: Record<LefDomain, string> = {
   finance: '💰 Finance',
 };
 
-export function CommunityResources({ resources }: Props) {
+export function CommunityResources({ resources, userId }: Props) {
   if (resources.length === 0) return null;
 
-  // Group by domain
   const byDomain = resources.reduce<Partial<Record<LefDomain, ResourceSubmission[]>>>(
     (acc, r) => {
       const list = acc[r.domain] ?? [];
@@ -37,11 +38,9 @@ export function CommunityResources({ resources }: Props) {
   return (
     <section className="card space-y-4 p-6">
       <div>
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-text-primary">
-          Community Resources
-        </h2>
+        <h2 className="text-sm font-semibold text-text-primary">Community Resources</h2>
         <p className="mt-0.5 text-xs text-text-secondary">
-          Reviewed and approved links submitted by learners.
+          Reviewed and approved links submitted by learners. Flag anything that seems wrong.
         </p>
       </div>
 
@@ -55,20 +54,23 @@ export function CommunityResources({ resources }: Props) {
               <span className="block text-xs font-semibold uppercase tracking-wider text-text-muted">
                 {DOMAIN_LABELS[d]}
               </span>
-              <ul className="space-y-1.5">
+              <ul className="space-y-2">
                 {list.map((r) => (
-                  <li key={r.id}>
-                    <a
-                      href={r.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={r.note ?? undefined}
-                      className="inline-flex items-start gap-1.5 text-xs leading-snug text-gold transition-colors hover:underline hover:opacity-80"
-                    >
-                      {TYPE_ICON[r.type]}
-                      <span>{r.title}</span>
-                      <span className="text-xs opacity-60">↗</span>
-                    </a>
+                  <li key={r.id} className="group relative">
+                    <div className="flex items-start justify-between gap-2">
+                      <a
+                        href={r.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={r.note ?? undefined}
+                        className="inline-flex min-w-0 items-start gap-1.5 text-xs leading-snug text-gold transition-colors hover:underline hover:opacity-80"
+                      >
+                        <span className="mt-px shrink-0">{TYPE_ICON[r.type]}</span>
+                        <span className="min-w-0 break-words">{r.title}</span>
+                        <span className="shrink-0 opacity-60">↗</span>
+                      </a>
+                      <FlagButton submissionId={r.id} userId={userId} />
+                    </div>
                   </li>
                 ))}
               </ul>

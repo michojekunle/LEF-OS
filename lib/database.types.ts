@@ -154,6 +154,32 @@ export type ResourceSubmission = {
   created_at: string;
 };
 
+export type QuestionAnswer = {
+  id: string;
+  user_id: string;
+  day_number: number;
+  domain: LefDomain;
+  question_index: number;
+  answer: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ContentFlag = {
+  id: string;
+  url: string;
+  title: string;
+  day_number: number | null;
+  domain: LefDomain | null;
+  content_type: 'video' | 'article';
+  flagged_by: string | null;
+  reason: string | null;
+  resolved: boolean;
+  resolved_by: string | null;
+  resolved_at: string | null;
+  created_at: string;
+};
+
 export type ResourceFlag = {
   id: string;
   submission_id: string;
@@ -272,6 +298,21 @@ export type Database = {
         Row: AiChatMemoryRow;
         Insert: Omit<Insertable<AiChatMemoryRow, 'day_context'>, 'updated_at'>;
         Update: Partial<AiChatMemoryRow>;
+        Relationships: [];
+      };
+      question_answers: {
+        Row: QuestionAnswer;
+        Insert: Insertable<QuestionAnswer>;
+        Update: Partial<QuestionAnswer>;
+        Relationships: [];
+      };
+      content_flags: {
+        Row: ContentFlag;
+        Insert: Omit<
+          Insertable<ContentFlag, 'day_number' | 'domain' | 'flagged_by' | 'reason' | 'resolved' | 'resolved_by' | 'resolved_at'>,
+          'updated_at'
+        >;
+        Update: Partial<ContentFlag>;
         Relationships: [];
       };
       resource_flags: {

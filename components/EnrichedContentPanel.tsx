@@ -11,6 +11,8 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
+import { ContentFlagButton } from './ContentFlagButton';
+import { QuestionAnswerInput } from './QuestionAnswerInput';
 
 type EnrichedData = {
   topic: string;
@@ -23,12 +25,17 @@ type EnrichedData = {
   status: string;
 };
 
+/** Keyed as `${domain}_${questionIndex}` → saved answer text */
+type SavedAnswers = Record<string, string>;
+
 type Props = {
   day: number;
   data: Record<'law' | 'economics' | 'finance', EnrichedData | null>;
+  userId?: string;
+  savedAnswers?: SavedAnswers;
 };
 
-export function EnrichedContentPanel({ day, data }: Props) {
+export function EnrichedContentPanel({ day, data, userId, savedAnswers = {} }: Props) {
   const domains = ['law', 'economics', 'finance'] as const;
   const hasAnyData = domains.some((d) => data[d]);
 
@@ -41,7 +48,7 @@ export function EnrichedContentPanel({ day, data }: Props) {
           Study Targets
         </h2>
         <p className="mt-1 text-sm leading-relaxed text-text-secondary">
-          Summaries, learning objectives, study outlines, and verified resources for each domain today.
+          Summaries, objectives, study outlines, verified resources, and review questions for each domain today.
         </p>
       </div>
 
@@ -50,14 +57,35 @@ export function EnrichedContentPanel({ day, data }: Props) {
           const content = data[d];
           if (!content || content.status !== 'success') return null;
 
-          return <DomainAccordion key={d} domain={d} content={content} />;
+          return (
+            <DomainAccordion
+              key={d}
+              domain={d}
+              content={content}
+              day={day}
+              userId={userId}
+              savedAnswers={savedAnswers}
+            />
+          );
         })}
       </div>
     </section>
   );
 }
 
-function DomainAccordion({ domain, content }: { domain: string; content: EnrichedData }) {
+function DomainAccordion({
+  domain,
+  content,
+  day,
+  userId,
+  savedAnswers,
+}: {
+  domain: string;
+  content: EnrichedData;
+  day: number;
+  userId?: string;
+  savedAnswers: SavedAnswers;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   const domainLabels = {
@@ -151,16 +179,27 @@ function DomainAccordion({ domain, content }: { domain: string; content: Enriche
                   <div className="space-y-2">
                     <span className="label-caps text-text-muted opacity-70">Video</span>
                     {content.videos.map((vid, i) => (
-                      <a
-                        key={i}
-                        href={vid.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`flex items-start gap-2.5 rounded-lg border p-3 text-sm leading-snug transition-colors hover:bg-surface-2 ${accentClass}`}
-                      >
-                        <PlayCircle size={15} className="mt-px shrink-0 opacity-80" />
-                        <span className="font-medium">{vid.title}</span>
-                      </a>
+                      <div key={i} className="group relative flex items-stretch gap-1">
+                        <a
+                          href={vid.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex min-w-0 flex-1 items-start gap-2.5 rounded-lg border p-3 text-sm leading-snug transition-colors hover:bg-surface-2 ${accentClass}`}
+                        >
+                          <PlayCircle size={15} className="mt-px shrink-0 opacity-80" />
+                          <span className="font-medium">{vid.title}</span>
+                        </a>
+                        <div className="flex items-center">
+                          <ContentFlagButton
+                            url={vid.url}
+                            title={vid.title}
+                            contentType="video"
+                            dayNumber={day}
+                            domain={domain}
+                            userId={userId}
+                          />
+                        </div>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -168,16 +207,27 @@ function DomainAccordion({ domain, content }: { domain: string; content: Enriche
                   <div className="space-y-2">
                     <span className="label-caps text-text-muted opacity-70">Reading</span>
                     {content.articles.map((art, i) => (
-                      <a
-                        key={i}
-                        href={art.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`flex items-start gap-2.5 rounded-lg border p-3 text-sm leading-snug transition-colors hover:bg-surface-2 ${accentClass}`}
-                      >
-                        <ExternalLink size={15} className="mt-px shrink-0 opacity-80" />
-                        <span className="font-medium">{art.title}</span>
-                      </a>
+                      <div key={i} className="group relative flex items-stretch gap-1">
+                        <a
+                          href={art.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex min-w-0 flex-1 items-start gap-2.5 rounded-lg border p-3 text-sm leading-snug transition-colors hover:bg-surface-2 ${accentClass}`}
+                        >
+                          <ExternalLink size={15} className="mt-px shrink-0 opacity-80" />
+                          <span className="font-medium">{art.title}</span>
+                        </a>
+                        <div className="flex items-center">
+                          <ContentFlagButton
+                            url={art.url}
+                            title={art.title}
+                            contentType="article"
+                            dayNumber={day}
+                            domain={domain}
+                            userId={userId}
+                          />
+                        </div>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -185,21 +235,41 @@ function DomainAccordion({ domain, content }: { domain: string; content: Enriche
             </div>
           )}
 
-          {/* Questions */}
+          {/* Review Questions + Answer Inputs */}
           {content.questions?.length > 0 && (
             <div className="space-y-3 rounded-lg border border-[var(--border-subtle)] bg-surface-2 p-4 md:p-5">
-              <h4 className="label-caps flex items-center gap-1.5 text-text-muted">
-                <HelpCircle size={13} /> Review Questions
-              </h4>
-              <ol className="space-y-3.5">
-                {content.questions.map((q, i) => (
-                  <li key={i} className="flex gap-3 text-sm leading-[1.65] text-text-primary">
-                    <span className="label-caps mt-0.5 min-w-[22px] tabular-nums text-text-muted">
-                      Q{i + 1}.
-                    </span>
-                    <span>{q}</span>
-                  </li>
-                ))}
+              <div className="flex items-center justify-between">
+                <h4 className="label-caps flex items-center gap-1.5 text-text-muted">
+                  <HelpCircle size={13} /> Review Questions
+                </h4>
+                <span className="text-xs text-text-muted">
+                  {userId ? 'Answers save automatically' : 'Sign in to save answers'}
+                </span>
+              </div>
+              <ol className="space-y-5">
+                {content.questions.map((q, i) => {
+                  const answerKey = `${domain}_${i}`;
+                  const savedAnswer = savedAnswers[answerKey] ?? '';
+                  return (
+                    <li key={i} className="space-y-0.5">
+                      <div className="flex gap-3 text-sm leading-[1.65] text-text-primary">
+                        <span className="label-caps mt-0.5 min-w-[22px] tabular-nums text-text-muted">
+                          Q{i + 1}.
+                        </span>
+                        <span className="font-medium">{q}</span>
+                      </div>
+                      <div className="pl-[30px]">
+                        <QuestionAnswerInput
+                          dayNumber={day}
+                          domain={domain}
+                          questionIndex={i}
+                          initialAnswer={savedAnswer}
+                          userId={userId}
+                        />
+                      </div>
+                    </li>
+                  );
+                })}
               </ol>
             </div>
           )}

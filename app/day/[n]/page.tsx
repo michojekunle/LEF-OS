@@ -71,6 +71,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
   let notes: DayNote[] = [];
   let questions: Question[] = [];
   let communityResources: ResourceSubmission[] = [];
+  let savedAnswers: Record<string, string> = {};
 
   if (hasSupabaseConfig()) {
     try {
@@ -89,7 +90,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
       if (u.user) {
         userId = u.user.id;
         const iso = date.toISOString().slice(0, 10);
-        const [{ data: e }, { data: n }, { data: q }] = await Promise.all([
+        const [{ data: e }, { data: n }, { data: q }, { data: qa }] = await Promise.all([
           sb
             .from('daily_entries')
             .select('*')
@@ -103,10 +104,21 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
             .eq('user_id', u.user.id)
             .eq('day_number', day)
             .order('created_at', { ascending: false }),
+          sb
+            .from('question_answers')
+            .select('domain, question_index, answer')
+            .eq('user_id', u.user.id)
+            .eq('day_number', day),
         ]);
         existing = (e as DailyEntry) ?? null;
         notes = (n as DayNote[]) ?? [];
         questions = (q as Question[]) ?? [];
+        // Build lookup map: `${domain}_${index}` → answer
+        savedAnswers = Object.fromEntries(
+          ((qa ?? []) as { domain: string; question_index: number; answer: string }[]).map(
+            (row) => [`${row.domain}_${row.question_index}`, row.answer],
+          ),
+        );
       }
     } catch {
       // anonymous view still works
@@ -195,7 +207,12 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
       </section>
 
       {/* ENRICHED CONTENT (Study Targets & Review) */}
-      <EnrichedContentPanel day={day} data={enrichedData} />
+      <EnrichedContentPanel
+        day={day}
+        data={enrichedData}
+        userId={userId ?? undefined}
+        savedAnswers={savedAnswers}
+      />
 
       {/* RECOMMENDED RESOURCES */}
       {month && (
@@ -252,7 +269,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
       )}
 
       {/* Community-submitted resources */}
-      <CommunityResources resources={communityResources} />
+      <CommunityResources resources={communityResources} userId={userId ?? undefined} />
 
       {/* Submit a resource */}
       {hasSupabaseConfig() && (
