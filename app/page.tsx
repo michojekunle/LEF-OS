@@ -68,12 +68,12 @@ export default function LandingPage() {
         <div className="grid gap-4 md:grid-cols-3" data-tour="domain-cards-row">
           {(['law', 'economics', 'finance'] as const).map((d) => {
             const meta = DOMAIN_META[d];
-            const accent =
-              DOMAIN_ACCENT_TEXT[d];
+            const accent = DOMAIN_ACCENT_TEXT[d];
             return (
-              <div
+              <Link
                 key={d}
-                className="card flex min-h-[200px] flex-col gap-4 p-6"
+                href={`/roadmap?domain=${d}`}
+                className="card hover:bg-surface-2/40 group flex min-h-[200px] flex-col gap-4 p-6 transition-colors hover:border-[var(--border)]"
                 data-tour-action="domain-card"
               >
                 <div className="flex items-center justify-between">
@@ -81,13 +81,14 @@ export default function LandingPage() {
                   <span className={`text-base font-semibold ${accent}`}>{meta.label}</span>
                 </div>
                 <p className="text-sm leading-relaxed text-text-secondary">{meta.description}</p>
-                <Link
-                  href={`/roadmap?domain=${d}`}
-                  className="mt-auto inline-flex items-center gap-1.5 text-xs text-text-secondary transition-colors hover:text-gold"
-                >
-                  See the 111 days <ArrowRight size={11} />
-                </Link>
-              </div>
+                <div className="mt-auto flex items-center justify-between">
+                  <span className={`text-sm font-bold ${accent}`}>See all 111 days</span>
+                  <ArrowRight
+                    size={14}
+                    className="text-text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-gold"
+                  />
+                </div>
+              </Link>
             );
           })}
         </div>
@@ -100,17 +101,28 @@ export default function LandingPage() {
         <h2 className="mb-8 font-display text-2xl md:text-3xl">Four months, four shifts.</h2>
         <ol className="space-y-3">
           {CURRICULUM.map((m) => (
-            <li key={m.month} className="card flex items-baseline gap-4 p-5">
-              <span className="w-20 shrink-0 font-mono text-xs uppercase tracking-[0.18em] text-text-muted">
-                Month {m.month}
-              </span>
-              <div className="flex-1">
-                <p className="text-base font-semibold leading-snug text-text-primary">{m.name}</p>
-                <p className="mt-0.5 text-xs text-text-secondary">{m.dateRange}</p>
-              </div>
-              <span className="text-xs text-text-muted">
-                D{m.startDay}–D{m.endDay}
-              </span>
+            <li key={m.month}>
+              <Link
+                href={`/roadmap?month=${m.month}`}
+                className="card hover:bg-surface-2/40 group flex items-center gap-4 p-5 transition-colors hover:border-[var(--border)]"
+              >
+                <span className="w-20 shrink-0 font-mono text-xs uppercase tracking-[0.18em] text-text-muted">
+                  Month {m.month}
+                </span>
+                <div className="flex-1">
+                  <p className="text-base font-semibold leading-snug text-text-primary">{m.name}</p>
+                  <p className="mt-0.5 text-xs text-text-secondary">{m.dateRange}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-text-muted">
+                    D{m.startDay}–D{m.endDay}
+                  </span>
+                  <ArrowRight
+                    size={13}
+                    className="text-text-muted opacity-0 transition-all group-hover:translate-x-0.5 group-hover:text-gold group-hover:opacity-100"
+                  />
+                </div>
+              </Link>
             </li>
           ))}
         </ol>

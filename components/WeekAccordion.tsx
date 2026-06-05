@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import { ChevronDown, ArrowRight } from 'lucide-react';
 import type { Week } from '../data/curriculum-data';
+import { getDayNumber, isInCourse } from '@/lib/utils';
 
 type Props = {
   week: Week;
@@ -11,6 +13,11 @@ type Props = {
 
 export function WeekAccordion({ week, defaultOpen = false }: Props) {
   const [open, setOpen] = useState(defaultOpen);
+
+  // Compute the current curriculum day client-side so we can highlight it.
+  // Falls back to -1 outside the course window so nothing is highlighted.
+  const today = isInCourse() ? getDayNumber() : -1;
+
   return (
     <div className="card overflow-hidden">
       <button
@@ -27,26 +34,66 @@ export function WeekAccordion({ week, defaultOpen = false }: Props) {
         </span>
         <ChevronDown
           size={16}
-          className={`text-text-secondary transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+          className={`shrink-0 text-text-secondary transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
         />
       </button>
+
       {open && (
-        <ol className="space-y-3 border-t border-[var(--border-subtle)] px-4 pb-5 pt-3">
-          {week.days.map((d) => (
-            <li
-              key={d.day}
-              className="flex items-start gap-4 text-base leading-snug max-[320px]:mb-6 max-[320px]:flex-col max-[320px]:gap-2"
-            >
-              <span className="inline-flex shrink-0 items-center justify-center rounded-md bg-surface-2 px-2 py-1 font-mono text-xs font-bold uppercase tracking-wider text-text-primary shadow-sm max-[320px]:justify-start">
-                Day {d.day}
-              </span>
-              <span
-                className={`pt-0.5 ${d.isReview ? 'review-day font-medium text-text-primary' : 'text-text-secondary'}`}
-              >
-                {d.topic}
-              </span>
-            </li>
-          ))}
+        <ol className="divide-y divide-[var(--border-subtle)] border-t border-[var(--border-subtle)]">
+          {week.days.map((d) => {
+            const isToday = d.day === today;
+            const isPast = d.day < today;
+
+            return (
+              <li key={d.day}>
+                <Link
+                  href={`/day/${d.day}`}
+                  className={`group flex items-start gap-4 px-4 py-3 transition-colors max-[320px]:flex-col max-[320px]:gap-2 ${
+                    isToday ? 'bg-gold/8 hover:bg-gold/12' : 'hover:bg-surface-2/50'
+                  } `}
+                >
+                  {/* Day badge */}
+                  <span
+                    className={`inline-flex shrink-0 items-center justify-center rounded-md px-2 py-1 font-mono text-xs font-bold uppercase tracking-wider shadow-sm max-[320px]:justify-start ${
+                      isToday
+                        ? 'bg-gold text-bg'
+                        : isPast
+                          ? 'bg-surface-2 text-text-muted'
+                          : 'bg-surface-2 text-text-primary'
+                    } `}
+                  >
+                    {isToday ? '→ ' : ''}Day {d.day}
+                  </span>
+
+                  {/* Topic */}
+                  <span
+                    className={`flex-1 pt-0.5 text-sm leading-snug ${
+                      d.isReview
+                        ? 'review-day font-medium'
+                        : isToday
+                          ? 'font-medium text-text-primary'
+                          : isPast
+                            ? 'text-text-muted'
+                            : 'text-text-secondary'
+                    } `}
+                  >
+                    {d.topic}
+                    {isToday && (
+                      <span className="ml-2 text-xs font-semibold uppercase tracking-wider text-gold">
+                        Today
+                      </span>
+                    )}
+                  </span>
+
+                  {/* Arrow — visible on hover */}
+                  <ArrowRight
+                    size={14}
+                    className="mt-0.5 shrink-0 text-text-muted opacity-0 transition-opacity group-hover:opacity-100 max-[320px]:hidden"
+                  />
+                </Link>
+              </li>
+            );
+          })}
         </ol>
       )}
     </div>

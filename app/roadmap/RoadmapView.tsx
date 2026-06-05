@@ -28,6 +28,7 @@ export function RoadmapView() {
   const [month, setMonth] = useState<1 | 2 | 3 | 4>(
     [1, 2, 3, 4].includes(initialMonth) ? initialMonth : 1,
   );
+  const domainIndex = LEF_DOMAINS.indexOf(domain);
 
   const monthData = useMemo(() => CURRICULUM.find((m) => m.month === month)!, [month]);
   const track = monthData.tracks[domain];
@@ -78,13 +79,24 @@ export function RoadmapView() {
         </div>
       </div>
 
-      {/* Domain tabs */}
-      <div role="tablist" aria-label="Syllabus domains" className="flex gap-2">
+      {/* Domain segmented control — mirrors the month switcher above */}
+      <div
+        role="tablist"
+        aria-label="Syllabus domains"
+        className="card relative grid grid-cols-3 gap-1 p-1.5"
+      >
+        {/* Sliding active pill */}
+        <span
+          aria-hidden
+          style={{ transform: `translateX(${domainIndex * 100}%)` }}
+          className="pointer-events-none absolute inset-y-1.5 left-1.5 w-[calc(33.333%-0.375rem)] rounded-md bg-surface-2 shadow-sm transition-transform duration-200 ease-out"
+        />
+
         {LEF_DOMAINS.map((d) => {
           const meta = DOMAIN_META[d];
           const isActive = domain === d;
-          const accentText =
-            DOMAIN_ACCENT_TEXT[d];
+          const accentText = DOMAIN_ACCENT_TEXT[d];
+
           return (
             <button
               key={d}
@@ -96,13 +108,17 @@ export function RoadmapView() {
                 setDomain(d);
                 update({ domain: d });
               }}
-              className={`card flex flex-1 items-center justify-center gap-2 px-3 py-3 transition-all ${
-                isActive ? 'border-gold' : ''
-              }`}
+              className="relative z-10 flex cursor-pointer flex-col items-center gap-1 rounded-lg px-2 py-3 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-1 md:flex-row md:justify-center md:gap-2.5 md:py-2.5"
             >
-              <span>{meta.icon}</span>
               <span
-                className={`text-sm font-medium ${isActive ? accentText : 'text-text-primary'}`}
+                className={`text-lg leading-none transition-transform duration-150 md:text-base ${isActive ? 'scale-110' : 'scale-100'}`}
+              >
+                {meta.icon}
+              </span>
+              <span
+                className={`text-xs font-semibold tracking-wide transition-colors duration-150 md:text-sm ${
+                  isActive ? accentText : 'text-text-muted'
+                }`}
               >
                 {meta.label}
               </span>
