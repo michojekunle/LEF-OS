@@ -2,107 +2,87 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useRef, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
+import { getDayNumber, isInCourse } from '@/lib/utils';
+import { CommandPaletteTrigger } from './CommandPalette';
 
-const TOP_LINKS = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/journal', label: 'Journal' },
-];
-
-const EXPLORE_LINKS = [
-  { href: '/roadmap', label: 'Roadmap', desc: 'Curriculum & learning paths' },
-  { href: '/today', label: 'Today', desc: 'Focus & daily context' },
-  { href: '/stats', label: 'Stats', desc: 'Your learning metrics' },
-];
+const NAV_LINKS = [
+  {
+    href: '/today',
+    label: 'Study',
+    matchPrefixes: ['/today', '/day/'],
+    showDayBadge: true,
+  },
+  {
+    href: '/roadmap',
+    label: 'Roadmap',
+    matchPrefixes: ['/roadmap'],
+    showDayBadge: false,
+  },
+  {
+    href: '/dashboard',
+    label: 'Progress',
+    matchPrefixes: ['/dashboard'],
+    showDayBadge: false,
+  },
+  {
+    href: '/journal',
+    label: 'Journal',
+    matchPrefixes: ['/journal'],
+    showDayBadge: false,
+  },
+  {
+    href: '/stats',
+    label: 'Stats',
+    matchPrefixes: ['/stats'],
+    showDayBadge: false,
+  },
+] as const;
 
 export function NavLinks() {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLLIElement>(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const dayNumber = isInCourse() ? getDayNumber() : null;
 
   return (
-    <ul className="hidden items-center gap-1 text-sm md:flex lg:gap-2">
-      {TOP_LINKS.map((l) => {
-        const active = pathname === l.href || pathname.startsWith(`${l.href}/`);
-        return (
-          <li key={l.href}>
-            <Link
-              href={l.href}
-              aria-current={active ? 'page' : undefined}
-              className={`rounded-md px-3 py-1.5 font-medium transition-colors ${
-                active
-                  ? 'bg-surface-2 text-gold'
-                  : 'hover:bg-surface-2/50 text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              {l.label}
-            </Link>
-          </li>
-        );
-      })}
+    <div className="hidden items-center gap-1 md:flex">
+      <ul className="flex items-center gap-0.5 lg:gap-1">
+        {NAV_LINKS.map(({ href, label, matchPrefixes, showDayBadge }) => {
+          const active = matchPrefixes.some(
+            (prefix) => pathname === prefix || pathname.startsWith(prefix),
+          );
 
-      {/* Explore Dropdown */}
-      <li
-        className="group relative"
-        ref={dropdownRef}
-        onMouseEnter={() => setIsOpen(true)}
-        onMouseLeave={() => setIsOpen(false)}
-      >
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className={`flex items-center gap-1 rounded-md px-3 py-1.5 font-medium transition-colors ${
-            isOpen || EXPLORE_LINKS.some((l) => pathname === l.href)
-              ? 'bg-surface-2/30 text-gold'
-              : 'hover:bg-surface-2/50 text-text-secondary hover:text-text-primary'
-          }`}
-        >
-          Explore{' '}
-          <ChevronDown
-            size={14}
-            className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          />
-        </button>
+          return (
+            <li key={href}>
+              <Link
+                href={href}
+                aria-current={active ? 'page' : undefined}
+                className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                  active
+                    ? 'bg-surface-2 text-gold'
+                    : 'hover:bg-surface-2/50 text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                {label === 'Stats' && <BarChart3 size={13} />}
+                {label}
+                {showDayBadge && dayNumber !== null && (
+                  <span
+                    className={`rounded px-1 py-px font-mono text-xs font-bold ${
+                      active ? 'bg-gold/20 text-gold' : 'bg-surface-2 text-text-muted'
+                    }`}
+                  >
+                    {dayNumber}
+                  </span>
+                )}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
 
-        {/* Dropdown Panel */}
-        <div
-          className={`absolute left-0 top-full mt-1 w-56 origin-top-left rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-nav)] p-1.5 shadow-lg backdrop-blur-xl transition-all duration-200 ${
-            isOpen
-              ? 'visible translate-y-0 scale-100 opacity-100'
-              : 'invisible -translate-y-2 scale-95 opacity-0'
-          }`}
-        >
-          <div className="flex flex-col">
-            {EXPLORE_LINKS.map((l) => {
-              const active = pathname === l.href;
-              return (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`flex flex-col gap-0.5 rounded-lg px-3 py-2 transition-colors ${
-                    active ? 'bg-surface-2 text-gold' : 'text-text-primary hover:bg-surface-2'
-                  }`}
-                >
-                  <span className="font-medium">{l.label}</span>
-                  <span className="text-sm text-text-muted">{l.desc}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </li>
-    </ul>
+      {/* ⌘K shortcut hint — surfaces the command palette to desktop users */}
+      <CommandPaletteTrigger className="ml-1 hidden items-center gap-1 rounded-md border border-[var(--border-subtle)] px-2 py-1 text-xs text-text-muted transition-colors hover:border-[var(--border)] hover:text-text-primary lg:flex">
+        <span>⌘K</span>
+      </CommandPaletteTrigger>
+    </div>
   );
 }
