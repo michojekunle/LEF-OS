@@ -101,7 +101,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       submittedBy: user?.email ?? 'anonymous',
     });
 
-    return NextResponse.json({ id: data.id, message: 'Submitted for review — thank you!' }, { status: 201 });
+    return NextResponse.json(
+      { id: data.id, message: 'Submitted for review — thank you!' },
+      { status: 201 },
+    );
   } catch (err) {
     console.error('[POST /api/resources]', err);
     return serverError('Failed to submit resource');

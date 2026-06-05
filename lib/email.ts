@@ -123,10 +123,7 @@ export async function sendEmail(params: {
  * Convenience: send to the admin (ADMIN_EMAIL env var).
  * No-op when ADMIN_EMAIL is unset.
  */
-export async function sendAdminEmail(params: {
-  subject: string;
-  html: string;
-}): Promise<boolean> {
+export async function sendAdminEmail(params: { subject: string; html: string }): Promise<boolean> {
   const adminEmail = process.env.ADMIN_EMAIL;
   if (!adminEmail) return false;
   return sendEmail({ to: adminEmail, ...params });

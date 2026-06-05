@@ -18,7 +18,10 @@ export function GuestOnboarding() {
           quizzes, and save your academic notes.
         </p>
       </div>
-      <Link href="/login" className="btn btn-primary mt-4 w-full py-2 text-center text-xs font-semibold">
+      <Link
+        href="/login"
+        className="btn btn-primary mt-4 w-full py-2 text-center text-xs font-semibold"
+      >
         Sign In to Start
       </Link>
     </div>

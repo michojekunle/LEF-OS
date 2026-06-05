@@ -10,25 +10,28 @@ export async function GET(): Promise<NextResponse> {
     const admin = await requireAdmin(sb);
     if (!admin) return forbidden();
 
-    const [{ data: pending, error: e1 }, { data: flagged, error: e2 }, { data: recent, error: e3 }] =
-      await Promise.all([
-        sb
-          .from('resource_submissions')
-          .select('*')
-          .eq('status', 'pending')
-          .order('created_at', { ascending: true }),
-        sb
-          .from('resource_submissions')
-          .select('*')
-          .eq('status', 'flagged')
-          .order('created_at', { ascending: false }),
-        sb
-          .from('resource_submissions')
-          .select('*')
-          .in('status', ['approved', 'rejected'])
-          .order('reviewed_at', { ascending: false })
-          .limit(20),
-      ]);
+    const [
+      { data: pending, error: e1 },
+      { data: flagged, error: e2 },
+      { data: recent, error: e3 },
+    ] = await Promise.all([
+      sb
+        .from('resource_submissions')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: true }),
+      sb
+        .from('resource_submissions')
+        .select('*')
+        .eq('status', 'flagged')
+        .order('created_at', { ascending: false }),
+      sb
+        .from('resource_submissions')
+        .select('*')
+        .in('status', ['approved', 'rejected'])
+        .order('reviewed_at', { ascending: false })
+        .limit(20),
+    ]);
 
     if (e1 ?? e2 ?? e3) throw e1 ?? e2 ?? e3;
 
@@ -80,7 +83,9 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
       await sb.from('resource_flags').delete().eq('submission_id', id);
     }
 
-    return NextResponse.json({ message: `Submission ${action === 'remove' ? 'removed' : newStatus}.` });
+    return NextResponse.json({
+      message: `Submission ${action === 'remove' ? 'removed' : newStatus}.`,
+    });
   } catch (err) {
     console.error('[PATCH /api/resources/review]', err);
     return serverError('Failed to update submission');

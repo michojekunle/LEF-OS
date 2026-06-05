@@ -14,15 +14,12 @@ type Props = {
 export function CommunityResources({ resources, userId }: Props) {
   if (resources.length === 0) return null;
 
-  const byDomain = resources.reduce<Partial<Record<LefDomain, ResourceSubmission[]>>>(
-    (acc, r) => {
-      const list = acc[r.domain] ?? [];
-      list.push(r);
-      acc[r.domain] = list;
-      return acc;
-    },
-    {},
-  );
+  const byDomain = resources.reduce<Partial<Record<LefDomain, ResourceSubmission[]>>>((acc, r) => {
+    const list = acc[r.domain] ?? [];
+    list.push(r);
+    acc[r.domain] = list;
+    return acc;
+  }, {});
 
   const domains = Object.keys(DOMAIN_LABELS_SHORT) as LefDomain[];
 
@@ -40,9 +37,7 @@ export function CommunityResources({ resources, userId }: Props) {
 
           return (
             <div key={d} className="space-y-2">
-              <span className="label-caps block text-text-muted">
-                {DOMAIN_LABELS_SHORT[d]}
-              </span>
+              <span className="label-caps block text-text-muted">{DOMAIN_LABELS_SHORT[d]}</span>
               <ul className="space-y-2">
                 {list.map((r) => (
                   <li key={r.id} className="group relative flex items-start justify-between gap-2">
