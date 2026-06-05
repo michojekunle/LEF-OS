@@ -124,7 +124,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html
       lang="en"
-      className={`${montserrat.variable} ${lexend.variable}`}
+      className={`${montserrat.variable} ${lexend.variable} font-sans`}
       suppressHydrationWarning
     >
       <head>

@@ -20,9 +20,7 @@ export function SectionHeader({ title, subtitle, aside, as: Tag = 'h2' }: Props)
     <div className={`flex items-start justify-between gap-4 ${subtitle ? 'mb-4' : 'mb-3'}`}>
       <div>
         <Tag className="text-sm font-semibold text-text-primary">{title}</Tag>
-        {subtitle && (
-          <p className="mt-0.5 text-xs text-text-secondary">{subtitle}</p>
-        )}
+        {subtitle && <p className="mt-0.5 text-xs text-text-secondary">{subtitle}</p>}
       </div>
       {aside && <div className="shrink-0">{aside}</div>}
     </div>

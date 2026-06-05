@@ -53,7 +53,8 @@ export function QuizBlock({ quiz }: Props) {
                 const isCorrect = optIdx === q.answerIndex;
                 const isChosen = chosen === optIdx;
 
-                const base = 'w-full text-left px-3 py-2 rounded-md border text-sm leading-snug transition-all ';
+                const base =
+                  'w-full text-left px-3 py-2 rounded-md border text-sm leading-snug transition-all ';
                 const stateClass = !isAnswered
                   ? 'border-border bg-surface-2/40 text-text-primary hover:border-gold/50 hover:bg-surface-2/70 cursor-pointer'
                   : isCorrect
@@ -75,8 +76,12 @@ export function QuizBlock({ quiz }: Props) {
                         {String.fromCharCode(65 + optIdx)}.
                       </span>
                       <span className="flex-1">{opt}</span>
-                      {isAnswered && isCorrect && <CheckCircle2 size={13} className="mt-px shrink-0 text-success" />}
-                      {isAnswered && isChosen && !isCorrect && <XCircle size={13} className="mt-px shrink-0 text-red" />}
+                      {isAnswered && isCorrect && (
+                        <CheckCircle2 size={13} className="mt-px shrink-0 text-success" />
+                      )}
+                      {isAnswered && isChosen && !isCorrect && (
+                        <XCircle size={13} className="mt-px shrink-0 text-red" />
+                      )}
                     </span>
                   </button>
                 );

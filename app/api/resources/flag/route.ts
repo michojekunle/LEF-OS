@@ -67,7 +67,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     return NextResponse.json(
-      { flagged: true, message: 'Resource flagged for review. Thank you.', threshold_reached: thresholdReached },
+      {
+        flagged: true,
+        message: 'Resource flagged for review. Thank you.',
+        threshold_reached: thresholdReached,
+      },
       { status: 201 },
     );
   } catch (err) {
@@ -101,7 +105,8 @@ async function sendFlagThresholdEmail(params: {
     html: buildEmailLayout({
       title: `Resource flagged ${flagCount} times`,
       badgeText: '⚑ Flag Threshold Reached',
-      subTitle: 'This resource has been automatically hidden from public view and needs your attention.',
+      subTitle:
+        'This resource has been automatically hidden from public view and needs your attention.',
       cardHtml,
       actionButton: { text: 'Review & Remove →', url: reviewUrl },
       footerText: `Visit <a href="${reviewUrl}" style="color:#857e76">/admin/resources</a> to manage flagged submissions.`,

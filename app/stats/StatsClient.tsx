@@ -1,7 +1,17 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Flame, CheckCircle2, Calendar, Award, Video, BookOpen, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
+import {
+  Flame,
+  CheckCircle2,
+  Calendar,
+  Award,
+  Video,
+  BookOpen,
+  TrendingUp,
+  ArrowRight,
+} from 'lucide-react';
 import {
   getOverallProgress,
   getDomainProgress,
@@ -67,6 +77,25 @@ export function StatsClient({ initialEntries }: Props) {
   const completionPercentage = useMemo(() => {
     return Math.round((totalCompleted / TOTAL_CALENDAR_DAYS) * 100) || 0;
   }, [totalCompleted]);
+
+  // Empty state — no entries logged yet
+  if (entries.length === 0) {
+    return (
+      <div className="mx-auto max-w-content px-5 py-16 md:px-6">
+        <div className="mx-auto max-w-md space-y-5 text-center">
+          <div className="text-5xl">📊</div>
+          <h1 className="font-display text-2xl tracking-tight">No stats yet</h1>
+          <p className="text-sm leading-relaxed text-text-secondary">
+            Your learning statistics will appear here once you start logging study days. Stats track
+            your streak, domain progress, monthly completion, and more.
+          </p>
+          <Link href="/today" className="btn btn-primary inline-flex items-center gap-2">
+            Log your first day <ArrowRight size={14} />
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-content animate-fade-in space-y-8 px-5 py-8 md:px-6">

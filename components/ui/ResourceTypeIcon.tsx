@@ -15,10 +15,14 @@ type Props = {
 
 export function ResourceTypeIcon({ type, size = 13, className = 'shrink-0' }: Props) {
   switch (type) {
-    case 'video':   return <PlayCircle   size={size} className={className} />;
-    case 'article': return <ExternalLink size={size} className={className} />;
-    case 'tool':    return <Wrench       size={size} className={className} />;
-    default:        return <Link2        size={size} className={className} />;
+    case 'video':
+      return <PlayCircle size={size} className={className} />;
+    case 'article':
+      return <ExternalLink size={size} className={className} />;
+    case 'tool':
+      return <Wrench size={size} className={className} />;
+    default:
+      return <Link2 size={size} className={className} />;
   }
 }
 

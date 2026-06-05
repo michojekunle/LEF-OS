@@ -1,8 +1,12 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 import { Sparkles, X, ChevronDown, ChevronUp, RefreshCw, MessageSquareIcon } from 'lucide-react';
 import { type Message, ChatBody, ChatInput } from './counsel';
+
+/** Pages where the floating AI button adds no value and should be hidden. */
+const FLOATING_HIDDEN_PATHS = ['/roadmap', '/journal', '/stats', '/export', '/settings'];
 
 type Props = {
   day: number;
@@ -20,6 +24,7 @@ interface CounselError extends Error {
 }
 
 export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Props) {
+  const pathname = usePathname();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -239,6 +244,14 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
   }
 
   // --- FLOATING WIDGET TRIGGER ---
+  // Hide on pages where an AI study partner adds no value
+  if (
+    isFloating &&
+    FLOATING_HIDDEN_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))
+  ) {
+    return null;
+  }
+
   if (isFloating) {
     return (
       <div className="fixed bottom-24 right-4 z-40 select-none md:bottom-6 md:right-6">

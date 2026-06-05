@@ -2,7 +2,18 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, Settings, LogOut, Search, Moon, Sun, Monitor, Download, User } from 'lucide-react';
+import {
+  Menu,
+  Settings,
+  LogOut,
+  Search,
+  Moon,
+  Sun,
+  Monitor,
+  Download,
+  User,
+  BarChart3,
+} from 'lucide-react';
 import { SignOutButton } from './SignOutButton';
 import { useTheme } from './ThemeProvider';
 import { CommandPaletteTrigger } from './CommandPalette';
@@ -88,6 +99,14 @@ export function UserMenu({ isAuthed, username }: Props) {
 
           {isAuthed ? (
             <>
+              <Link
+                href="/stats"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary"
+              >
+                <BarChart3 size={15} /> Stats
+              </Link>
+
               {username ? (
                 <Link
                   href={`/u/${username}`}

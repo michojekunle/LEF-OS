@@ -168,12 +168,21 @@ export default async function JournalPage({
       </header>
 
       {entries.length === 0 ? (
-        <div className="card p-10 text-center">
-          <p className="text-sm text-text-secondary">
-            {q
-              ? 'No matching insights yet. Try a different word.'
-              : 'No public entries yet. Be the first to log a day.'}
+        <div className="card space-y-4 p-10 text-center">
+          <p className="text-3xl">{q ? '🔍' : '📖'}</p>
+          <p className="text-sm font-medium text-text-primary">
+            {q ? 'No matching insights' : 'The journal is empty'}
           </p>
+          <p className="mx-auto max-w-sm text-sm text-text-secondary">
+            {q
+              ? `No public insights match "${q}". Try a different search term.`
+              : 'Public insights from study sessions will appear here. Log a day and share your insight to start the journal.'}
+          </p>
+          {!q && configured && (
+            <Link href="/today" className="btn btn-primary mt-2 inline-flex items-center gap-2">
+              Log today's study →
+            </Link>
+          )}
         </div>
       ) : (
         <ul className="space-y-4">

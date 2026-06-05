@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
-import {
-  requireAuth,
-  requireAdmin,
-  conflict,
-  forbidden,
-  badRequest,
-  serverError,
-} from '@/lib/api';
+import { requireAuth, requireAdmin, conflict, forbidden, badRequest, serverError } from '@/lib/api';
 import { buildEmailLayout, sanitizeHtmlText, sendAdminEmail } from '@/lib/email';
 import { ContentFlagCreateSchema, ContentFlagResolveSchema } from '@/lib/schemas';
 import { DOMAIN_LABELS } from '@/lib/domain';
@@ -37,17 +30,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       if (existing) return conflict('You have already flagged this resource.');
     }
 
-    const { error } = await sb
-      .from('content_flags')
-      .insert({
-        url,
-        title,
-        day_number: day_number ?? null,
-        domain: (domain ?? null) as LefDomain | null,
-        content_type,
-        flagged_by: user?.id ?? null,
-        reason: reason ?? null,
-      });
+    const { error } = await sb.from('content_flags').insert({
+      url,
+      title,
+      day_number: day_number ?? null,
+      domain: (domain ?? null) as LefDomain | null,
+      content_type,
+      flagged_by: user?.id ?? null,
+      reason: reason ?? null,
+    });
 
     if (error) {
       if (error.code === '23505') return conflict('You have already flagged this resource.');
@@ -55,9 +46,20 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     // Every content flag fires an email immediately (no threshold)
-    void sendContentFlagEmail({ url, title, day_number, domain, content_type, reason, flaggedBy: user?.email ?? 'anonymous' });
+    void sendContentFlagEmail({
+      url,
+      title,
+      day_number,
+      domain,
+      content_type,
+      reason,
+      flaggedBy: user?.email ?? 'anonymous',
+    });
 
-    return NextResponse.json({ flagged: true, message: 'Flagged for review. Thank you.' }, { status: 201 });
+    return NextResponse.json(
+      { flagged: true, message: 'Flagged for review. Thank you.' },
+      { status: 201 },
+    );
   } catch (err) {
     console.error('[POST /api/content/flag]', err);
     return serverError('Failed to submit flag.');
@@ -102,7 +104,9 @@ async function sendContentFlagEmail(params: {
   const typeIcon = content_type === 'video' ? '▶' : '📄';
   const typeLabel = content_type === 'video' ? 'Video' : 'Article';
   const domainLabel = domain ? (DOMAIN_LABELS[domain as Domain] ?? domain) : '';
-  const dayLine = day_number ? `Day ${day_number}${domainLabel ? ` · ${domainLabel}` : ''}` : 'Unknown day';
+  const dayLine = day_number
+    ? `Day ${day_number}${domainLabel ? ` · ${domainLabel}` : ''}`
+    : 'Unknown day';
 
   const cardHtml = `
   <div class="card">

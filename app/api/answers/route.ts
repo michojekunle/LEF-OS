@@ -1,15 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
-import {
-  requireAuth,
-  unauthorized,
-  badRequest,
-  serverError,
-} from '@/lib/api';
-import {
-  QuestionAnswerUpsertSchema,
-  QuestionAnswerDeleteSchema,
-} from '@/lib/schemas';
+import { requireAuth, unauthorized, badRequest, serverError } from '@/lib/api';
+import { QuestionAnswerUpsertSchema, QuestionAnswerDeleteSchema } from '@/lib/schemas';
 import type { LefDomain } from '@/lib/database.types';
 
 // GET /api/answers?day=N  — load all saved answers for a day (auth required)
@@ -48,10 +40,12 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
 
     const { day_number, domain, question_index, answer } = parsed.data;
 
-    const { error } = await sb.from('question_answers').upsert(
-      { user_id: user.id, day_number, domain: domain as LefDomain, question_index, answer },
-      { onConflict: 'user_id,day_number,domain,question_index' },
-    );
+    const { error } = await sb
+      .from('question_answers')
+      .upsert(
+        { user_id: user.id, day_number, domain: domain as LefDomain, question_index, answer },
+        { onConflict: 'user_id,day_number,domain,question_index' },
+      );
     if (error) throw error;
 
     return NextResponse.json({ saved: true });
