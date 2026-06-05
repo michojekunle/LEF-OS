@@ -4,6 +4,8 @@ A 4-month founder's curriculum in Nigerian and global **Law, Economics, and Fina
 
 **Created by:** Michael Ojekunle ([michojekunle](https://github.com/michojekunle))
 
+<img width="3024" height="1718" alt="Screenshot 2026-06-05 at 07 26 24" src="https://github.com/user-attachments/assets/6f525338-defd-4329-b6d7-0c5f95068fa0" />
+
 ## Core Features
 
 - **Public Roadmap & Journal**: 122 calendar days (111 study days) spanning 3 domains, completely learned in public.
