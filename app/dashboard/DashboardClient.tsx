@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { Flame, CheckCircle2, Calendar, Bell, X } from 'lucide-react';
+import { Flame, CheckCircle2, Calendar, Bell, X, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import {
   getDayNumber,
@@ -164,9 +164,17 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
 
       {/* TODAY TOPICS */}
       <section className="space-y-3" data-tour="today-topics">
-        <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">
-          {selectedDayOffset === 0 ? "Today's study" : "Yesterday's study"}
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">
+            {selectedDayOffset === 0 ? "Today's study" : "Yesterday's study"}
+          </h2>
+          <Link
+            href={`/day/${activeDay}`}
+            className="inline-flex items-center gap-1 text-xs text-text-muted transition-colors hover:text-gold"
+          >
+            Full study content <ArrowRight size={11} />
+          </Link>
+        </div>
         <div className="grid gap-3 md:grid-cols-3">
           <DayCard domain="law" day={activeDay} />
           <DayCard domain="economics" day={activeDay} />
@@ -176,6 +184,14 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
           <p className="text-xs italic text-text-muted">
             Day {activeDay} is in the integration & sharing buffer. Review, write, ship.
           </p>
+        )}
+        {(topics.law || topics.economics || topics.finance) && (
+          <Link
+            href={`/day/${activeDay}`}
+            className="btn btn-primary inline-flex w-full items-center justify-center gap-2 md:w-auto"
+          >
+            Open Day {activeDay} — Study Content <ArrowRight size={14} />
+          </Link>
         )}
       </section>
 
@@ -236,8 +252,19 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
       <section className="space-y-3">
         <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">Entry history</h2>
         {entries.length === 0 ? (
-          <div className="card p-6 text-center text-sm text-text-secondary">
-            No entries yet. Start your streak today.
+          <div className="card space-y-3 p-8 text-center">
+            <p className="text-2xl">📋</p>
+            <p className="text-sm font-medium text-text-primary">No entries yet</p>
+            <p className="mx-auto max-w-xs text-sm text-text-secondary">
+              Log your first study session above and it will appear here. Your history, streak, and
+              progress all build from these entries.
+            </p>
+            <a
+              href="#log-form"
+              className="btn btn-primary mx-auto mt-1 inline-flex items-center gap-2 text-sm"
+            >
+              Log today ↓
+            </a>
           </div>
         ) : (
           <ul className="space-y-3">

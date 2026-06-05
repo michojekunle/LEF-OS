@@ -9,7 +9,14 @@ import {
   type Domain,
 } from '@/data/curriculum-data';
 import { DomainBadge } from '@/components/DomainBadge';
-import { dateFromDayNumber, formatDate, isThursday } from '@/lib/utils';
+import {
+  dateFromDayNumber,
+  formatDate,
+  isThursday,
+  getDayNumber,
+  isInCourse,
+  clampDay,
+} from '@/lib/utils';
 import { hasSupabaseConfig } from '@/lib/supabase';
 import { supabaseServer } from '@/lib/supabase-server';
 import type { DailyEntry, DayNote, Question } from '@/lib/database.types';
@@ -128,6 +135,8 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
   const prev = day > 1 ? day - 1 : null;
   const next = day < TOTAL_CALENDAR_DAYS ? day + 1 : null;
   const isThu = isThursday(date);
+  const todayDay = isInCourse() ? clampDay(getDayNumber(new Date())) : null;
+  const isToday = todayDay !== null && todayDay === day;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -150,12 +159,61 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <header className="space-y-3">
-        <Link
-          href="/roadmap"
-          className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.18em] text-text-secondary hover:text-text-primary"
-        >
-          <ArrowLeft size={11} /> Roadmap
-        </Link>
+        {/* Top bar: breadcrumb + quick prev/next + actions */}
+        <div className="flex items-center justify-between gap-3">
+          {/* Breadcrumb: Roadmap › Day N [Today] */}
+          <div className="flex items-center gap-2">
+            <Link
+              href="/roadmap"
+              className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.18em] text-text-secondary hover:text-text-primary"
+            >
+              <ArrowLeft size={11} /> Roadmap
+            </Link>
+            {isToday && (
+              <span className="bg-gold/15 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-gold">
+                Today
+              </span>
+            )}
+            {!isToday && todayDay !== null && (
+              <Link
+                href={`/day/${todayDay}`}
+                className="hover:bg-gold/15 rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium uppercase tracking-widest text-text-muted transition-colors hover:text-gold"
+              >
+                → Day {todayDay}
+              </Link>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Quick prev/next at top so users don't have to scroll */}
+            {prev && (
+              <Link
+                href={`/day/${prev}`}
+                className="inline-flex items-center gap-1 rounded-md border border-[var(--border-subtle)] px-2 py-1 text-xs text-text-muted transition-colors hover:border-[var(--border)] hover:text-text-primary"
+              >
+                <ArrowLeft size={11} /> {prev}
+              </Link>
+            )}
+            {next && (
+              <Link
+                href={`/day/${next}`}
+                className="inline-flex items-center gap-1 rounded-md border border-[var(--border-subtle)] px-2 py-1 text-xs text-text-muted transition-colors hover:border-[var(--border)] hover:text-text-primary"
+              >
+                {next} <ArrowRight size={11} />
+              </Link>
+            )}
+            {/* Anchor shortcut to log section */}
+            {userId && (
+              <a
+                href="#log-panel"
+                className="bg-gold/10 hover:bg-gold/20 inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-gold transition-colors"
+              >
+                ↓ Log
+              </a>
+            )}
+          </div>
+        </div>
+
         <h1 className="font-display text-4xl tracking-tight md:text-5xl">
           Day {day} <span className="text-lg text-text-muted">of {TOTAL_CALENDAR_DAYS}</span>
         </h1>
@@ -279,18 +337,20 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
         </section>
       )}
 
-      {userId ? (
-        <DayLogPanel
-          userId={userId}
-          day={day}
-          date={date}
-          existing={existing}
-          initialNotes={notes}
-          initialQuestions={questions}
-        />
-      ) : (
-        <SignInPrompt day={day} />
-      )}
+      <div id="log-panel">
+        {userId ? (
+          <DayLogPanel
+            userId={userId}
+            day={day}
+            date={date}
+            existing={existing}
+            initialNotes={notes}
+            initialQuestions={questions}
+          />
+        ) : (
+          <SignInPrompt day={day} />
+        )}
+      </div>
 
       <LEFCounselPanel
         day={day}
