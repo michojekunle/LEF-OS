@@ -29,7 +29,7 @@ export async function Nav() {
   }
 
   return (
-    <header className="bg-[var(--bg-nav)]/80 sticky top-0 z-40 w-full border-b border-[var(--border-subtle)] backdrop-blur-md">
+    <header className="header-safe sticky top-0 z-40 w-full border-b border-[var(--border-subtle)] bg-[var(--bg-nav)]/80 backdrop-blur-md">
       <nav className="mx-auto flex h-16 w-full max-w-content items-center justify-between gap-2 px-4 md:h-[4.5rem] md:gap-4 md:px-6">
         {/* Logo */}
         <Link href="/" className="group flex shrink-0 items-center gap-3">

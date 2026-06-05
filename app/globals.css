@@ -572,6 +572,11 @@ h5 {
     padding-left: max(1rem, env(safe-area-inset-left));
     padding-right: max(1rem, env(safe-area-inset-right));
   }
+
+  /* Push the sticky header below the iOS status bar in standalone PWA mode */
+  .header-safe {
+    padding-top: env(safe-area-inset-top);
+  }
 }
 
 /* Prevent text size inflation on mobile after orientation change */
