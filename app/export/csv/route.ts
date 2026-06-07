@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
 import type { DailyEntry } from '@/lib/database.types';
 
@@ -13,7 +13,13 @@ function csvEscape(value: string | number | boolean | null): string {
   return s;
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const includeParam = req.nextUrl.searchParams.get('include');
+  const inc = includeParam
+    ? new Set(includeParam.split(','))
+    : new Set(['entries', 'journal', 'insights', 'notes', 'questions', 'answers']);
+  const wantJournal = inc.has('journal');
+  const wantInsights = inc.has('insights');
   const sb = await supabaseServer();
   const { data: u } = await sb.auth.getUser();
   if (!u.user) return NextResponse.json({ error: 'Not signed in' }, { status: 401 });
@@ -34,8 +40,8 @@ export async function GET() {
     'finance',
     'study_rating',
     'is_public',
-    'share_insight',
-    'journal_text',
+    ...(wantInsights ? ['share_insight'] : []),
+    ...(wantJournal ? ['journal_text'] : []),
   ];
 
   const lines = [headers.join(',')];
@@ -49,8 +55,8 @@ export async function GET() {
         e.finance_completed,
         e.study_rating ?? '',
         e.is_public,
-        e.share_insight ?? '',
-        e.journal_text ?? '',
+        ...(wantInsights ? [e.share_insight ?? ''] : []),
+        ...(wantJournal ? [e.journal_text ?? ''] : []),
       ]
         .map(csvEscape)
         .join(','),
