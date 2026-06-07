@@ -12,8 +12,11 @@ import { TourShell } from '@/components/TourShell';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { hasSupabaseConfig } from '@/lib/supabase';
 import { supabaseServer } from '@/lib/supabase-server';
-import { getDayNumber, clampDay } from '@/lib/utils';
+import { getDayNumber, clampDay, getCourseWindow } from '@/lib/utils';
 import { LEFCounselPanel } from '@/components/LEFCounselPanel';
+import { CourseProvider } from '@/components/CourseContext';
+import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
+import { AchievementProvider } from '@/components/AchievementProvider';
 
 // Montserrat: geometric sans for display headings — authoritative, editorial, strong
 const montserrat = Montserrat({
@@ -94,6 +97,10 @@ const themeScript = `(function(){try{var t=localStorage.getItem('lef-theme');var
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   let activeDay = 1;
   let userId: string | undefined = undefined;
+  let courseStartDate: string | null = null;
+  let courseDurationMonths: number | null = null;
+  let preferredDomains: string[] | null = null;
+  let needsOnboarding = false;
 
   if (hasSupabaseConfig()) {
     try {
@@ -101,7 +108,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       const { data } = await sb.auth.getUser();
       if (data.user) {
         userId = data.user.id;
-        activeDay = clampDay(getDayNumber(new Date()));
+        const { data: settings } = await sb
+          .from('user_settings')
+          .select(
+            'course_start_date, course_duration_months, onboarding_completed, preferred_domains',
+          )
+          .eq('user_id', data.user.id)
+          .maybeSingle();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const s = settings as any;
+        courseStartDate = s?.course_start_date ?? null;
+        courseDurationMonths = s?.course_duration_months ?? null;
+        preferredDomains = s?.preferred_domains ?? null;
+        needsOnboarding = s ? s.onboarding_completed === false : true;
+        activeDay = clampDay(
+          getDayNumber(new Date(), getCourseWindow(courseStartDate, courseDurationMonths)),
+        );
       }
     } catch {
       // Ignored — Supabase may not be configured in dev
@@ -137,19 +159,42 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <ThemeProvider>
-          <TourShell>
-            <ToastProvider>
-              <CommandPaletteProvider>
-                <OfflineBanner />
-                <Nav />
-                <main className="min-h-[calc(100dvh-120px)] pb-24 md:pb-12">{children}</main>
-                <Footer />
-                <MobileTabBar />
-                <InstallPrompt />
-                <LEFCounselPanel day={activeDay} isFloating={true} userId={userId} />
-              </CommandPaletteProvider>
-            </ToastProvider>
-          </TourShell>
+          <CourseProvider
+            startDate={courseStartDate}
+            durationMonths={courseDurationMonths}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            preferredDomains={preferredDomains as any}
+          >
+            <TourShell>
+              <ToastProvider>
+                <CommandPaletteProvider>
+                  <OfflineBanner />
+                  {/* Immersive onboarding — shown once to new authenticated users */}
+                  {userId && <OnboardingShell userId={userId} needsOnboarding={needsOnboarding} />}
+                  <Nav />
+                  <main className="min-h-[calc(100dvh-120px)] pb-24 md:pb-12">{children}</main>
+                  <Footer
+                    courseStartDate={courseStartDate}
+                    courseTotalDays={
+                      courseStartDate || courseDurationMonths
+                        ? getCourseWindow(courseStartDate, courseDurationMonths).totalDays
+                        : null
+                    }
+                    preferredDomainsCount={
+                      preferredDomains && preferredDomains.length > 0
+                        ? preferredDomains.length
+                        : null
+                    }
+                  />
+                  <MobileTabBar />
+                  <InstallPrompt />
+                  <LEFCounselPanel day={activeDay} isFloating={true} userId={userId} />
+                  {/* Global achievement modal — any page can fire window 'lef-achievement' event */}
+                  <AchievementProvider />
+                </CommandPaletteProvider>
+              </ToastProvider>
+            </TourShell>
+          </CourseProvider>
         </ThemeProvider>
       </body>
     </html>

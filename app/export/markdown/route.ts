@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
 import { findDayMeta } from '@/data/curriculum-data';
 import { DOMAIN_LABELS } from '@/lib/domain';
@@ -6,12 +6,23 @@ import type { DailyEntry, DayNote, LefDomain, Question } from '@/lib/database.ty
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const sb = await supabaseServer();
   const { data: u } = await sb.auth.getUser();
   if (!u.user) {
     return NextResponse.json({ error: 'Not signed in' }, { status: 401 });
   }
+
+  // Parse ?include= param — default: all sections
+  const includeParam = req.nextUrl.searchParams.get('include');
+  const inc = includeParam
+    ? new Set(includeParam.split(','))
+    : new Set(['entries', 'journal', 'insights', 'notes', 'questions', 'answers']);
+  const wantEntries = inc.has('entries');
+  const wantJournal = inc.has('journal');
+  const wantInsights = inc.has('insights');
+  const wantNotes = inc.has('notes');
+  const wantQuestions = inc.has('questions');
 
   const [{ data: profile }, { data: entriesData }, { data: notesData }, { data: qData }] =
     await Promise.all([
@@ -69,7 +80,7 @@ export async function GET() {
   lines.push('---');
   lines.push('');
 
-  for (const e of entries) {
+  for (const e of wantEntries ? entries : []) {
     lines.push(`## Day ${e.day_number} — ${e.entry_date}`);
     const flags: string[] = [];
     if (e.law_completed) flags.push('Law');
@@ -79,7 +90,8 @@ export async function GET() {
     if (flags.length) lines.push(`**Completed**: ${flags.join(' · ')}`);
     if (e.study_rating)
       lines.push(`**Depth**: ${'★'.repeat(e.study_rating)}${'☆'.repeat(5 - e.study_rating)}`);
-    if (e.is_public && e.share_insight) lines.push(`**Public insight**: ${e.share_insight}`);
+    if (wantInsights && e.is_public && e.share_insight)
+      lines.push(`**Public insight**: ${e.share_insight}`);
     lines.push('');
 
     // Curriculum topics for context
@@ -94,35 +106,39 @@ export async function GET() {
       lines.push('');
     }
 
-    if (e.journal_text) {
+    if (wantJournal && e.journal_text) {
       lines.push('### Journal');
       lines.push('');
       lines.push(e.journal_text);
       lines.push('');
     }
 
-    const dayNotes = notesByDay.get(e.day_number) ?? [];
-    if (dayNotes.length) {
-      lines.push('### Notes');
-      for (const d of ['law', 'economics', 'finance'] as LefDomain[]) {
-        const note = dayNotes.find((x) => x.domain === d);
-        if (note) {
-          lines.push(`**${DOMAIN_LABELS[d]}**`);
-          lines.push('');
-          lines.push(note.body);
-          lines.push('');
+    if (wantNotes) {
+      const dayNotes = notesByDay.get(e.day_number) ?? [];
+      if (dayNotes.length) {
+        lines.push('### Notes');
+        for (const d of ['law', 'economics', 'finance'] as LefDomain[]) {
+          const note = dayNotes.find((x) => x.domain === d);
+          if (note) {
+            lines.push(`**${DOMAIN_LABELS[d]}**`);
+            lines.push('');
+            lines.push(note.body);
+            lines.push('');
+          }
         }
       }
     }
 
-    const dayQs = questionsByDay.get(e.day_number);
-    if (dayQs && dayQs.length) {
-      lines.push('### Questions');
-      for (const q of dayQs) {
-        lines.push(`- ${q.answered ? '✓' : '○'} ${q.body}`);
-        if (q.answer) lines.push(`  > ${q.answer.replace(/\n/g, '\n  > ')}`);
+    if (wantQuestions) {
+      const dayQs = questionsByDay.get(e.day_number);
+      if (dayQs && dayQs.length) {
+        lines.push('### Questions');
+        for (const q of dayQs) {
+          lines.push(`- ${q.answered ? '✓' : '○'} ${q.body}`);
+          if (q.answer) lines.push(`  > ${q.answer.replace(/\n/g, '\n  > ')}`);
+        }
+        lines.push('');
       }
-      lines.push('');
     }
 
     lines.push('---');
@@ -130,7 +146,9 @@ export async function GET() {
   }
 
   // Trailing notes without an entry-day
-  const orphanNotes = notes.filter((n) => !entries.some((e) => e.day_number === n.day_number));
+  const orphanNotes = wantNotes
+    ? notes.filter((n) => !entries.some((e) => e.day_number === n.day_number))
+    : [];
   if (orphanNotes.length) {
     lines.push('## Notes without a logged entry');
     lines.push('');
@@ -143,7 +161,7 @@ export async function GET() {
   }
 
   // Unanchored questions
-  const orphans = questionsByDay.get('unanchored');
+  const orphans = wantQuestions ? questionsByDay.get('unanchored') : undefined;
   if (orphans && orphans.length) {
     lines.push('## Open questions (no day)');
     lines.push('');

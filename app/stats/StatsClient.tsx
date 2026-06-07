@@ -23,7 +23,8 @@ import {
   MONTH_BOUNDARIES,
   type DailyEntry,
 } from '@/lib/utils';
-import { TOTAL_CALENDAR_DAYS } from '@/data/curriculum-data';
+import { TOTAL_CURRICULUM_DAYS } from '@/lib/utils';
+import { useCourse } from '@/components/CourseContext';
 import { ProgressBar } from '@/components/ProgressBar';
 import { StatCard } from '@/components/StatCard';
 
@@ -34,6 +35,7 @@ type Props = {
 };
 
 export function StatsClient({ initialEntries }: Props) {
+  const course = useCourse();
   const entries = useMemo(() => initialEntries, [initialEntries]);
 
   // Overall calculations
@@ -73,9 +75,9 @@ export function StatsClient({ initialEntries }: Props) {
     return stats;
   }, [entries]);
 
-  // Percentage completions
+  // Completion = topics logged out of total curriculum content (always 111)
   const completionPercentage = useMemo(() => {
-    return Math.round((totalCompleted / TOTAL_CALENDAR_DAYS) * 100) || 0;
+    return Math.round((totalCompleted / TOTAL_CURRICULUM_DAYS) * 100) || 0;
   }, [totalCompleted]);
 
   // Empty state — no entries logged yet
@@ -116,7 +118,7 @@ export function StatsClient({ initialEntries }: Props) {
           icon={<CheckCircle2 size={16} className="text-success" />}
           label="Total Logged Days"
           value={`${totalCompleted}`}
-          sub={`/ ${TOTAL_CALENDAR_DAYS} days`}
+          sub={`/ ${TOTAL_CURRICULUM_DAYS} topics`}
           padding="p-5"
         />
         <StatCard
@@ -157,28 +159,34 @@ export function StatsClient({ initialEntries }: Props) {
           </div>
 
           <div className="space-y-4 py-2">
-            <ProgressBar
-              value={lawDone}
-              max={TOTAL_CALENDAR_DAYS}
-              label="⚖️ Law Domain"
-              accent="gold"
-            />
-            <ProgressBar
-              value={econDone}
-              max={TOTAL_CALENDAR_DAYS}
-              label="📊 Economics Domain"
-              accent="sage"
-            />
-            <ProgressBar
-              value={finDone}
-              max={TOTAL_CALENDAR_DAYS}
-              label="💰 Finance Domain"
-              accent="slate"
-            />
+            {course.preferredDomains.includes('law') && (
+              <ProgressBar
+                value={lawDone}
+                max={TOTAL_CURRICULUM_DAYS}
+                label="⚖️ Law Domain"
+                accent="gold"
+              />
+            )}
+            {course.preferredDomains.includes('economics') && (
+              <ProgressBar
+                value={econDone}
+                max={TOTAL_CURRICULUM_DAYS}
+                label="📊 Economics Domain"
+                accent="sage"
+              />
+            )}
+            {course.preferredDomains.includes('finance') && (
+              <ProgressBar
+                value={finDone}
+                max={TOTAL_CURRICULUM_DAYS}
+                label="💰 Finance Domain"
+                accent="slate"
+              />
+            )}
           </div>
 
           <div className="flex items-center justify-between border-t border-[var(--border-dim)] pt-4 text-sm text-text-secondary">
-            <span>Minimum domain target: 122 completions</span>
+            <span>Target: {TOTAL_CURRICULUM_DAYS} topics per domain</span>
             <span className="font-semibold text-gold">Learning in public</span>
           </div>
         </section>
@@ -222,7 +230,7 @@ export function StatsClient({ initialEntries }: Props) {
             Monthly Milestone Progress
           </h2>
           <p className="mt-1 text-xs text-text-secondary">
-            Visual breakdown of study logs recorded in each month of the 4-month curriculum.
+            Visual breakdown of study logs recorded in each month of the curriculum.
           </p>
         </div>
 

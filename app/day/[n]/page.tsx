@@ -16,6 +16,7 @@ import {
   getDayNumber,
   isInCourse,
   clampDay,
+  getCourseWindow,
 } from '@/lib/utils';
 import { hasSupabaseConfig } from '@/lib/supabase';
 import { supabaseServer } from '@/lib/supabase-server';
@@ -79,11 +80,25 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
   let questions: Question[] = [];
   let communityResources: ResourceSubmission[] = [];
   let savedAnswers: Record<string, string> = {};
+  let courseTotalDays = TOTAL_CALENDAR_DAYS; // default
 
   if (hasSupabaseConfig()) {
     try {
       const sb = await supabaseServer();
       const { data: u } = await sb.auth.getUser();
+
+      // Fetch user's course window for personalised "of N" display
+      if (u.user) {
+        const { data: settings } = await sb
+          .from('user_settings')
+          .select('course_start_date, course_duration_months')
+          .eq('user_id', u.user.id)
+          .maybeSingle();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const s = settings as any;
+        const cw = getCourseWindow(s?.course_start_date ?? null, s?.course_duration_months ?? null);
+        courseTotalDays = cw.totalDays;
+      }
 
       // Community resources visible to everyone (anon-safe via RLS)
       const { data: cr } = await sb
@@ -133,6 +148,8 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
   }
 
   const prev = day > 1 ? day - 1 : null;
+  // Navigation caps at TOTAL_CALENDAR_DAYS (122) — the curriculum content ceiling.
+  // courseTotalDays only affects the "of N" display; the URL space is always 1–122.
   const next = day < TOTAL_CALENDAR_DAYS ? day + 1 : null;
   const isThu = isThursday(date);
   const todayDay = isInCourse() ? clampDay(getDayNumber(new Date())) : null;
@@ -215,7 +232,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
         </div>
 
         <h1 className="font-display text-4xl tracking-tight md:text-5xl">
-          Day {day} <span className="text-lg text-text-muted">of {TOTAL_CALENDAR_DAYS}</span>
+          Day {day} <span className="text-lg text-text-muted">of {courseTotalDays}</span>
         </h1>
         <div className="flex flex-wrap items-center gap-3 text-xs text-text-secondary">
           <span className="inline-flex items-center gap-1.5">

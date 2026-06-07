@@ -12,6 +12,7 @@ import {
   deleteQuestionAction,
 } from '@/app/actions/questions';
 import { useToast } from '@/components/Toast';
+import { checkNotesAchievement } from '@/lib/achievements';
 
 type Props = {
   userId: string;
@@ -20,6 +21,8 @@ type Props = {
   existing: DailyEntry | null;
   initialNotes: DayNote[];
   initialQuestions: Question[];
+  /** Called with newly earned achievement types after a note saves */
+  onAchievements?: (types: import('@/lib/achievements').Achievement[]) => void;
 };
 
 export function DayLogPanel({
@@ -29,6 +32,7 @@ export function DayLogPanel({
   existing,
   initialNotes,
   initialQuestions,
+  onAchievements,
 }: Props) {
   const [entry, setEntry] = useState<DailyEntry | null>(existing);
   const [notes, setNotes] = useState<Record<LefDomain, string>>({
@@ -36,6 +40,17 @@ export function DayLogPanel({
     economics: initialNotes.find((n) => n.domain === 'economics')?.body ?? '',
     finance: initialNotes.find((n) => n.domain === 'finance')?.body ?? '',
   });
+
+  function handleNoteSaved(domain: LefDomain, value: string) {
+    const updated = { ...notes, [domain]: value };
+    setNotes(updated);
+    const earned = checkNotesAchievement(day, updated.law, updated.economics, updated.finance);
+    for (const a of earned) {
+      window.dispatchEvent(new CustomEvent('lef-achievement', { detail: a }));
+    }
+    // Also call optional prop for callers that want to handle it locally
+    if (onAchievements && earned.length > 0) onAchievements(earned);
+  }
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   // Mobile tab: which domain is active in the note switcher
   const [activeTab, setActiveTab] = useState<LefDomain>('law');
@@ -95,6 +110,7 @@ export function DayLogPanel({
             domain={activeTab}
             value={notes[activeTab]}
             onChange={(v) => setNotes((n) => ({ ...n, [activeTab]: v }))}
+            onSaved={(v) => handleNoteSaved(activeTab, v)}
           />
         </div>
 
@@ -107,6 +123,7 @@ export function DayLogPanel({
               domain={d}
               value={notes[d]}
               onChange={(v) => setNotes((n) => ({ ...n, [d]: v }))}
+              onSaved={(v) => handleNoteSaved(d, v)}
             />
           ))}
         </div>
@@ -132,11 +149,13 @@ function NoteEditor({
   domain,
   value,
   onChange,
+  onSaved,
 }: {
   day: number;
   domain: LefDomain;
   value: string;
   onChange: (v: string) => void;
+  onSaved?: (v: string) => void;
 }) {
   const meta = DOMAIN_META[domain];
   const [pending, start] = useTransition();
@@ -152,6 +171,7 @@ function NoteEditor({
       }
       setSaved(true);
       setTimeout(() => setSaved(false), 1800);
+      onSaved?.(value);
     });
   }
 

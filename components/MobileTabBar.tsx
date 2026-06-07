@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { GraduationCap, Map, LayoutDashboard, BookOpen, BarChart3 } from 'lucide-react';
 import { getDayNumber, isInCourse } from '@/lib/utils';
+import { useCourse } from './CourseContext';
 
 const tabs = [
   {
@@ -46,7 +47,8 @@ const tabs = [
 
 export function MobileTabBar() {
   const pathname = usePathname();
-  const dayNumber = isInCourse() ? getDayNumber() : null;
+  const course = useCourse();
+  const dayNumber = isInCourse(new Date(), course) ? getDayNumber(new Date(), course) : null;
 
   return (
     <nav

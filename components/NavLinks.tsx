@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BarChart3 } from 'lucide-react';
 import { getDayNumber, isInCourse } from '@/lib/utils';
+import { useCourse } from './CourseContext';
 import { CommandPaletteTrigger } from './CommandPalette';
 
 const NAV_LINKS = [
@@ -41,7 +42,8 @@ const NAV_LINKS = [
 
 export function NavLinks() {
   const pathname = usePathname();
-  const dayNumber = isInCourse() ? getDayNumber() : null;
+  const course = useCourse();
+  const dayNumber = isInCourse(new Date(), course) ? getDayNumber(new Date(), course) : null;
 
   return (
     <div className="hidden items-center gap-1 md:flex">

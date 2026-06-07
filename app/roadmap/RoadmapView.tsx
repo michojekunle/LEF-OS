@@ -14,17 +14,30 @@ import { WeekAccordion } from '@/components/WeekAccordion';
 import { LevelBadge } from '@/components/DomainBadge';
 import { DOMAIN_ACCENT_TEXT } from '@/lib/domain';
 
-export function RoadmapView() {
+type Props = {
+  /** Domains the user selected during onboarding. All three shown if not provided. */
+  preferredDomains?: Domain[];
+  /** Per-phase date ranges computed from the user's actual course start date. */
+  phaseDateRanges?: Record<number, string>;
+};
+
+export function RoadmapView({
+  preferredDomains = ['law', 'economics', 'finance'],
+  phaseDateRanges = {},
+}: Props) {
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const initialDomain = (params.get('domain') as Domain) || 'law';
+  // Default to the user's first preferred domain (or URL param if explicitly set)
+  const urlDomain = params.get('domain') as Domain | null;
+  const defaultDomain: Domain =
+    urlDomain && LEF_DOMAINS.includes(urlDomain) ? urlDomain : (preferredDomains[0] ?? 'law');
+
+  const initialDomain = defaultDomain;
   const initialMonth = Number(params.get('month') ?? 1) as 1 | 2 | 3 | 4;
 
-  const [domain, setDomain] = useState<Domain>(
-    LEF_DOMAINS.includes(initialDomain) ? initialDomain : 'law',
-  );
+  const [domain, setDomain] = useState<Domain>(initialDomain);
   const [month, setMonth] = useState<1 | 2 | 3 | 4>(
     [1, 2, 3, 4].includes(initialMonth) ? initialMonth : 1,
   );
@@ -70,9 +83,9 @@ export function RoadmapView() {
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              <span className="block font-semibold leading-tight">{m.monthName}</span>
+              <span className="block font-semibold leading-tight">{m.name.split(' ')[0]}</span>
               <span className="mt-0.5 block text-xs uppercase tracking-[0.18em] text-text-muted">
-                M{m.month}
+                Phase {m.month}
               </span>
             </button>
           ))}
@@ -96,6 +109,7 @@ export function RoadmapView() {
           const meta = DOMAIN_META[d];
           const isActive = domain === d;
           const accentText = DOMAIN_ACCENT_TEXT[d];
+          const isInTrack = preferredDomains.includes(d);
 
           return (
             <button
@@ -111,17 +125,28 @@ export function RoadmapView() {
               className="relative z-10 flex cursor-pointer flex-col items-center gap-1 rounded-lg px-2 py-3 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-1 md:flex-row md:justify-center md:gap-2.5 md:py-2.5"
             >
               <span
-                className={`text-lg leading-none transition-transform duration-150 md:text-base ${isActive ? 'scale-110' : 'scale-100'}`}
+                className={`text-lg leading-none transition-transform duration-150 md:text-base ${isActive ? 'scale-110' : 'scale-100'} ${!isInTrack && preferredDomains.length < 3 ? 'opacity-40' : ''}`}
               >
                 {meta.icon}
               </span>
               <span
                 className={`text-xs font-semibold tracking-wide transition-colors duration-150 md:text-sm ${
-                  isActive ? accentText : 'text-text-muted'
+                  isActive
+                    ? accentText
+                    : !isInTrack && preferredDomains.length < 3
+                      ? 'text-text-muted opacity-50'
+                      : 'text-text-muted'
                 }`}
               >
                 {meta.label}
               </span>
+              {/* "Your track" dot — only shown when not all domains selected */}
+              {isInTrack && preferredDomains.length < 3 && (
+                <span
+                  className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-gold"
+                  title="In your track"
+                />
+              )}
             </button>
           );
         })}
@@ -139,7 +164,7 @@ export function RoadmapView() {
           <div className="mb-3 flex flex-wrap items-center gap-3">
             <LevelBadge level={track.level} />
             <span className="text-xs uppercase tracking-[0.22em] text-text-muted">
-              {monthData.dateRange}
+              {phaseDateRanges[month] ?? monthData.dateRange}
             </span>
           </div>
           <h2 className="font-display text-xl font-bold tracking-tight md:text-2xl">

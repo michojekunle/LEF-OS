@@ -22,7 +22,13 @@ export default async function SettingsPage() {
   const [{ data: profile }, { data: settings }, { data: reminders }, { data: subscriptions }] =
     await Promise.all([
       sb.from('profiles').select('*').eq('id', userData.user.id).maybeSingle(),
-      sb.from('user_settings').select('*').eq('user_id', userData.user.id).maybeSingle(),
+      sb
+        .from('user_settings')
+        .select(
+          'daily_reminder_enabled, timezone, course_start_date, course_duration_months, preferred_domains',
+        )
+        .eq('user_id', userData.user.id)
+        .maybeSingle(),
       sb
         .from('custom_reminders')
         .select('*')
@@ -39,7 +45,15 @@ export default async function SettingsPage() {
       displayName={profile?.display_name ?? null}
       bio={profile?.bio ?? null}
       defaultPublic={profile?.default_public ?? false}
-      initialSettings={settings ?? { daily_reminder_enabled: true, timezone: 'Africa/Lagos' }}
+      initialSettings={
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (settings as any) ?? {
+          daily_reminder_enabled: true,
+          timezone: 'Africa/Lagos',
+          course_start_date: null,
+          course_duration_months: 4,
+        }
+      }
       initialReminders={reminders ?? []}
       hasActivePush={Boolean(subscriptions && subscriptions.length > 0)}
     />
