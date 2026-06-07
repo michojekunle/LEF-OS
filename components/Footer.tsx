@@ -3,7 +3,27 @@ import { Github, Twitter, Globe, GitFork, ArrowUpRight } from 'lucide-react';
 
 const GITHUB_URL = 'https://github.com/michojekunle/lef-os';
 
-export function Footer() {
+type Props = {
+  courseStartDate?: string | null;
+  courseTotalDays?: number | null;
+  preferredDomainsCount?: number | null;
+};
+
+export function Footer({ courseStartDate, courseTotalDays, preferredDomainsCount }: Props = {}) {
+  const totalDays = courseTotalDays ?? 122;
+  const domainCount = preferredDomainsCount ?? 3;
+
+  // Format the start date if provided, otherwise fall back to the default cohort text
+  let metaLine = 'June 1 – September 30, 2026 · 122 days · 3 domains';
+  if (courseStartDate) {
+    const start = new Date(courseStartDate);
+    const startStr = start.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+    metaLine = `From ${startStr} · ${totalDays} days · ${domainCount} domain${domainCount === 1 ? '' : 's'}`;
+  }
   return (
     <footer className="mt-12 border-t border-[var(--border-subtle)]">
       {/* ── Contribute band ─────────────────────────────────────────── */}
@@ -53,10 +73,8 @@ export function Footer() {
             <p className="font-display text-xl tracking-tight text-text-primary">
               Law · Economics · Finance
             </p>
-            <p className="mt-1 text-xs">A 4-month founder's curriculum. Learned in public.</p>
-            <p className="mt-2 font-mono text-xs text-text-muted">
-              June 1 – September 30, 2026 · 122 days · 3 domains
-            </p>
+            <p className="mt-1 text-xs">A founder&apos;s curriculum. Learned in public.</p>
+            <p className="mt-2 font-mono text-xs text-text-muted">{metaLine}</p>
           </div>
 
           <div className="flex flex-col gap-3 md:items-end">

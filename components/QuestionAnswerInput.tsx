@@ -12,6 +12,8 @@ type Props = {
   questionIndex: number;
   initialAnswer?: string;
   userId?: string;
+  /** Called with the current value after each successful save */
+  onAnswerChange?: (value: string) => void;
 };
 
 const DEBOUNCE_MS = 1400;
@@ -22,6 +24,7 @@ export function QuestionAnswerInput({
   questionIndex,
   initialAnswer = '',
   userId,
+  onAnswerChange,
 }: Props) {
   const [isOpen, setIsOpen] = useState(!!initialAnswer);
   const [text, setText] = useState(initialAnswer);
@@ -72,6 +75,7 @@ export function QuestionAnswerInput({
         }
         lastSavedRef.current = value;
         setSaveState('saved');
+        onAnswerChange?.(value);
         setTimeout(() => setSaveState('idle'), 2500);
       } catch {
         setSaveState('error');

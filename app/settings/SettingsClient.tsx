@@ -25,6 +25,9 @@ type Props = {
   initialSettings: {
     daily_reminder_enabled: boolean;
     timezone: string;
+    course_start_date?: string | null;
+    course_duration_months?: number | null;
+    preferred_domains?: string[] | null;
   };
   initialReminders: CustomReminder[];
   hasActivePush: boolean;
@@ -68,6 +71,9 @@ export function SettingsClient({
             userId={userId}
             initialReminderEnabled={initialSettings.daily_reminder_enabled}
             initialTimezone={initialSettings.timezone}
+            initialCourseStartDate={initialSettings.course_start_date}
+            initialCourseDurationMonths={initialSettings.course_duration_months}
+            initialPreferredDomains={initialSettings.preferred_domains}
           />
 
           {/* CUSTOM REMINDERS CONFIG */}

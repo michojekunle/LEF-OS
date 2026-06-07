@@ -1,5 +1,15 @@
 'use client';
 
+// Module-level constant — not recreated on every render
+const AUTH_ROUTES = [
+  '/login',
+  '/signup',
+  '/register',
+  '/auth',
+  '/forgot-password',
+  '/reset-password',
+];
+
 import {
   createContext,
   useCallback,
@@ -163,6 +173,9 @@ export function TourProvider({ children }: { children: ReactNode }) {
   // Proper cleanup in the return function is sufficient — React handles idempotency.
 
   useEffect(() => {
+    // Never auto-start the tour on auth screens — wrong moment, wrong audience
+    if (AUTH_ROUTES.some((r) => pathname.startsWith(r))) return;
+
     const savedStep = getSavedTourStep();
     if (!shouldShowTour()) return;
 
@@ -181,6 +194,20 @@ export function TourProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'START', step: 0 });
     }, 1200);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ─── Onboarding→tour handoff ─────────────────────────────────────────────
+  // The OnboardingShell fires 'lef-tour-start' after the wizard completes.
+  // We listen here so the tour starts regardless of the localStorage state
+  // (a brand-new user who just finished onboarding has shouldShowTour()=true).
+
+  useEffect(() => {
+    function handleTourStart() {
+      dispatch({ type: 'START', step: 0 });
+    }
+    window.addEventListener('lef-tour-start', handleTourStart);
+    return () => window.removeEventListener('lef-tour-start', handleTourStart);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
