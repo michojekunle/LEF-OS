@@ -114,14 +114,7 @@ function parseScore(text: string, knownTotal = 0): { answered: number; total: nu
  *  `/day` is in the list because the day detail page renders its own inline
  *  LEFCounselPanel — having two panels would also cause global quiz events to
  *  fire twice. */
-const FLOATING_HIDDEN_PATHS = [
-  '/roadmap',
-  '/journal',
-  '/stats',
-  '/export',
-  '/settings',
-  '/day',
-];
+const FLOATING_HIDDEN_PATHS = ['/roadmap', '/journal', '/stats', '/export', '/settings', '/day'];
 
 type Props = {
   day: number;
@@ -202,12 +195,14 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
       return; // Another instance owns the slot; do nothing.
     }
     function handleProgress(e: Event) {
-      const detail = (e as CustomEvent<{
-        answered: number;
-        total: number;
-        correct: number;
-        complete: boolean;
-      }>).detail;
+      const detail = (
+        e as CustomEvent<{
+          answered: number;
+          total: number;
+          correct: number;
+          complete: boolean;
+        }>
+      ).detail;
       if (!detail || typeof detail.total !== 'number') return;
 
       // Update bar in real-time; mark JSON-block mode so text sends
@@ -408,7 +403,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
           {
             role: 'assistant',
             content: chatCleared
-              ? "Chat cleared. What would you like to study next?"
+              ? 'Chat cleared. What would you like to study next?'
               : "I cleared the local chat view, but the server-side history couldn't be reached. Try again in a moment.",
           },
         ]);
@@ -422,7 +417,7 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
           ...prev,
           {
             role: 'assistant',
-            content: "Something went wrong clearing the chat. Please try again.",
+            content: 'Something went wrong clearing the chat. Please try again.',
           },
         ]);
       }
