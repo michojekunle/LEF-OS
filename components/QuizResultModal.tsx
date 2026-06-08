@@ -52,8 +52,20 @@ export function QuizResultModal({ answered, total, topic, onMoreQuestions, onDis
     ? `You answered all ${total} questions on ${topic}.`
     : `${answered} of ${total} questions answered on ${topic}.`;
 
-  const tryAgainPrompt = `I just worked through the review questions on "${topic}". Give me ${total} new, different practice questions on this topic — mix in some harder angles and edge cases I might have missed.`;
-  const challengePrompt = `I scored perfectly on the review questions for "${topic}". Now challenge me: give me ${total} advanced questions that go deeper — application scenarios, edge cases, or cross-domain connections to Economics and Finance.`;
+  // IMPORTANT: prompts must contain the word "quiz" and explicitly request the
+  // JSON format — the system prompt in /api/ai/chat only emits the JSON quiz
+  // block when the user asks for a "quiz". Saying "questions" alone produces
+  // a wall of prose instead of an interactive quiz.
+  const tryAgainPrompt =
+    `Generate another quick ${total}-question multiple-choice quiz on "${topic}". ` +
+    `Make these different from previous questions and mix in harder angles and edge cases. ` +
+    `Respond strictly with the JSON quiz format inside a \`\`\`json block — no other text.`;
+
+  const challengePrompt =
+    `Generate a challenging ${total}-question multiple-choice quiz on "${topic}". ` +
+    `Go deeper than the previous quiz — application scenarios, edge cases, and cross-domain ` +
+    `connections to Economics and Finance. ` +
+    `Respond strictly with the JSON quiz format inside a \`\`\`json block — no other text.`;
 
   return (
     <div
@@ -63,25 +75,30 @@ export function QuizResultModal({ answered, total, topic, onMoreQuestions, onDis
       role="dialog"
       aria-modal="true"
     >
-      {/* Confetti */}
+      {/* Confetti — pops in then falls past the bottom with rotation */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-        {CONFETTI_COLOURS.map((colour, i) => (
-          <span
-            key={i}
-            className="absolute animate-bounce rounded-sm"
-            style={{
-              width: `${6 + (i % 4) * 2}px`,
-              height: `${6 + (i % 3) * 3}px`,
-              background: colour,
-              opacity: 0.85,
-              left: `${(i * 9.7 + 5) % 90}%`,
-              top: `${(i * 13.3 + 4) % 45}%`,
-              animationDuration: `${0.8 + (i % 5) * 0.2}s`,
-              animationDelay: `${(i % 6) * 0.1}s`,
-              transform: `rotate(${i * 33}deg)`,
-            }}
-          />
-        ))}
+        {Array.from({ length: 36 }).map((_, i) => {
+          const colour = CONFETTI_COLOURS[i % CONFETTI_COLOURS.length];
+          // Pseudo-random horizontal drift so pieces fan out as they fall
+          const driftX = ((i * 53) % 280) - 140; // -140 to 140 px
+          return (
+            <span
+              key={i}
+              className="animate-confetti absolute rounded-sm"
+              style={{
+                width: `${5 + (i % 4) * 2}px`,
+                height: `${7 + (i % 3) * 3}px`,
+                background: colour,
+                opacity: 0.92,
+                left: `${(i * 7.3 + 5) % 95}%`,
+                top: `${(i * 11) % 30}%`,
+                animationDelay: `${(i % 12) * 0.08}s`,
+                // Custom property consumed by the keyframe for end-X position
+                ['--confetti-x' as string]: `${driftX}px`,
+              }}
+            />
+          );
+        })}
       </div>
 
       <div className="card relative w-full max-w-sm animate-[slideUp_0.3s_cubic-bezier(0.16,1,0.3,1)_both] space-y-5 p-7 text-center shadow-2xl">

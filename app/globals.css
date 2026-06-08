@@ -566,6 +566,32 @@ h5 {
   animation: wiggle 0.4s ease-in-out;
 }
 
+/* ── Confetti burst ──────────────────────────────────────────────── */
+/* Each piece pops up briefly, then falls past the bottom with rotation.
+   Designed to be paired with per-piece inline `animation-delay` so the
+   burst staggers naturally. */
+@keyframes confetti-fall {
+  0% {
+    transform: translate3d(0, -20px, 0) rotate(0deg) scale(0.3);
+    opacity: 0;
+  }
+  10% {
+    /* Pop-in: small upward jump as it appears */
+    transform: translate3d(0, -40px, 0) rotate(45deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    /* Fall well past the modal bottom, with full spin */
+    transform: translate3d(var(--confetti-x, 0px), 110vh, 0) rotate(720deg) scale(0.6);
+    opacity: 0;
+  }
+}
+
+.animate-confetti {
+  animation: confetti-fall 2.8s cubic-bezier(0.2, 0.4, 0.6, 1) forwards;
+  will-change: transform, opacity;
+}
+
 /* ── PWA viewport improvements ───────────────────────────────────── */
 @supports (padding: max(0px)) {
   .nav-safe {
