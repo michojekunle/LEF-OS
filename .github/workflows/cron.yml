@@ -1,15 +1,42 @@
 name: Hourly Reminder Cron
 
+# Triggers /api/cron/daily-reminder once every hour. The endpoint iterates
+# every user with daily_reminder_enabled=true and:
+#   - resolves their personal course window (start date + duration)
+#   - skips anyone outside their own course range (pre-start or post-end)
+#   - looks up the curriculum topics for THEIR Day N (not the cohort's)
+#   - filters the email body to only the domains they selected
+#   - matches their custom reminder times against their local timezone hour
+# All user-preference handling happens server-side — the workflow only
+# needs to ping reliably and authenticate.
+
 on:
   schedule:
-    - cron: '0 * * * *' # Runs at the top of every hour
-  workflow_dispatch: # Allows manual triggering from the GitHub UI
+    - cron: '0 * * * *' # Top of every hour, UTC
+  workflow_dispatch: # Allow manual triggering from the GitHub UI
 
 jobs:
   ping-cron:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Trigger Daily Reminder API
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
-          curl -f -X GET "${{ secrets.SITE_URL }}/api/cron/daily-reminder" \
-               -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
+          if [ -z "$SITE_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::error::SITE_URL or CRON_SECRET secret is not set"
+            exit 1
+          fi
+          # --fail-with-body so we see the JSON error response on non-2xx
+          # --max-time 240 so a hung response can't run forever
+          # --retry 2 with backoff for transient cold-start / 502 errors
+          curl --fail-with-body \
+               --max-time 240 \
+               --retry 2 \
+               --retry-delay 10 \
+               --retry-all-errors \
+               -X GET "${SITE_URL%/}/api/cron/daily-reminder" \
+               -H "Authorization: Bearer ${CRON_SECRET}" \
+               -H "Accept: application/json"

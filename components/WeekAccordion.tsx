@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import type { Week } from '../data/curriculum-data';
-import { getDayNumber, isInCourse } from '@/lib/utils';
+import { getDayNumber, isInCourse, toCurriculumDay } from '@/lib/utils';
+import { useCourse } from './CourseContext';
 
 type Props = {
   week: Week;
@@ -14,9 +15,11 @@ type Props = {
 export function WeekAccordion({ week, defaultOpen = false }: Props) {
   const [open, setOpen] = useState(defaultOpen);
 
-  // Compute the current curriculum day client-side so we can highlight it.
-  // Falls back to -1 outside the course window so nothing is highlighted.
-  const today = isInCourse() ? getDayNumber() : -1;
+  // Compute the current curriculum day using the user's personal course window
+  // so the "Today" highlight is accurate for custom timelines.
+  const course = useCourse();
+  const todayCalendarDay = isInCourse(new Date(), course) ? getDayNumber(new Date(), course) : -1;
+  const today = todayCalendarDay > 0 ? toCurriculumDay(todayCalendarDay, course.totalDays) : -1;
 
   return (
     <div className="card overflow-hidden">

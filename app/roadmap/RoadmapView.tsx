@@ -118,29 +118,36 @@ export function RoadmapView({
               role="tab"
               aria-selected={isActive}
               aria-controls="roadmap-panel"
+              disabled={!isInTrack && preferredDomains.length < 3}
+              title={
+                !isInTrack && preferredDomains.length < 3
+                  ? 'Not in your track — change in Settings'
+                  : undefined
+              }
               onClick={() => {
+                if (!isInTrack && preferredDomains.length < 3) return;
                 setDomain(d);
                 update({ domain: d });
               }}
-              className="relative z-10 flex cursor-pointer flex-col items-center gap-1 rounded-lg px-2 py-3 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-1 md:flex-row md:justify-center md:gap-2.5 md:py-2.5"
+              className={`relative z-10 flex flex-col items-center gap-1 rounded-lg px-2 py-3 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-1 md:flex-row md:justify-center md:gap-2.5 md:py-2.5 ${
+                !isInTrack && preferredDomains.length < 3
+                  ? 'cursor-not-allowed opacity-35'
+                  : 'cursor-pointer'
+              }`}
             >
               <span
-                className={`text-lg leading-none transition-transform duration-150 md:text-base ${isActive ? 'scale-110' : 'scale-100'} ${!isInTrack && preferredDomains.length < 3 ? 'opacity-40' : ''}`}
+                className={`text-lg leading-none transition-transform duration-150 md:text-base ${isActive ? 'scale-110' : 'scale-100'}`}
               >
                 {meta.icon}
               </span>
               <span
                 className={`text-xs font-semibold tracking-wide transition-colors duration-150 md:text-sm ${
-                  isActive
-                    ? accentText
-                    : !isInTrack && preferredDomains.length < 3
-                      ? 'text-text-muted opacity-50'
-                      : 'text-text-muted'
+                  isActive ? accentText : 'text-text-muted'
                 }`}
               >
                 {meta.label}
               </span>
-              {/* "Your track" dot — only shown when not all domains selected */}
+              {/* "Your track" indicator dot */}
               {isInTrack && preferredDomains.length < 3 && (
                 <span
                   className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-gold"

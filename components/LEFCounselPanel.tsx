@@ -17,10 +17,25 @@ import { checkQuizAchievement } from '@/lib/achievements';
 
 // ── Quiz helpers ───────────────────────────────────────────────────────────────
 
-/** Returns the number of questions detected in an AI response, or 0 if not a quiz. */
+/** Returns the number of questions detected in an AI response, or 0 if not a quiz.
+ *
+ *  Gemini emits quizzes in many shapes — the previous regex only matched the bare
+ *  `1.` style, missing every markdown-formatted response. This handles:
+ *    `1.`  `1)`  `1:`   ← plain numbered
+ *    `Q1.` `Q1:`         ← Q-prefix
+ *    `**1.**` `**1)**`   ← bold-wrapped numbered
+ *    `Question 1:`       ← "Question N" phrasing
+ *    `**Question 1:**`   ← bold-wrapped Question phrasing
+ *    `### Question 1`    ← header-prefixed
+ */
 function detectQuizQuestions(text: string): number {
-  // Match numbered items: "1." "1)" "Q1." "Q1:" at the start of a line
-  const numbered = text.match(/(?:^|\n)\s*(?:Q?\d+[.):\s])/g) ?? [];
+  // Two alternatives so we don't false-positive on prose with stray digits:
+  //   A) "Question N" / "Q N" phrasing — punctuation NOT required (handles
+  //      header style like "### Question 1"). Word boundary prevents partial matches.
+  //   B) Plain "N." / "N)" / "N:" — trailing punctuation IS required so phrases
+  //      like "I'll give you 3 examples" don't trigger.
+  const re = /(?:^|\n)\s*#{0,3}\s*\*{0,2}\s*(?:(?:Question\s+|Q)\d+\b|\d+\s*\*{0,2}\s*[.):])/gim;
+  const numbered = text.match(re) ?? [];
   return numbered.length >= 2 ? numbered.length : 0;
 }
 
@@ -294,15 +309,29 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
           }
 
           // ── Quiz detection (only when we didn't just handle a score) ──────────
-          if (!scoreHandled && detectedCount > 0 && quizQuestionCount === 0) {
-            // AI sent a new quiz — enter quiz mode
-            setQuizQuestionCount(detectedCount);
-            setQuizAnswerCount(0);
-            setScorePending(false);
-            // Fire one-time "attempted" achievement — does NOT show the result
-            // modal here; the modal shows when the score comes back so the user
-            // sees actual results, not a 0/N placeholder.
-            checkQuizAchievement(day); // marks seen in localStorage (deduped)
+          if (!scoreHandled && detectedCount > 0) {
+            // Always run the achievement check on every detected quiz — the
+            // function is deduped per day via localStorage so it's a no-op
+            // after the first quiz of the day. Previously this was guarded by
+            // `quizQuestionCount === 0`, which meant a follow-up quiz mid-chat
+            // never fired the achievement even on day-1 first attempts where
+            // the prior quiz state hadn't been cleared yet.
+            const earned = checkQuizAchievement(day);
+            if (earned.length > 0 && typeof window !== 'undefined') {
+              // Microtask delay so the achievement modal renders after the
+              // assistant message has painted (avoids flash-of-stacked-modals).
+              setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('lef-achievement', { detail: earned[0] }));
+              }, 200);
+            }
+
+            // Only enter quiz tracking mode if no quiz is currently active —
+            // we don't want to overwrite mid-quiz state with a new count.
+            if (quizQuestionCount === 0) {
+              setQuizQuestionCount(detectedCount);
+              setQuizAnswerCount(0);
+              setScorePending(false);
+            }
           }
         } else {
           const text = await res.text();

@@ -53,8 +53,10 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
 
   const date = dateFromDayNumber(day);
   const month = getMonthByCurriculumDay(day);
-  const domains: Domain[] = ['law', 'economics', 'finance'];
-  const metas = Object.fromEntries(domains.map((d) => [d, findDayMeta(d, day)])) as Record<
+  // domains is resolved later after preferredDomains is set; placeholder here
+  // so metas can be built for all three (needed for JSON-LD and EnrichedContent)
+  const allDomains: Domain[] = ['law', 'economics', 'finance'];
+  const metas = Object.fromEntries(allDomains.map((d) => [d, findDayMeta(d, day)])) as Record<
     Domain,
     ReturnType<typeof findDayMeta>
   >;
@@ -74,6 +76,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
     // ignore
   }
 
+  const VALID_DOMAINS: Domain[] = ['law', 'economics', 'finance'];
   let userId: string | null = null;
   let existing: DailyEntry | null = null;
   let notes: DayNote[] = [];
@@ -81,23 +84,35 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
   let communityResources: ResourceSubmission[] = [];
   let savedAnswers: Record<string, string> = {};
   let courseTotalDays = TOTAL_CALENDAR_DAYS; // default
+  let preferredDomains: Domain[] = VALID_DOMAINS;
+  let userCourseWindow = getCourseWindow(); // default window
 
   if (hasSupabaseConfig()) {
     try {
       const sb = await supabaseServer();
       const { data: u } = await sb.auth.getUser();
 
-      // Fetch user's course window for personalised "of N" display
+      // Fetch user's course window + domain preferences
       if (u.user) {
         const { data: settings } = await sb
           .from('user_settings')
-          .select('course_start_date, course_duration_months')
+          .select('course_start_date, course_duration_months, preferred_domains')
           .eq('user_id', u.user.id)
           .maybeSingle();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const s = settings as any;
-        const cw = getCourseWindow(s?.course_start_date ?? null, s?.course_duration_months ?? null);
-        courseTotalDays = cw.totalDays;
+        userCourseWindow = getCourseWindow(
+          s?.course_start_date ?? null,
+          s?.course_duration_months ?? null,
+        );
+        courseTotalDays = userCourseWindow.totalDays;
+        // Filter preferred domains
+        if (Array.isArray(s?.preferred_domains)) {
+          const filtered = (s.preferred_domains as string[]).filter((d): d is Domain =>
+            VALID_DOMAINS.includes(d as Domain),
+          );
+          if (filtered.length > 0) preferredDomains = filtered;
+        }
       }
 
       // Community resources visible to everyone (anon-safe via RLS)
@@ -148,11 +163,12 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
   }
 
   const prev = day > 1 ? day - 1 : null;
-  // Navigation caps at TOTAL_CALENDAR_DAYS (122) — the curriculum content ceiling.
-  // courseTotalDays only affects the "of N" display; the URL space is always 1–122.
   const next = day < TOTAL_CALENDAR_DAYS ? day + 1 : null;
   const isThu = isThursday(date);
-  const todayDay = isInCourse() ? clampDay(getDayNumber(new Date())) : null;
+  // Use the user's actual course window for "today" detection
+  const todayDay = isInCourse(new Date(), userCourseWindow)
+    ? clampDay(getDayNumber(new Date(), userCourseWindow))
+    : null;
   const isToday = todayDay !== null && todayDay === day;
 
   const jsonLd = {
@@ -252,8 +268,10 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
         </div>
       </header>
 
-      <section className="grid gap-3 md:grid-cols-3">
-        {domains.map((d) => {
+      <section
+        className={`grid gap-3 ${preferredDomains.length === 1 ? '' : preferredDomains.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}
+      >
+        {preferredDomains.map((d) => {
           const m = metas[d];
           return (
             <div key={d} className="card flex min-h-[160px] flex-col gap-3 p-5">
@@ -287,6 +305,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
         data={enrichedData}
         userId={userId ?? undefined}
         savedAnswers={savedAnswers}
+        preferredDomains={preferredDomains}
       />
 
       {/* RECOMMENDED RESOURCES */}
@@ -302,8 +321,10 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {domains.map((d) => {
+          <div
+            className={`grid gap-6 ${preferredDomains.length === 1 ? '' : preferredDomains.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}
+          >
+            {preferredDomains.map((d) => {
               const track = month.tracks[d];
               const resList = track?.resources || [];
               if (resList.length === 0) return null;
@@ -363,6 +384,7 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
             existing={existing}
             initialNotes={notes}
             initialQuestions={questions}
+            preferredDomains={preferredDomains}
           />
         ) : (
           <SignInPrompt day={day} />

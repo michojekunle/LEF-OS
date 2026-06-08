@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { Plus, Trash2, Check, Loader2, HelpCircle, BookOpen } from 'lucide-react';
 import type { DailyEntry, DayNote, LefDomain, Question } from '@/lib/database.types';
-import { DOMAIN_META, LEF_DOMAINS } from '@/data/curriculum-data';
+import { DOMAIN_META, LEF_DOMAINS, type Domain } from '@/data/curriculum-data';
 import { DailyLogForm } from '@/components/DailyLogForm';
 import { upsertDayNoteAction } from '@/app/actions/notes';
 import {
@@ -21,6 +21,8 @@ type Props = {
   existing: DailyEntry | null;
   initialNotes: DayNote[];
   initialQuestions: Question[];
+  /** Only show notes/form for these domains. Defaults to all three. */
+  preferredDomains?: Domain[];
   /** Called with newly earned achievement types after a note saves */
   onAchievements?: (types: import('@/lib/achievements').Achievement[]) => void;
 };
@@ -32,8 +34,15 @@ export function DayLogPanel({
   existing,
   initialNotes,
   initialQuestions,
+  preferredDomains,
   onAchievements,
 }: Props) {
+  // Resolve which domains to show — always a subset of LEF_DOMAINS in order
+  const activeDomains: LefDomain[] = LEF_DOMAINS.filter(
+    (d) => !preferredDomains || preferredDomains.includes(d as Domain),
+  );
+  const firstDomain = activeDomains[0] ?? 'law';
+
   const [entry, setEntry] = useState<DailyEntry | null>(existing);
   const [notes, setNotes] = useState<Record<LefDomain, string>>({
     law: initialNotes.find((n) => n.domain === 'law')?.body ?? '',
@@ -44,16 +53,19 @@ export function DayLogPanel({
   function handleNoteSaved(domain: LefDomain, value: string) {
     const updated = { ...notes, [domain]: value };
     setNotes(updated);
-    const earned = checkNotesAchievement(day, updated.law, updated.economics, updated.finance);
+    // Check achievement for notes across all active domains
+    const lawBody = activeDomains.includes('law') ? updated.law : 'filled';
+    const econBody = activeDomains.includes('economics') ? updated.economics : 'filled';
+    const finBody = activeDomains.includes('finance') ? updated.finance : 'filled';
+    const earned = checkNotesAchievement(day, lawBody, econBody, finBody);
     for (const a of earned) {
       window.dispatchEvent(new CustomEvent('lef-achievement', { detail: a }));
     }
-    // Also call optional prop for callers that want to handle it locally
     if (onAchievements && earned.length > 0) onAchievements(earned);
   }
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
-  // Mobile tab: which domain is active in the note switcher
-  const [activeTab, setActiveTab] = useState<LefDomain>('law');
+  // Mobile tab: start on the first preferred domain
+  const [activeTab, setActiveTab] = useState<LefDomain>(firstDomain);
 
   return (
     <div className="space-y-8">
@@ -62,7 +74,14 @@ export function DayLogPanel({
         <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">
           {entry ? 'Edit log' : 'Log this day'}
         </h2>
-        <DailyLogForm userId={userId} day={day} date={date} existing={entry} onSaved={setEntry} />
+        <DailyLogForm
+          userId={userId}
+          day={day}
+          date={date}
+          existing={entry}
+          onSaved={setEntry}
+          preferredDomains={preferredDomains}
+        />
       </section>
 
       {/* ── Per-domain notes ───────────────────────────────────────── */}
@@ -74,11 +93,10 @@ export function DayLogPanel({
           </h2>
         </div>
 
-        {/* Mobile: tab switcher */}
+        {/* Mobile: tab switcher — only preferred domains */}
         <div className="md:hidden">
-          {/* Domain tabs */}
           <div className="mb-3 flex overflow-hidden rounded-lg border border-[var(--border-subtle)]">
-            {LEF_DOMAINS.map((d) => {
+            {activeDomains.map((d) => {
               const meta = DOMAIN_META[d];
               const active = activeTab === d;
               const accentClass =
@@ -103,7 +121,6 @@ export function DayLogPanel({
               );
             })}
           </div>
-          {/* Active domain editor */}
           <NoteEditor
             key={activeTab}
             day={day}
@@ -114,9 +131,11 @@ export function DayLogPanel({
           />
         </div>
 
-        {/* Desktop: 3-column grid */}
-        <div className="hidden gap-3 md:grid md:grid-cols-3">
-          {LEF_DOMAINS.map((d) => (
+        {/* Desktop: grid — 1, 2, or 3 columns based on preferred domains */}
+        <div
+          className={`hidden gap-3 md:grid ${activeDomains.length === 1 ? 'md:grid-cols-1' : activeDomains.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}
+        >
+          {activeDomains.map((d) => (
             <NoteEditor
               key={d}
               day={day}

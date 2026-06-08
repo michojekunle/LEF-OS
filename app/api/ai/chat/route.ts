@@ -186,13 +186,8 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
       { name: 'Gemini 2.5 Flash', type: 'gemini', modelId: 'gemini-2.5-flash' },
       { name: 'Gemini 2.5 Pro', type: 'gemini', modelId: 'gemini-2.5-pro' },
       { name: 'Gemini 2.0 Flash', type: 'gemini', modelId: 'gemini-2.0-flash' },
-      { name: 'Gemini 1.5 Flash', type: 'gemini', modelId: 'gemini-1.5-flash' },
-      { name: 'Gemini 1.5 Pro', type: 'gemini', modelId: 'gemini-1.5-pro' },
       { name: 'Groq Llama 3.3 70B', type: 'groq', modelId: 'llama-3.3-70b-versatile' },
       { name: 'Groq Llama 3.1 8B', type: 'groq', modelId: 'llama-3.1-8b-instant' },
-      { name: 'Groq Mixtral 8x7B', type: 'groq', modelId: 'mixtral-8x7b-32768' },
-      { name: 'Groq Gemma 2 9B', type: 'groq', modelId: 'gemma2-9b-it' },
-      { name: 'Groq DeepSeek R1 70B', type: 'groq', modelId: 'deepseek-r1-distill-llama-70b' },
     ];
 
     let text = '';
@@ -273,9 +268,20 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
           `Attempting chat generation fallback using ${provider.name} (${provider.modelId})...`,
         );
         try {
+          // Limit Groq history dynamically to prevent TPM/Rate limits
+          const groqHistory = [...safeMsgs];
+          let totalChars = groqHistory.reduce((acc, m) => acc + m.content.length, 0);
+
+          // Keep dropping oldest messages until total character count is under 12,000
+          // (roughly 3,000 tokens) to guarantee staying under the TPM limits
+          while (groqHistory.length > 1 && totalChars > 12000) {
+            const removed = groqHistory.shift();
+            if (removed) totalChars -= removed.content.length;
+          }
+
           const groqMessages = [
             { role: 'system', content: systemInstruction },
-            ...safeMsgs.map((m) => ({
+            ...groqHistory.map((m) => ({
               role: m.role,
               content: m.content,
             })),
