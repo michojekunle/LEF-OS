@@ -37,10 +37,21 @@ type Props = {
   data: Record<'law' | 'economics' | 'finance', EnrichedData | null>;
   userId?: string;
   savedAnswers?: SavedAnswers;
+  /** Only render accordions for these domains. Defaults to all three. */
+  preferredDomains?: string[];
 };
 
-export function EnrichedContentPanel({ day, data, userId, savedAnswers = {} }: Props) {
-  const domains = ['law', 'economics', 'finance'] as const;
+export function EnrichedContentPanel({
+  day,
+  data,
+  userId,
+  savedAnswers = {},
+  preferredDomains,
+}: Props) {
+  const allDomains = ['law', 'economics', 'finance'] as const;
+  const domains = preferredDomains
+    ? allDomains.filter((d) => preferredDomains.includes(d))
+    : allDomains;
   const hasAnyData = domains.some((d) => data[d]);
 
   if (!hasAnyData) return null;
@@ -114,11 +125,13 @@ function DomainAccordion({
         else delete next[index];
         const answeredCount = Object.keys(next).length;
 
-        // First answer — show "attempted" confetti
+        // First answer — fire achievement + show modal
         if (!quizAttempted && value.trim()) {
           setQuizAttempted(true);
           const earned = checkQuizAchievement(day);
           if (earned.length > 0) {
+            // Dispatch globally so AchievementProvider shows the confetti modal
+            window.dispatchEvent(new CustomEvent('lef-achievement', { detail: earned[0] }));
             setQuizModal({ answered: answeredCount, total: totalQuestions });
           }
         }

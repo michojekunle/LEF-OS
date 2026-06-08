@@ -7,11 +7,18 @@ import {
   clampDay,
   isoDate,
   isEntryComplete,
+  getCourseWindow,
+  toCurriculumDay,
+  isInCourse,
+  type CourseWindow,
 } from '@/lib/utils';
 import webpush from 'web-push';
 import { buildEmailLayout, sanitizeHtmlText, sendEmail as dispatchEmail } from '@/lib/email';
 import { calculateLocalHour, matchCustomReminders, shouldSendReminder } from '@/lib/reminders';
 import { getSiteUrl } from '@/lib/env';
+
+type Domain = 'law' | 'economics' | 'finance';
+const VALID_DOMAINS: Domain[] = ['law', 'economics', 'finance'];
 
 export async function GET(request: Request) {
   // ── Auth: CRON_SECRET must be set and must match the Authorization header ──
@@ -44,19 +51,16 @@ export async function GET(request: Request) {
   const todayIso = isoDate(todayDate);
   const yesterdayIso = isoDate(yesterdayDate);
 
-  const todayDay = clampDay(getDayNumber(todayDate));
-  const yesterdayDay = clampDay(getDayNumber(yesterdayDate));
-
-  const todayTopics = getTodayTopics(todayDay);
-  const yesterdayTopics = getTodayTopics(yesterdayDay);
-
   try {
     const sb = supabaseAdmin();
 
-    // Fetch user settings for active notifications (with timezone)
+    // Fetch user settings — include timeline + domain preferences so the
+    // reminder content is computed per-user, not using the default cohort window.
     const { data: settingsList, error: settingsError } = await sb
       .from('user_settings')
-      .select('user_id, email, timezone, daily_reminder_enabled')
+      .select(
+        'user_id, email, timezone, daily_reminder_enabled, course_start_date, course_duration_months, preferred_domains',
+      )
       .eq('daily_reminder_enabled', true);
 
     if (settingsError) throw settingsError;
@@ -76,9 +80,48 @@ export async function GET(request: Request) {
 
     // Process reminders for each user
     for (const setting of settingsList) {
-      const userId = setting.user_id;
-      const email = setting.email;
-      const timezone = setting.timezone || 'Africa/Lagos';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const s = setting as any;
+      const userId = s.user_id;
+      const email = s.email;
+      const timezone = s.timezone || 'Africa/Lagos';
+
+      // ── Per-user course window ────────────────────────────────────────────
+      // Every user has their own start date + duration. Compute their personal
+      // course window so reminders show topics for the right curriculum day.
+      const userCourseWindow: CourseWindow = getCourseWindow(
+        s.course_start_date ?? null,
+        s.course_duration_months ?? null,
+      );
+
+      // Skip users whose course hasn't started or has ended — sending them
+      // "Day X awaits" reminders would be wrong.
+      if (!isInCourse(todayDate, userCourseWindow)) {
+        continue;
+      }
+
+      // Per-user calendar day → curriculum topic day mapping (handles timelines
+      // longer than 111 days by spreading topics across calendar days).
+      const userTodayCalendarDay = clampDay(getDayNumber(todayDate, userCourseWindow));
+      const userYesterdayCalendarDay = clampDay(getDayNumber(yesterdayDate, userCourseWindow));
+      const userTodayDay = toCurriculumDay(userTodayCalendarDay, userCourseWindow.totalDays);
+      const userYesterdayDay = toCurriculumDay(
+        userYesterdayCalendarDay,
+        userCourseWindow.totalDays,
+      );
+
+      const userTodayTopics = getTodayTopics(userTodayDay);
+      const userYesterdayTopics = getTodayTopics(userYesterdayDay);
+
+      // Validate & resolve user's preferred domains (default = all 3)
+      const rawDomains = s.preferred_domains;
+      const userPreferredDomains: Domain[] = Array.isArray(rawDomains)
+        ? (rawDomains as string[]).filter((d): d is Domain =>
+            (VALID_DOMAINS as string[]).includes(d),
+          )
+        : VALID_DOMAINS;
+      const effectiveDomains: Domain[] =
+        userPreferredDomains.length > 0 ? userPreferredDomains : VALID_DOMAINS;
 
       // 1. Calculate user's current hour in their timezone
       const localHour = calculateLocalHour(todayDate, timezone);
@@ -138,7 +181,19 @@ export async function GET(request: Request) {
       // 3. Trigger each matching reminder
       for (const reminder of matchingReminders) {
         const title = reminder.title || 'LEF OS Study Reminder';
-        const message = `Day ${todayDay} awaits: Law, Economics, and Finance. Keep your ${streak}-day streak going!`;
+        // Build a domain phrase that matches the user's actual track
+        const domainLabels: Record<Domain, string> = {
+          law: 'Law',
+          economics: 'Economics',
+          finance: 'Finance',
+        };
+        const domainPhrase =
+          effectiveDomains.length === 3
+            ? 'Law, Economics, and Finance'
+            : effectiveDomains.length === 2
+              ? `${domainLabels[effectiveDomains[0]]} and ${domainLabels[effectiveDomains[1]]}`
+              : domainLabels[effectiveDomains[0]];
+        const message = `Day ${userTodayDay} awaits: ${domainPhrase}. Keep your ${streak}-day streak going!`;
 
         let emailSent = false;
         let inAppSent = false;
@@ -155,17 +210,18 @@ export async function GET(request: Request) {
             title,
             message,
             streak,
-            todayDay,
-            todayTopics,
-            yesterdayDay,
-            yesterdayTopics,
+            userTodayDay,
+            userTodayTopics,
+            userYesterdayDay,
+            userYesterdayTopics,
             Boolean(yesterdayComplete),
             siteUrl,
+            effectiveDomains,
           );
 
           emailSent = await dispatchEmail({
             to: email,
-            subject: `LEF OS · ${title} (Day ${todayDay})`,
+            subject: `LEF OS · ${title} (Day ${userTodayDay})`,
             html: emailHtml,
             from: 'LEF OS Reminder <onboarding@resend.dev>',
           });
@@ -237,6 +293,27 @@ export async function GET(request: Request) {
   }
 }
 
+// Per-domain visual styling for the email cards
+const DOMAIN_STYLE: Record<Domain, { label: string; icon: string; colour: string }> = {
+  law: { label: 'Law', icon: '⚖️', colour: '#c9ab70' },
+  economics: { label: 'Economics', icon: '📊', colour: '#7C9E8F' },
+  finance: { label: 'Finance', icon: '💰', colour: '#8B9ECC' },
+};
+
+function buildDomainCardHtml(
+  domain: Domain,
+  topic: string | null | undefined,
+  fallback = 'Integration & sharing buffer',
+): string {
+  const style = DOMAIN_STYLE[domain];
+  const topicHtml = topic ? sanitizeHtmlText(topic) : fallback;
+  return `
+    <div class="card" style="border-left: 3px solid ${style.colour}; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
+      <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">${style.icon} ${style.label}</div>
+      <p style="font-size: 14px; margin: 0; color: #ede8e0;">${topicHtml}</p>
+    </div>`;
+}
+
 function getReminderEmailHtml(
   title: string,
   message: string,
@@ -247,34 +324,21 @@ function getReminderEmailHtml(
   yesterdayTopics: { law?: string | null; economics?: string | null; finance?: string | null },
   yesterdayComplete: boolean,
   siteUrl: string,
+  preferredDomains: Domain[],
 ): string {
-  const todayLaw = todayTopics.law
-    ? sanitizeHtmlText(todayTopics.law)
-    : 'Integration & sharing buffer';
-  const todayEcon = todayTopics.economics
-    ? sanitizeHtmlText(todayTopics.economics)
-    : 'Integration & sharing buffer';
-  const todayFin = todayTopics.finance
-    ? sanitizeHtmlText(todayTopics.finance)
-    : 'Integration & sharing buffer';
+  // Render only the domain cards the user has selected
+  const todayCards = preferredDomains.map((d) => buildDomainCardHtml(d, todayTopics[d])).join('');
+
+  const yesterdayCards = preferredDomains
+    .map((d) => buildDomainCardHtml(d, yesterdayTopics[d]))
+    .join('');
 
   const yesterdayHtml = !yesterdayComplete
     ? `
       <div style="border-top: 1px solid #2a2a2a; margin-top: 32px; padding-top: 24px;">
         <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: #cc7272; margin-bottom: 12px;">Yesterday was waiting (Day ${yesterdayDay})</div>
         <p style="font-size: 13px; color: #857e76; margin-bottom: 12px;">You haven't logged yesterday's study yet. Here is what you were to do:</p>
-        <div class="card" style="border-left: 3px solid #c9ab70; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">⚖️ Law</div>
-          <p style="font-size: 14px; margin: 0; color: #ede8e0;">${yesterdayTopics.law ? sanitizeHtmlText(yesterdayTopics.law) : 'Integration & sharing buffer'}</p>
-        </div>
-        <div class="card" style="border-left: 3px solid #7C9E8F; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">📊 Economics</div>
-          <p style="font-size: 14px; margin: 0; color: #ede8e0;">${yesterdayTopics.economics ? sanitizeHtmlText(yesterdayTopics.economics) : 'Integration & sharing buffer'}</p>
-        </div>
-        <div class="card" style="border-left: 3px solid #8B9ECC; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">💰 Finance</div>
-          <p style="font-size: 14px; margin: 0; color: #ede8e0;">${yesterdayTopics.finance ? sanitizeHtmlText(yesterdayTopics.finance) : 'Integration & sharing buffer'}</p>
-        </div>
+        ${yesterdayCards}
       </div>`
     : '';
 
@@ -286,20 +350,7 @@ function getReminderEmailHtml(
   </div>
 
   <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: #857e76; margin-top: 24px; margin-bottom: 12px;">Today's Topics (Day ${todayDay})</div>
-  
-  <div class="card" style="border-left: 3px solid #c9ab70; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
-    <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">⚖️ Law</div>
-    <p style="font-size: 14px; margin: 0; color: #ede8e0;">${todayLaw}</p>
-  </div>
-  <div class="card" style="border-left: 3px solid #7C9E8F; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
-    <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">📊 Economics</div>
-    <p style="font-size: 14px; margin: 0; color: #ede8e0;">${todayEcon}</p>
-  </div>
-  <div class="card" style="border-left: 3px solid #8B9ECC; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
-    <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">💰 Finance</div>
-    <p style="font-size: 14px; margin: 0; color: #ede8e0;">${todayFin}</p>
-  </div>
-
+  ${todayCards}
   ${yesterdayHtml}
   `;
 

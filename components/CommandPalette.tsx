@@ -24,8 +24,10 @@ import {
   Compass,
   Sparkles,
   Download,
+  Trash2,
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase';
+import { clearAllHistory } from '@/lib/clear-history';
 import { CURRICULUM, TOTAL_CALENDAR_DAYS, type Domain } from '../data/curriculum-data';
 
 type Command = {
@@ -165,6 +167,28 @@ function Palette({ onClose }: { onClose: () => void }) {
               },
             },
           ]),
+      {
+        id: 'clear-history',
+        group: 'Account',
+        label: 'Clear all history (chat, achievements, tour state)',
+        hint: 'Local + server chat memory',
+        Icon: Trash2,
+        keywords: 'reset wipe delete chat conversation memory achievements tour',
+        run: async () => {
+          if (typeof window === 'undefined') return;
+          const ok = window.confirm(
+            'This will:\n' +
+              '  • Delete your LEFCounsel chat history (server)\n' +
+              '  • Clear achievement badges, tour progress, and dismissed prompts (local)\n' +
+              '  • Reset quiz session state\n\n' +
+              'Your study logs, notes, and entries are NOT affected.\n\nProceed?',
+          );
+          if (!ok) return;
+          await clearAllHistory();
+          // Refresh so cleared chat history + UI flags reload fresh
+          router.refresh();
+        },
+      },
       {
         id: 'signout',
         group: 'Account',

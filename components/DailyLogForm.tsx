@@ -13,12 +13,14 @@ type Props = {
   date: Date;
   existing: DailyEntry | null;
   onSaved: (entry: DailyEntry) => void;
+  /** Only show checkboxes for these domains. Defaults to all three. */
+  preferredDomains?: string[];
 };
 
 const MAX_JOURNAL = 4000;
 const MAX_INSIGHT = 280;
 
-export function DailyLogForm({ day, date, existing, onSaved }: Props) {
+export function DailyLogForm({ day, date, existing, onSaved, preferredDomains }: Props) {
   const [studied, setStudied] = useState(
     Boolean(
       existing &&
@@ -45,9 +47,9 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
 
   function markAll() {
     setStudied(true);
-    setLaw(true);
-    setEcon(true);
-    setFin(true);
+    if (!preferredDomains || preferredDomains.includes('law')) setLaw(true);
+    if (!preferredDomains || preferredDomains.includes('economics')) setEcon(true);
+    if (!preferredDomains || preferredDomains.includes('finance')) setFin(true);
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -105,9 +107,15 @@ export function DailyLogForm({ day, date, existing, onSaved }: Props) {
           Domains completed
         </legend>
         <div className="flex flex-wrap gap-3">
-          <DomainCheck label="⚖️ Law" checked={law} onChange={setLaw} />
-          <DomainCheck label="📊 Economics" checked={econ} onChange={setEcon} />
-          <DomainCheck label="💰 Finance" checked={fin} onChange={setFin} />
+          {(!preferredDomains || preferredDomains.includes('law')) && (
+            <DomainCheck label="⚖️ Law" checked={law} onChange={setLaw} />
+          )}
+          {(!preferredDomains || preferredDomains.includes('economics')) && (
+            <DomainCheck label="📊 Economics" checked={econ} onChange={setEcon} />
+          )}
+          {(!preferredDomains || preferredDomains.includes('finance')) && (
+            <DomainCheck label="💰 Finance" checked={fin} onChange={setFin} />
+          )}
         </div>
       </fieldset>
 

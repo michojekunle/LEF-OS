@@ -6,12 +6,42 @@ import type { QuizData } from './types';
 
 type Props = { quiz: QuizData };
 
+/**
+ * Notifies LEFCounselPanel about quiz progress so the floating/inline panel
+ * can update its quiz status bar in real-time AND open the QuizResultModal
+ * when all questions are answered. The panel listens for `lef-quiz-progress`
+ * on the window.
+ */
+type QuizProgressDetail = {
+  answered: number;
+  total: number;
+  correct: number;
+  complete: boolean;
+};
+
 export function QuizBlock({ quiz }: Props) {
   const [answers, setAnswers] = useState<Record<number, number>>({});
 
   function pick(qIdx: number, optIdx: number): void {
     if (qIdx in answers) return; // locked once answered
-    setAnswers((prev) => ({ ...prev, [qIdx]: optIdx }));
+    const next = { ...answers, [qIdx]: optIdx };
+    setAnswers(next);
+
+    // ── Notify parent panel of the latest progress ──────────────────────────
+    if (typeof window !== 'undefined') {
+      const total = quiz.questions.length;
+      const answered = Object.keys(next).length;
+      const correct = Object.entries(next).filter(
+        ([qi, oi]) => quiz.questions[parseInt(qi, 10)].answerIndex === oi,
+      ).length;
+      const detail: QuizProgressDetail = {
+        answered,
+        total,
+        correct,
+        complete: answered === total,
+      };
+      window.dispatchEvent(new CustomEvent('lef-quiz-progress', { detail }));
+    }
   }
 
   const totalAnswered = Object.keys(answers).length;

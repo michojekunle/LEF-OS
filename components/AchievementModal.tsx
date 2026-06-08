@@ -115,25 +115,28 @@ export function AchievementModal({ achievement, onDismiss }: Props) {
       aria-modal="true"
       aria-label={meta.title}
     >
-      {/* Confetti */}
+      {/* Confetti — pops in then falls past the bottom with rotation */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-        {CONFETTI_COLOURS.map((colour, i) => (
-          <span
-            key={i}
-            className="absolute animate-bounce rounded-sm"
-            style={{
-              width: `${6 + (i % 4) * 2}px`,
-              height: `${6 + (i % 3) * 3}px`,
-              background: colour,
-              opacity: 0.85,
-              left: `${(i * 7.3 + 5) % 90}%`,
-              top: `${(i * 11.7 + 2) % 40}%`,
-              animationDuration: `${0.9 + (i % 5) * 0.25}s`,
-              animationDelay: `${(i % 7) * 0.1}s`,
-              transform: `rotate(${i * 27}deg)`,
-            }}
-          />
-        ))}
+        {Array.from({ length: 40 }).map((_, i) => {
+          const colour = CONFETTI_COLOURS[i % CONFETTI_COLOURS.length];
+          const driftX = ((i * 47) % 320) - 160;
+          return (
+            <span
+              key={i}
+              className="animate-confetti absolute rounded-sm"
+              style={{
+                width: `${5 + (i % 4) * 2}px`,
+                height: `${7 + (i % 3) * 3}px`,
+                background: colour,
+                opacity: 0.92,
+                left: `${(i * 6.7 + 4) % 95}%`,
+                top: `${(i * 9.3) % 25}%`,
+                animationDelay: `${(i % 14) * 0.07}s`,
+                ['--confetti-x' as string]: `${driftX}px`,
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Modal card */}

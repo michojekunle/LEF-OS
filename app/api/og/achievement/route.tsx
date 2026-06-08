@@ -67,6 +67,7 @@ export async function GET(req: NextRequest) {
   const streak = searchParams.get('streak') ?? '';
   const theme = searchParams.get('theme') ?? 'dark';
 
+  // 'system' resolves to dark — we can't detect OS preference server-side
   const isDark = theme !== 'light';
   const bg = isDark ? '#0e0e0e' : '#faf9f7';
   const textPrimary = isDark ? '#ede8e0' : '#18160f';
@@ -93,7 +94,7 @@ export async function GET(req: NextRequest) {
         overflow: 'hidden',
       }}
     >
-      {/* Background glow */}
+      {/* Background glow — single child, no display needed */}
       <div
         style={{
           position: 'absolute',
@@ -104,6 +105,7 @@ export async function GET(req: NextRequest) {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
+          display: 'flex',
         }}
       />
 
@@ -116,6 +118,7 @@ export async function GET(req: NextRequest) {
           right: 0,
           height: '4px',
           background: `linear-gradient(90deg, transparent, ${meta.colour}, transparent)`,
+          display: 'flex',
         }}
       />
 
@@ -138,13 +141,14 @@ export async function GET(req: NextRequest) {
         </span>
       </div>
 
-      {/* User — top right */}
+      {/* User — top right (single text node, display flex) */}
       {username && (
         <div
           style={{
             position: 'absolute',
             top: '44px',
             right: '56px',
+            display: 'flex',
             fontSize: '14px',
             color: textMuted,
             letterSpacing: '0.06em',
@@ -154,7 +158,7 @@ export async function GET(req: NextRequest) {
         </div>
       )}
 
-      {/* Centre content */}
+      {/* Centre content — zIndex removed (unitless but unsupported by Satori) */}
       <div
         style={{
           display: 'flex',
@@ -162,12 +166,12 @@ export async function GET(req: NextRequest) {
           alignItems: 'center',
           gap: '20px',
           textAlign: 'center',
-          zIndex: 1,
         }}
       >
         {/* Emoji */}
         <div
           style={{
+            display: 'flex',
             fontSize: '96px',
             lineHeight: 1,
             filter: 'drop-shadow(0 0 32px ' + meta.colour + '66)',
@@ -179,6 +183,7 @@ export async function GET(req: NextRequest) {
         {/* Achievement name */}
         <div
           style={{
+            display: 'flex',
             fontSize: '52px',
             fontWeight: 800,
             color: meta.colour,
@@ -192,6 +197,7 @@ export async function GET(req: NextRequest) {
         {/* Subtitle */}
         <div
           style={{
+            display: 'flex',
             fontSize: '20px',
             color: textMuted,
             maxWidth: '680px',
@@ -205,6 +211,7 @@ export async function GET(req: NextRequest) {
         {day && (
           <div
             style={{
+              display: 'flex',
               background: surfaceBg,
               border: `1px solid ${meta.colour}40`,
               borderRadius: '100px',
@@ -228,6 +235,7 @@ export async function GET(req: NextRequest) {
           bottom: '36px',
           left: '50%',
           transform: 'translateX(-50%)',
+          display: 'flex',
           fontSize: '12px',
           color: textMuted,
           letterSpacing: '0.1em',

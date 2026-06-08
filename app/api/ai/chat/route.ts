@@ -162,7 +162,12 @@ Instructions:
 2. Provide practical Nigerian context (e.g. referencing CAMA 2020, FIRS tax codes, CBN monetary policy, local informal markets) alongside global principles.
 3. Be concise and structured. Use Markdown tables, bullet points, and clean lists. Keep explanations under 3-4 paragraphs unless a deep dive is explicitly requested.
 4. Always identify yourself as "LEF Counsel".
-5. If the user asks for a quiz, you must generate a quick 3-question multiple-choice quiz based on the current day's topics. Format the quiz strictly as a JSON block wrapped in \`\`\`json and \`\`\` code blocks. The JSON must follow this exact format:
+5. If the user asks for a quiz, you must generate a multiple-choice quiz on the requested topic.
+   - If the user specifies a number of questions (e.g. "5-question quiz", "give me 4 questions"), use that exact count.
+   - Otherwise default to 3 questions.
+   - Default to the current day's topics unless the user specifies a different topic in their request.
+   - On a follow-up "challenge" or "harder" request, generate genuinely harder questions — application scenarios, edge cases, cross-domain connections — and make them different from any prior questions in the conversation.
+   Format the quiz STRICTLY as a JSON block wrapped in \`\`\`json and \`\`\` code blocks. Do NOT add any prose, headings, or commentary outside the JSON block. The JSON must follow this exact format:
 {
   "type": "quiz",
   "questions": [
@@ -173,8 +178,7 @@ Instructions:
       "explanation": "Explanation text"
     }
   ]
-}
-Do not add any other text outside of the JSON block when a quiz is requested.`;
+}`;
 
     interface ModelProvider {
       name: string;
@@ -186,13 +190,8 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
       { name: 'Gemini 2.5 Flash', type: 'gemini', modelId: 'gemini-2.5-flash' },
       { name: 'Gemini 2.5 Pro', type: 'gemini', modelId: 'gemini-2.5-pro' },
       { name: 'Gemini 2.0 Flash', type: 'gemini', modelId: 'gemini-2.0-flash' },
-      { name: 'Gemini 1.5 Flash', type: 'gemini', modelId: 'gemini-1.5-flash' },
-      { name: 'Gemini 1.5 Pro', type: 'gemini', modelId: 'gemini-1.5-pro' },
       { name: 'Groq Llama 3.3 70B', type: 'groq', modelId: 'llama-3.3-70b-versatile' },
       { name: 'Groq Llama 3.1 8B', type: 'groq', modelId: 'llama-3.1-8b-instant' },
-      { name: 'Groq Mixtral 8x7B', type: 'groq', modelId: 'mixtral-8x7b-32768' },
-      { name: 'Groq Gemma 2 9B', type: 'groq', modelId: 'gemma2-9b-it' },
-      { name: 'Groq DeepSeek R1 70B', type: 'groq', modelId: 'deepseek-r1-distill-llama-70b' },
     ];
 
     let text = '';
@@ -273,9 +272,20 @@ Do not add any other text outside of the JSON block when a quiz is requested.`;
           `Attempting chat generation fallback using ${provider.name} (${provider.modelId})...`,
         );
         try {
+          // Limit Groq history dynamically to prevent TPM/Rate limits
+          const groqHistory = [...safeMsgs];
+          let totalChars = groqHistory.reduce((acc, m) => acc + m.content.length, 0);
+
+          // Keep dropping oldest messages until total character count is under 12,000
+          // (roughly 3,000 tokens) to guarantee staying under the TPM limits
+          while (groqHistory.length > 1 && totalChars > 12000) {
+            const removed = groqHistory.shift();
+            if (removed) totalChars -= removed.content.length;
+          }
+
           const groqMessages = [
             { role: 'system', content: systemInstruction },
-            ...safeMsgs.map((m) => ({
+            ...groqHistory.map((m) => ({
               role: m.role,
               content: m.content,
             })),
