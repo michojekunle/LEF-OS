@@ -17,11 +17,20 @@ export function AchievementProvider() {
   useEffect(() => {
     function handle(e: Event) {
       const achievement = (e as CustomEvent<Achievement>).detail;
+      // eslint-disable-next-line no-console
+      console.log('[AchievementProvider] Received lef-achievement event', achievement);
       if (achievement?.type) {
         queueAchievement([achievement]);
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(
+          '[AchievementProvider] Event received but no valid achievement.type — ignoring',
+        );
       }
     }
     window.addEventListener('lef-achievement', handle);
+    // eslint-disable-next-line no-console
+    console.log('[AchievementProvider] Listener registered');
     return () => window.removeEventListener('lef-achievement', handle);
   }, [queueAchievement]);
 

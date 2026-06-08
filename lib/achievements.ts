@@ -107,11 +107,28 @@ export function checkNotesAchievement(
   return [{ type: 'full_notes_day', day }];
 }
 
-/** Check after all quiz answers saved for a day. Returns newly earned achievement. */
+/**
+ * Check after a quiz is detected. Returns the achievement object every time
+ * (no localStorage dedup) — every quiz attempt is worth celebrating, and the
+ * AI conversation already provides its own "you've taken this quiz" continuity.
+ *
+ * The `day` arg is still recorded in the result so the achievement card can
+ * render the correct day number, but it isn't used as a uniqueness key.
+ */
 export function checkQuizAchievement(day: number): Achievement[] {
-  const k = seenKey('quiz_complete', day);
-  if (hasSeen(k)) return [];
-  markSeen(k);
+  // Use sessionStorage to throttle to one fire per browser session per day —
+  // prevents the modal stacking if Gemini accidentally re-sends a quiz format
+  // in the same conversation, but resets on tab close so users can re-experience
+  // the celebration in a new session.
+  if (typeof window !== 'undefined') {
+    try {
+      const sessionKey = `lef_quiz_seen_session:${Number.isFinite(day) ? day : 'unknown'}`;
+      if (sessionStorage.getItem(sessionKey)) return [];
+      sessionStorage.setItem(sessionKey, '1');
+    } catch {
+      // sessionStorage blocked (private mode in some browsers) → just fire
+    }
+  }
   return [{ type: 'quiz_complete', day }];
 }
 
