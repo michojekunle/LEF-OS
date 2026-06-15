@@ -82,7 +82,7 @@ export function QuestionAnswerInput({
         setTimeout(() => setSaveState('idle'), 3000);
       }
     },
-    [userId, dayNumber, domain, questionIndex],
+    [userId, dayNumber, domain, questionIndex, onAnswerChange],
   );
 
   // Debounced auto-save on text change
@@ -116,6 +116,13 @@ export function QuestionAnswerInput({
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>): void {
     setText(e.target.value);
     resize();
+  }
+
+  function handleBlur(): void {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (text !== lastSavedRef.current) {
+      void save(text);
+    }
   }
 
   // ── Collapsed (no answer yet) ─────────────────────────────────────
@@ -193,6 +200,7 @@ export function QuestionAnswerInput({
         ref={textareaRef}
         value={text}
         onChange={handleChange}
+        onBlur={handleBlur}
         placeholder="Write your answer here — it saves automatically…"
         rows={3}
         className="focus:ring-gold/30 w-full resize-none overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-surface px-3 py-2.5 text-sm leading-relaxed text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-gold focus:ring-1"

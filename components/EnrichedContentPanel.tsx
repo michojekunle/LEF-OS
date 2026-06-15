@@ -13,8 +13,7 @@ import {
 } from 'lucide-react';
 import { ContentFlagButton } from './ContentFlagButton';
 import { QuestionAnswerInput } from './QuestionAnswerInput';
-import { QuizResultModal } from './QuizResultModal';
-import { checkQuizAchievement } from '@/lib/achievements';
+
 import { DOMAIN_LABELS, DOMAIN_ACCENT_CARD } from '@/lib/domain';
 import type { Domain } from '@/data/curriculum-data';
 
@@ -109,62 +108,22 @@ function DomainAccordion({
     });
     return init;
   });
-  const [quizModal, setQuizModal] = useState<{ answered: number; total: number } | null>(null);
-  const [quizAttempted, setQuizAttempted] = useState(
-    // Already attempted if any answer exists
-    Object.keys(savedAnswers).some((k) => k.startsWith(`${domain}_`)),
-  );
-
   const totalQuestions = content.questions?.length ?? 0;
 
-  const handleAnswerChange = useCallback(
-    (index: number, value: string) => {
-      setAnswers((prev) => {
-        const next = { ...prev };
-        if (value.trim()) next[index] = value;
-        else delete next[index];
-        const answeredCount = Object.keys(next).length;
-
-        // First answer — fire achievement + show modal
-        if (!quizAttempted && value.trim()) {
-          setQuizAttempted(true);
-          const earned = checkQuizAchievement(day);
-          if (earned.length > 0) {
-            // Dispatch globally so AchievementProvider shows the confetti modal
-            window.dispatchEvent(new CustomEvent('lef-achievement', { detail: earned[0] }));
-            setQuizModal({ answered: answeredCount, total: totalQuestions });
-          }
-        }
-
-        // All answered — show completion modal
-        if (answeredCount === totalQuestions && totalQuestions > 0) {
-          setQuizModal({ answered: answeredCount, total: totalQuestions });
-        }
-
-        return next;
-      });
-    },
-    [quizAttempted, day, totalQuestions],
-  );
-
-  function sendToLEFCounsel(prompt: string) {
-    window.dispatchEvent(new CustomEvent('lef-counsel-prompt', { detail: { query: prompt } }));
-  }
+  const handleAnswerChange = useCallback((index: number, value: string) => {
+    setAnswers((prev) => {
+      const next = { ...prev };
+      if (value.trim()) next[index] = value;
+      else delete next[index];
+      return next;
+    });
+  }, []);
 
   const label = DOMAIN_LABELS[domain as keyof typeof DOMAIN_LABELS];
   const accentClass = DOMAIN_ACCENT_CARD[domain as Domain];
 
   return (
     <>
-      {quizModal && (
-        <QuizResultModal
-          answered={quizModal.answered}
-          total={quizModal.total}
-          topic={content.topic}
-          onMoreQuestions={sendToLEFCounsel}
-          onDismiss={() => setQuizModal(null)}
-        />
-      )}
       <div className={`overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-surface`}>
         <button
           onClick={() => setIsOpen(!isOpen)}
