@@ -6,6 +6,7 @@ import { BarChart3 } from 'lucide-react';
 import { getDayNumber, isInCourse } from '@/lib/utils';
 import { useCourse } from './CourseContext';
 import { CommandPaletteTrigger } from './CommandPalette';
+import { SankofaBird } from '@/components/sankofa/SankofaBird';
 
 const NAV_LINKS = [
   {
@@ -44,6 +45,7 @@ export function NavLinks() {
   const pathname = usePathname();
   const course = useCourse();
   const dayNumber = isInCourse(new Date(), course) ? getDayNumber(new Date(), course) : null;
+  const isSankofa = pathname.startsWith('/sankofa');
 
   return (
     <div className="hidden items-center gap-1 md:flex">
@@ -79,6 +81,19 @@ export function NavLinks() {
             </li>
           );
         })}
+
+        {/* Sankofa — sibling app teaser */}
+        <li>
+          <Link
+            href="/sankofa"
+            aria-current={isSankofa ? 'page' : undefined}
+            className="sankofa-nav-link inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium"
+          >
+            <SankofaBird size={14} color="currentColor" />
+            <span>Sankofa</span>
+            <span className="sankofa-coming-soon-badge">COMING SOON</span>
+          </Link>
+        </li>
       </ul>
 
       {/* ⌘K shortcut hint — surfaces the command palette to desktop users */}
@@ -88,3 +103,4 @@ export function NavLinks() {
     </div>
   );
 }
+

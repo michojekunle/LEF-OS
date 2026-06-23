@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { GraduationCap, Map, LayoutDashboard, BookOpen, BarChart3 } from 'lucide-react';
+import { GraduationCap, Map, LayoutDashboard, BookOpen } from 'lucide-react';
 import { getDayNumber, isInCourse } from '@/lib/utils';
 import { useCourse } from './CourseContext';
+import { SankofaBird } from '@/components/sankofa/SankofaBird';
 
 const tabs = [
   {
@@ -36,19 +37,13 @@ const tabs = [
     matchPrefixes: ['/journal'],
     showDayBadge: false,
   },
-  {
-    href: '/stats',
-    label: 'Stats',
-    Icon: BarChart3,
-    matchPrefixes: ['/stats'],
-    showDayBadge: false,
-  },
 ] as const;
 
 export function MobileTabBar() {
   const pathname = usePathname();
   const course = useCourse();
   const dayNumber = isInCourse(new Date(), course) ? getDayNumber(new Date(), course) : null;
+  const isSankofa = pathname.startsWith('/sankofa');
 
   return (
     <nav
@@ -88,7 +83,24 @@ export function MobileTabBar() {
             </li>
           );
         })}
+
+        {/* Sankofa tab — 5th position, terracotta active colour */}
+        <li className="flex">
+          <Link
+            href="/sankofa"
+            aria-current={isSankofa ? 'page' : undefined}
+            className={`relative mx-0.5 flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 rounded-md transition-colors ${
+              isSankofa ? 'text-[#C4633A]' : 'text-text-secondary active:text-text-primary'
+            }`}
+          >
+            <SankofaBird size={20} color="currentColor" />
+            <span className={`text-xs font-medium tracking-wide ${isSankofa ? 'text-[#C4633A]' : ''}`}>
+              Sankofa
+            </span>
+          </Link>
+        </li>
       </ul>
     </nav>
   );
 }
+

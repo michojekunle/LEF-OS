@@ -617,3 +617,1045 @@ a,
 [role='button'] {
   touch-action: manipulation;
 }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   SANKOFA DESIGN SYSTEM — completely scoped, does NOT affect LEF-OS
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme='sankofa'] {
+  --s-bg: #F5F0E8;
+  --s-bg-card: #EDE6D8;
+  --s-bg-surface: #E4DBC8;
+  --s-text-primary: #1C1408;
+  --s-text-secondary: #6A5A3A;
+  --s-text-muted: #9A8A6A;
+  --s-border: #C4B898;
+  --s-accent: #C4633A;
+  --s-africa: #2D5A3D;
+  --s-world: #4A6B8A;
+  --s-gold: #C4A24A;
+  --s-crimson: #7A3A4A;
+  --s-mahogany: #8B6B3A;
+}
+
+/* ── Sankofa base reset ─────────────────────────────────────────── */
+.sankofa-page {
+  /* Rich layered parchment depth */
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(255, 250, 240, 0.8) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(200, 185, 160, 0.2) 0%, transparent 70%),
+    var(--s-bg);
+  color: var(--s-text-primary);
+  min-height: 100vh;
+  font-family: 'Source Serif 4', 'Georgia', serif;
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.sankofa-page *,
+.sankofa-page *::before,
+.sankofa-page *::after {
+  box-sizing: border-box;
+}
+
+.sankofa-page ::selection {
+  background: rgba(196, 99, 58, 0.2);
+  color: var(--s-text-primary);
+}
+
+/* ── Typography ─────────────────────────────────────────────────── */
+.sankofa-h1 {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--s-text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.sankofa-h1 em {
+  font-style: italic;
+}
+
+.sankofa-h2 {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--s-text-primary);
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.sankofa-h2::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: rgba(196, 99, 58, 0.4);
+  margin: 12px auto 0;
+  border-radius: 1px;
+}
+
+.sankofa-h2--light {
+  color: var(--s-bg);
+}
+
+.sankofa-h2--light::after {
+  background: rgba(196, 162, 74, 0.4); /* Gold tone for dark background */
+}
+
+.sankofa-h3 {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--s-text-primary);
+  margin: 0 0 8px 0;
+}
+
+.sankofa-body {
+  font-family: 'Source Serif 4', 'Georgia', serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--s-text-secondary);
+  margin: 0;
+}
+
+.sankofa-section-sub {
+  font-family: 'Source Serif 4', 'Georgia', serif;
+  font-size: 16px;
+  font-style: italic;
+  color: var(--s-text-secondary);
+  text-align: center;
+  margin: 0 auto 40px auto;
+  max-width: 520px;
+}
+
+.sankofa-quote-mark {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 32px;
+  color: rgba(196, 99, 58, 0.3);
+  vertical-align: -4px;
+  margin: 0 2px;
+}
+
+.sankofa-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Decorative Elements ────────────────────────────────────────── */
+.sankofa-divider {
+  height: 40px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sankofa-divider::before,
+.sankofa-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+}
+
+.sankofa-divider::before {
+  background: linear-gradient(to right, transparent, var(--s-border));
+}
+
+.sankofa-divider::after {
+  background: linear-gradient(to left, transparent, var(--s-border));
+}
+
+.sankofa-divider-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--s-border);
+  border-radius: 50%;
+  transform: rotate(45deg); /* Make it a diamond */
+  margin: 0 16px;
+}
+
+/* Let's inject the dot inside via pseudo on a wrapper or just use the border directly */
+.sankofa-divider > * {
+  display: none; /* handled via divider component if needed */
+}
+
+/* For simplicity, we just style the divider itself to hold the diamond */
+.sankofa-divider {
+  gap: 16px;
+}
+.sankofa-divider::after {
+  background: linear-gradient(to left, transparent, var(--s-border));
+}
+.sankofa-divider::before {
+  background: linear-gradient(to right, transparent, var(--s-border));
+}
+
+/* ── Section common ─────────────────────────────────────────────── */
+.sankofa-section {
+  padding: 80px 0;
+}
+
+.sankofa-section:not(.in-view) .sankofa-domain-card,
+.sankofa-section:not(.in-view) .sankofa-how-card,
+.sankofa-section:not(.in-view) .sankofa-path-card,
+.sankofa-section:not(.in-view) .sankofa-tier {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 1 — HERO
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.sankofa-hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 80px 24px;
+  /* Atmospheric warm ambient light */
+  background: 
+    radial-gradient(circle at 50% 30%, rgba(196, 162, 74, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(196, 99, 58, 0.03) 0%, transparent 40%);
+}
+
+.sankofa-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  filter: url(#sankofa-grain);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.sankofa-africa-outline {
+  position: absolute;
+  width: 60%;
+  max-width: 500px;
+  height: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(8deg);
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sankofa-hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 680px;
+  gap: 16px;
+}
+
+/* Badge */
+.sankofa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  background: rgba(196, 99, 58, 0.12);
+  border: 0.5px solid rgba(196, 99, 58, 0.2);
+  color: var(--s-accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+}
+
+/* Griot tagline */
+.sankofa-griot-tagline {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 24px;
+  font-style: italic;
+  color: var(--s-accent);
+  letter-spacing: 0.02em;
+  margin: 16px 0 8px 0;
+}
+
+/* Subheading */
+.sankofa-subheading {
+  font-family: 'Source Serif 4', 'Georgia', serif;
+  font-size: 18px;
+  color: var(--s-text-secondary);
+  max-width: 520px;
+  margin: 8px 0 0 0;
+  line-height: 1.65;
+}
+
+/* Three-beat closer */
+.sankofa-three-beat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 16px 0;
+}
+
+.sankofa-three-beat p {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 16px;
+  color: var(--s-text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.sankofa-three-beat--small p {
+  font-family: 'Source Serif 4', 'Georgia', serif;
+  font-size: 14px;
+  color: var(--s-text-muted);
+}
+
+/* Hero decorative rule */
+.sankofa-hero-rule {
+  width: 40px;
+  height: 1px;
+  background: var(--s-border);
+  margin: 8px auto;
+}
+
+/* Promise */
+.sankofa-promise {
+  font-family: 'Source Serif 4', 'Georgia', serif;
+  font-size: 16px;
+  color: var(--s-text-secondary);
+  max-width: 480px;
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* CTA */
+.sankofa-hero-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.sankofa-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 24px;
+  background: linear-gradient(135deg, var(--s-accent) 0%, #a8522e 100%);
+  color: #fff;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 12px rgba(196, 99, 58, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.sankofa-btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+  transform: skewX(-20deg);
+}
+
+.sankofa-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(196, 99, 58, 0.3);
+}
+
+.sankofa-btn-primary:hover::after {
+  animation: sankofa-shimmer 1.5s infinite;
+}
+
+.sankofa-btn-secondary {
+  color: var(--s-text-muted);
+  font-family: 'Source Serif 4', 'Georgia', serif;
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.sankofa-btn-secondary:hover {
+  color: var(--s-text-primary);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 2 — DOMAIN CARDS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.sankofa-domains {
+  background: transparent;
+}
+
+.sankofa-domain-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.sankofa-domain-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 20px;
+  background: var(--s-bg-card);
+  border: 0.5px solid var(--s-border);
+  /* Book spine via thick left border */
+  border-left: 4px solid var(--domain-color, var(--s-border));
+  border-radius: 6px;
+  aspect-ratio: 2 / 3;
+  justify-content: center;
+  gap: 12px;
+  /* Inner shadow from left for spine depth */
+  box-shadow: inset 4px 0 12px -4px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.02);
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+
+.sankofa-section.in-view .sankofa-domain-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sankofa-domain-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-left-color: var(--domain-color, var(--s-border)); /* Keeps color */
+  box-shadow: inset 6px 0 12px -4px rgba(0,0,0,0.08), 0 12px 24px rgba(196, 99, 58, 0.12);
+}
+
+.sankofa-domain-name {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.sankofa-domain-tagline {
+  font-family: 'Source Serif 4', 'Georgia', serif;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--s-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sankofa-domain-preview {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--s-text-muted);
+  line-height: 1.5;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 3 — HOW IT WORKS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.sankofa-how {
+  background: transparent;
+}
+
+.sankofa-how-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 8px;
+}
+
+.sankofa-how-card {
+  text-align: center;
+  padding: 32px 24px;
+  background: var(--s-bg-card);
+  border-radius: 8px;
+  border: 0.5px solid var(--s-border);
+  /* Top accent line */
+  border-top: 2px solid rgba(196, 99, 58, 0.2);
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.sankofa-section.in-view .sankofa-how-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sankofa-how-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(196, 99, 58, 0.08);
+  border-top-color: var(--s-accent);
+}
+
+.sankofa-how-icon-wrap {
+  width: 52px;
+  height: 52px;
+  background: var(--s-bg);
+  border: 1px solid var(--s-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.sankofa-how-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 4 — TWO PATHS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.sankofa-paths {
+  background: transparent;
+}
+
+.sankofa-paths-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.sankofa-path-card {
+  background: radial-gradient(circle at top left, var(--s-bg-card) 0%, var(--s-bg-surface) 100%);
+  border: 1px solid var(--s-border);
+  border-top: 3px solid var(--path-color, var(--s-accent));
+  border-radius: 6px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.sankofa-section.in-view .sankofa-path-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sankofa-path-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.06), inset 0 2px 8px rgba(255,255,255,0.4);
+  /* Top border glow */
+  border-top-color: var(--path-color);
+}
+
+.sankofa-path-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.sankofa-path-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.sankofa-path-tags span {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--s-text-muted);
+  padding: 4px 10px;
+  border: 0.5px solid var(--s-border);
+  border-radius: 100px;
+  background: rgba(255,255,255,0.3);
+}
+
+.sankofa-path-status {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 4px;
+  margin-top: auto;
+  text-align: center;
+}
+
+.sankofa-path-status--active {
+  background: var(--s-accent);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(196, 99, 58, 0.3);
+}
+
+.sankofa-path-status--future {
+  background: var(--s-bg-surface);
+  color: var(--s-text-muted);
+  border: 1px solid var(--s-border);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 5 — PATH TO GRIOT
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.sankofa-griot {
+  background: transparent;
+}
+
+.sankofa-tiers {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 48px;
+  flex-wrap: wrap;
+}
+
+.sankofa-tier {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sankofa-section.in-view .sankofa-tier {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sankofa-tier-seal {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, var(--s-bg) 0%, var(--s-bg-card) 100%);
+  /* Double border rings for wax seal look */
+  box-shadow: 0 0 0 3px var(--s-bg), 0 0 0 5px var(--s-border), 0 4px 8px rgba(0,0,0,0.05);
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  margin-bottom: 4px;
+}
+
+.sankofa-tier:hover .sankofa-tier-seal {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px var(--s-bg), 0 0 0 5px var(--s-accent), 0 8px 16px rgba(196, 99, 58, 0.15);
+}
+
+.sankofa-tier-seal--griot {
+  width: 72px;
+  height: 72px;
+  background: radial-gradient(circle, #E6C875 0%, var(--s-gold) 100%);
+  box-shadow: 0 0 0 4px var(--s-bg), 0 0 0 7px var(--s-gold), 0 8px 24px rgba(196, 162, 74, 0.3);
+}
+
+.sankofa-tier--griot:hover .sankofa-tier-seal--griot {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 4px var(--s-bg), 0 0 0 7px var(--s-accent), 0 12px 32px rgba(196, 162, 74, 0.4);
+}
+
+.sankofa-section.in-view .sankofa-tier--griot .sankofa-tier-seal--griot {
+  animation: sankofa-griot-pulse 2s ease-out infinite;
+}
+
+.sankofa-tier-symbol {
+  font-size: 24px;
+  color: var(--s-text-secondary);
+  line-height: 1;
+}
+
+.sankofa-tier-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--s-text-primary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.sankofa-tier-threshold {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--s-text-muted);
+}
+
+.sankofa-tier-arrow {
+  color: var(--s-text-muted);
+  font-size: 14px;
+  align-self: center;
+  opacity: 0.4;
+  margin-bottom: 32px; /* align with seals visually */
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 6 — WAITLIST
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.sankofa-waitlist {
+  /* Dark dramatic layered background */
+  background: 
+    radial-gradient(circle at 50% 50%, rgba(196, 99, 58, 0.05) 0%, transparent 60%),
+    linear-gradient(to bottom, #231A0F, #1C1408);
+  padding: 96px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Pseudo-element stars/dots pattern */
+.sankofa-waitlist::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(196, 162, 74, 0.15) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.sankofa-waitlist .sankofa-container {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.sankofa-waitlist-bird {
+  display: block;
+  margin: 0 auto 20px auto;
+  opacity: 0.8;
+}
+
+.sankofa-waitlist-sub {
+  font-family: 'Source Serif 4', 'Georgia', serif;
+  font-size: 18px;
+  font-style: italic;
+  color: var(--s-border);
+  margin: 0 0 32px 0;
+}
+
+.sankofa-waitlist-form {
+  display: flex;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.sankofa-waitlist-input {
+  flex: 1;
+  height: 52px;
+  padding: 0 20px;
+  background: rgba(0,0,0,0.2);
+  color: #fff;
+  border: 1px solid rgba(196, 162, 74, 0.3);
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  font-family: 'Source Serif 4', 'Georgia', serif;
+  font-size: 16px;
+  outline: none;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  transition: all 300ms ease;
+}
+
+.sankofa-waitlist-input:focus {
+  border-color: var(--s-accent);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 0 0 3px rgba(196, 99, 58, 0.2);
+  background: rgba(0,0,0,0.4);
+}
+
+.sankofa-waitlist-input::placeholder {
+  color: rgba(196, 162, 74, 0.4);
+}
+
+.sankofa-waitlist-btn {
+  height: 52px;
+  padding: 0 28px;
+  background: linear-gradient(135deg, var(--s-accent) 0%, #a8522e 100%);
+  color: #fff;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 300ms ease;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.sankofa-waitlist-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+  transform: skewX(-20deg);
+}
+
+.sankofa-waitlist-btn:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(196, 99, 58, 0.4);
+}
+
+.sankofa-waitlist-btn:hover:not(:disabled)::after {
+  animation: sankofa-shimmer 1.5s infinite;
+}
+
+.sankofa-waitlist-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+.sankofa-waitlist-note {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--s-text-muted);
+  margin: 16px 0 0 0;
+  opacity: 0.6;
+}
+
+.sankofa-waitlist-error {
+  font-family: 'Source Serif 4', 'Georgia', serif;
+  font-size: 14px;
+  color: #E26A6A;
+  margin: 12px 0 0 0;
+}
+
+.sankofa-waitlist-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.sankofa-waitlist-confirm {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 28px;
+  font-style: italic;
+  color: var(--s-gold);
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 7 — FOOTER
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.sankofa-footer {
+  background: var(--s-bg-surface);
+  padding: 32px 0;
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(to right, transparent, rgba(196, 162, 74, 0.4), transparent) 1;
+}
+
+.sankofa-footer-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Source Serif 4', 'Georgia', serif;
+  font-size: 13px;
+  color: var(--s-text-muted);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.sankofa-footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sankofa-footer-link {
+  color: var(--s-text-secondary);
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.sankofa-footer-link:hover {
+  color: var(--s-accent);
+}
+
+/* ── Sankofa Animations ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes sankofa-griot-pulse {
+    0% {
+      box-shadow: 0 0 0 4px var(--s-bg), 0 0 0 7px var(--s-gold), 0 0 0 0 rgba(196, 162, 74, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 0 4px var(--s-bg), 0 0 0 7px var(--s-gold), 0 0 0 16px rgba(196, 162, 74, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 4px var(--s-bg), 0 0 0 7px var(--s-gold), 0 0 0 0 rgba(196, 162, 74, 0);
+    }
+  }
+
+  @keyframes sankofa-shimmer {
+    0% { left: -100%; }
+    100% { left: 200%; }
+  }
+
+  .sankofa-section .sankofa-domain-card,
+  .sankofa-section .sankofa-how-card,
+  .sankofa-section .sankofa-path-card,
+  .sankofa-section .sankofa-tier {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .sankofa-section.in-view .sankofa-domain-card,
+  .sankofa-section.in-view .sankofa-how-card,
+  .sankofa-section.in-view .sankofa-path-card,
+  .sankofa-section.in-view .sankofa-tier {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Sankofa Responsive ──────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .sankofa-domain-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .sankofa-h1 {
+    font-size: 44px;
+  }
+
+  .sankofa-h2 {
+    font-size: 28px;
+  }
+
+  .sankofa-griot-tagline {
+    font-size: 20px;
+  }
+
+  .sankofa-subheading {
+    font-size: 16px;
+  }
+
+  .sankofa-domain-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 100%;
+  }
+
+  .sankofa-domain-card {
+    border-left-width: 3px;
+    aspect-ratio: auto;
+    padding: 24px 16px;
+  }
+
+  .sankofa-how-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .sankofa-paths-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sankofa-tiers {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .sankofa-tier-seal {
+    width: 44px;
+    height: 44px;
+  }
+
+  .sankofa-tier-seal--griot {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .sankofa-tier-arrow {
+    margin-bottom: 24px;
+  }
+
+  .sankofa-waitlist-form {
+    flex-direction: column;
+  }
+
+  .sankofa-waitlist-input {
+    border-right: 1px solid rgba(196, 162, 74, 0.3);
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+
+  .sankofa-waitlist-btn {
+    border-radius: 4px;
+  }
+
+  .sankofa-footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .sankofa-hero {
+    padding: 60px 20px;
+    min-height: 100dvh;
+  }
+
+  .sankofa-section {
+    padding: 56px 0;
+  }
+
+  .sankofa-waitlist {
+    padding: 64px 0;
+  }
+
+  .sankofa-waitlist-confirm {
+    font-size: 22px;
+  }
+}
+
+/* ── Sankofa nav integration classes ─────────────────────────────── */
+.sankofa-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.sankofa-nav-link:hover {
+  color: #C4633A;
+}
+
+.sankofa-coming-soon-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: #C4633A;
+  vertical-align: 2px;
+}
