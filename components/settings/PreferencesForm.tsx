@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bell, CalendarDays, Info, BookMarked, Check } from 'lucide-react';
+import { Bell, CalendarDays, Info, BookMarked, Check, Scale, BarChart, Landmark } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase';
 import { useToast } from '@/components/Toast';
 
@@ -10,7 +10,7 @@ const DOMAIN_OPTIONS = [
   {
     id: 'law',
     label: 'Law',
-    icon: '⚖️',
+    icon: <Scale className="h-5 w-5" />,
     colour: 'text-gold',
     border: 'border-gold/40',
     bg: 'bg-gold/10',
@@ -18,7 +18,7 @@ const DOMAIN_OPTIONS = [
   {
     id: 'economics',
     label: 'Economics',
-    icon: '📊',
+    icon: <BarChart className="h-5 w-5" />,
     colour: 'text-sage',
     border: 'border-sage/40',
     bg: 'bg-sage/10',
@@ -26,7 +26,7 @@ const DOMAIN_OPTIONS = [
   {
     id: 'finance',
     label: 'Finance',
-    icon: '💰',
+    icon: <Landmark className="h-5 w-5" />,
     colour: 'text-slate-blue',
     border: 'border-slate-blue/40',
     bg: 'bg-slate-blue/10',

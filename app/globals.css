@@ -633,13 +633,12 @@ a,
 }
 
 .sankofa-page {
-  /* Dynamic background is handled by Framer Motion in React */
+  background-color: #F5F0E8; /* Initial bright background */
+  color: #1C1408;
   min-height: 100vh;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
   position: relative;
-  transition: background-color 0.5s ease, color 0.5s ease;
+  /* overflow-x: hidden removed because it breaks position: sticky horizontally */
+  transition: background-color 2s ease, color 2s ease;
 }
 
 .sankofa-page ::selection {
@@ -688,6 +687,131 @@ a,
   overflow: hidden;
 }
 
+/* Hero Metadata */
+.sankofa-hero-meta {
+  position: absolute;
+  padding: 4vw;
+  z-index: 20;
+}
+
+.sankofa-meta-tl { top: 0; left: 0; text-align: left; max-width: 300px; }
+.sankofa-meta-tr { top: 0; right: 0; text-align: right; }
+.sankofa-meta-bl { bottom: 0; left: 0; text-align: left; max-width: 400px; }
+.sankofa-meta-br { bottom: 0; right: 0; text-align: right; }
+
+.sankofa-def-text {
+  font-family: 'DM Mono', 'Helvetica Neue', monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  line-height: 1.6;
+}
+
+.sankofa-manifesto-text {
+  font-size: clamp(1rem, 1.5vw, 1.5rem);
+  line-height: 1.4;
+  opacity: 0.8;
+}
+
+.sankofa-scroll-prompt {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sankofa-scroll-prompt::before {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 20px;
+  background-color: currentColor;
+  animation: pulse-line 2s infinite;
+}
+
+@keyframes pulse-line {
+  0% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  50.1% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* ── MOBILE RESPONSIVENESS ── */
+@media (max-width: 768px) {
+  .sankofa-hero-meta {
+    padding: 24px;
+  }
+  /* The Spine layout for ARCHIVE_01 */
+  .sankofa-meta-tr {
+    display: block !important;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%) rotate(90deg);
+    transform-origin: right center;
+    white-space: nowrap;
+    opacity: 0.5;
+    padding: 0 24px;
+  }
+
+  /* Glassmorphism Manifesto */
+  .sankofa-meta-bl {
+    display: block !important;
+    bottom: 80px;
+    left: 24px;
+    right: 24px;
+    max-width: none;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    z-index: 30;
+  }
+  .sankofa-meta-bl .sankofa-manifesto-text {
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  /* Reposition scroll prompt to the bottom center */
+  .sankofa-meta-br {
+    right: 50%;
+    transform: translateX(50%);
+    bottom: 24px;
+    padding: 0;
+  }
+  .sankofa-meta-tl {
+    top: 32px;
+    left: 24px;
+    padding: 0;
+    max-width: 80vw;
+  }
+  
+  .sankofa-hero-floating-img {
+    width: 70%;
+    max-width: 300px;
+    top: 50%;
+  }
+
+  .sankofa-h1-massive {
+    font-size: clamp(3rem, 15vw, 18rem);
+  }
+
+  .sankofa-input-brutalist {
+    font-size: 18px;
+    padding: 12px 0;
+  }
+  
+  .sankofa-btn-brutalist {
+    font-size: 14px;
+    padding: 0 12px;
+  }
+}
+
 .sankofa-hero-floating-img {
   position: absolute;
   top: 50%;
@@ -711,10 +835,110 @@ a,
   text-align: center;
 }
 
+/* Intro & Roadmap Sections */
+.sankofa-intro-section {
+  padding: 15vh 24px;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+  position: relative;
+  overflow: clip;
+}
+
+.sankofa-marquee-container {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sankofa-marquee-text {
+  font-size: clamp(8rem, 25vw, 30rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+  line-height: 0.8;
+  opacity: 0.5;
+}
+
+.sankofa-intro-content {
+  position: relative;
+  z-index: 10;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.sankofa-roadmap-section {
+  padding: 15vh 24px 30vh;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sankofa-roadmap-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 80px;
+  position: relative;
+}
+
+.sankofa-roadmap-card {
+  position: sticky;
+  height: 70vh;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto 10vh;
+  padding: 8vw;
+  background: #0A0A0A; /* Solid brutalist black to cover underlying cards */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  box-shadow: 0 -30px 60px rgba(0,0,0,0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+  transform-origin: top center;
+  overflow: hidden; /* Ensure overlay respects border radius */
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+}
+
+.sankofa-roadmap-card:nth-child(1) { top: 10vh; z-index: 1; }
+.sankofa-roadmap-card:nth-child(2) { top: 15vh; z-index: 2; }
+.sankofa-roadmap-card:nth-child(3) { top: 20vh; z-index: 3; }
+
+.sankofa-phase-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #c9ab70;
+  opacity: 0.8;
+}
+
+.sankofa-phase-title {
+  font-size: clamp(3rem, 6vw, 6rem);
+  line-height: 1;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+.sankofa-phase-desc {
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  line-height: 1.5;
+  opacity: 0.7;
+  max-width: 800px;
+}
+
 /* Horizontal Scroll Area */
 .sankofa-horizontal-wrapper {
-  height: 400vh; /* creates scroll space for sticky */
   position: relative;
+  /* height handled by React inline style */
 }
 
 .sankofa-horizontal-sticky {
@@ -723,45 +947,52 @@ a,
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  display: flex;
-  align-items: center;
 }
 
 .sankofa-horizontal-container {
   display: flex;
-  gap: 15vw;
-  padding: 0 50vw; /* start center, end center */
-  width: max-content; /* Ensure container expands to hold all items */
+  height: 100vh;
+  width: max-content;
 }
 
-.sankofa-domain-minimal {
-  width: 400px; /* Slightly wider for immersive feel */
-  flex-shrink: 0;
+.sankofa-domain-panel {
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  opacity: 0.3;
-  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  transform: scale(0.95);
-}
-
-.sankofa-domain-minimal:hover {
-  opacity: 1;
-  transform: scale(1) translateY(-10px);
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+  flex-shrink: 0;
 }
 
 .sankofa-domain-number {
   font-family: 'Helvetica Neue', sans-serif;
-  font-size: 14px;
-  border-bottom: 1px solid currentColor;
+  font-size: 24px;
+  border-bottom: 2px solid currentColor;
   padding-bottom: 12px;
-  opacity: 0.5;
+  margin-bottom: 24px;
+  opacity: 0.6;
 }
 
 .sankofa-domain-title {
-  font-size: 56px;
-  font-style: italic;
+  font-size: clamp(4rem, 12vw, 15rem);
+  font-style: normal;
   margin: 0;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.sankofa-domain-desc {
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  opacity: 0.7;
+  margin-top: 40px;
+  max-width: 600px;
 }
 
 /* Brutalist Form */
@@ -827,4 +1058,10 @@ a,
 }
 .sankofa-btn-brutalist:hover {
   color: var(--s-accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body:has(.sankofa-page) * {
+    cursor: none !important;
+  }
 }

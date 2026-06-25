@@ -28,5 +28,5 @@ export function ResourceTypeIcon({ type, size = 13, className = 'shrink-0' }: Pr
 
 /** Plain-text label for a resource type. */
 export function resourceTypeLabel(type: ResourceType): string {
-  return { video: '▶ Video', article: '📄 Article', tool: '🔧 Tool', other: '🔗 Other' }[type];
+  return { video: 'Video', article: 'Article', tool: 'Tool', other: 'Other' }[type];
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { Star, Send, Loader2 } from 'lucide-react';
+import { Star, Send, Loader2, Scale, BarChart, Landmark } from 'lucide-react';
 import type { DailyEntry } from '@/lib/utils';
 import { isoDate } from '@/lib/utils';
 import { upsertEntryAction } from '@/app/actions/entries';
@@ -108,13 +108,13 @@ export function DailyLogForm({ day, date, existing, onSaved, preferredDomains }:
         </legend>
         <div className="flex flex-wrap gap-3">
           {(!preferredDomains || preferredDomains.includes('law')) && (
-            <DomainCheck label="⚖️ Law" checked={law} onChange={setLaw} />
+            <DomainCheck label={<span className="inline-flex items-center gap-1"><Scale className="h-4 w-4" /> Law</span>} checked={law} onChange={setLaw} />
           )}
           {(!preferredDomains || preferredDomains.includes('economics')) && (
-            <DomainCheck label="📊 Economics" checked={econ} onChange={setEcon} />
+            <DomainCheck label={<span className="inline-flex items-center gap-1"><BarChart className="h-4 w-4" /> Economics</span>} checked={econ} onChange={setEcon} />
           )}
           {(!preferredDomains || preferredDomains.includes('finance')) && (
-            <DomainCheck label="💰 Finance" checked={fin} onChange={setFin} />
+            <DomainCheck label={<span className="inline-flex items-center gap-1"><Landmark className="h-4 w-4" /> Finance</span>} checked={fin} onChange={setFin} />
           )}
         </div>
       </fieldset>
@@ -224,7 +224,7 @@ function DomainCheck({
   checked,
   onChange,
 }: {
-  label: string;
+  label: React.ReactNode;
   checked: boolean;
   onChange: (v: boolean) => void;
 }) {

@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation';
 import type { ReactionKind } from '@/lib/database.types';
 import { toggleReactionAction } from '@/app/actions/reactions';
 import { useToast } from './Toast';
+import { Hand, Brain, Flame, Bookmark } from 'lucide-react';
 
-const KINDS: { kind: ReactionKind; emoji: string; label: string }[] = [
-  { kind: 'clap', emoji: '👏', label: 'Clap' },
-  { kind: 'brain', emoji: '🧠', label: 'Insightful' },
-  { kind: 'fire', emoji: '🔥', label: 'Fire' },
-  { kind: 'bookmark', emoji: '🔖', label: 'Save' },
+const KINDS: { kind: ReactionKind; emoji: React.ReactNode; label: string }[] = [
+  { kind: 'clap', emoji: <Hand size={14} />, label: 'Clap' },
+  { kind: 'brain', emoji: <Brain size={14} />, label: 'Insightful' },
+  { kind: 'fire', emoji: <Flame size={14} />, label: 'Fire' },
+  { kind: 'bookmark', emoji: <Bookmark size={14} />, label: 'Save' },
 ];
 
 type Counts = Partial<Record<ReactionKind, number>>;

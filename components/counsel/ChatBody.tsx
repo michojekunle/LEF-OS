@@ -7,7 +7,7 @@ import type { Message } from './types';
 
 type Props = {
   messages: Message[];
-  starterPills: { label: string; query: string }[];
+  starterPills: { label: React.ReactNode; query: string }[];
   loading: boolean;
   error: string | null;
   onPillClick: (q: string) => void;
@@ -45,7 +45,7 @@ export function ChatBody({
           <div className="border-border/40 flex flex-wrap gap-2 border-b pb-3">
             {starterPills.map((pill) => (
               <button
-                key={pill.label}
+                key={pill.query}
                 onClick={() => onPillClick(pill.query)}
                 className="bg-surface-2/60 rounded-full border border-border px-2.5 py-1.5 text-xs font-medium leading-normal text-text-secondary transition-all hover:border-gold hover:text-text-primary"
               >
@@ -92,7 +92,7 @@ function EmptyState({
   starterPills,
   onPillClick,
 }: {
-  starterPills: { label: string; query: string }[];
+  starterPills: { label: React.ReactNode; query: string }[];
   onPillClick: (q: string) => void;
 }) {
   return (
@@ -109,7 +109,7 @@ function EmptyState({
       <div className="flex w-full flex-col gap-2 pt-2">
         {starterPills.map((pill) => (
           <button
-            key={pill.label}
+            key={pill.query}
             onClick={() => onPillClick(pill.query)}
             className="bg-surface-2/40 rounded-lg border border-border px-3 py-2 text-left text-xs leading-normal text-text-secondary transition-all hover:border-gold hover:text-text-primary"
           >

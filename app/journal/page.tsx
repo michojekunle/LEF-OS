@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
+import { Search, BookOpen } from 'lucide-react';
 import { hasSupabaseConfig } from '@/lib/supabase';
 import { supabaseServer } from '@/lib/supabase-server';
 import { EntryCard } from '@/components/EntryCard';
@@ -168,8 +169,8 @@ export default async function JournalPage({
       </header>
 
       {entries.length === 0 ? (
-        <div className="card space-y-4 p-10 text-center">
-          <p className="text-3xl">{q ? '🔍' : '📖'}</p>
+        <div className="card space-y-4 p-10 text-center flex flex-col items-center">
+          {q ? <Search className="h-8 w-8 text-text-muted mb-2" /> : <BookOpen className="h-8 w-8 text-text-muted mb-2" />}
           <p className="text-sm font-medium text-text-primary">
             {q ? 'No matching insights' : 'The journal is empty'}
           </p>

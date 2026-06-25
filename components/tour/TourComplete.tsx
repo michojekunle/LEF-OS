@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { markTourComplete } from '@/lib/tour';
 import { useTour } from './TourProvider';
+import { Flame } from 'lucide-react';
 
 const CONFETTI_COLORS = [
   'var(--gold)',
@@ -192,7 +193,7 @@ export function TourComplete() {
           }}
           aria-hidden="true"
         >
-          🔥
+          <Flame className="text-gold" size={32} />
         </div>
 
         <h2

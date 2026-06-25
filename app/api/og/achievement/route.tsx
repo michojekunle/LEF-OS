@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
+import { Trophy, FileText, Brain, Flame, CheckCircle, Zap } from 'lucide-react';
 
 export const runtime = 'edge';
 
@@ -13,45 +14,45 @@ type AchievementType =
 
 const ACHIEVEMENT_META: Record<
   AchievementType,
-  { emoji: string; title: string; subtitle: string; colour: string; gradient: [string, string] }
+  { icon: React.ReactNode; title: string; subtitle: string; colour: string; gradient: [string, string] }
 > = {
   perfect_day: {
-    emoji: '🏆',
+    icon: <Trophy size={96} strokeWidth={1.5} />,
     title: 'Perfect Day',
     subtitle: 'Law · Economics · Finance — all three, one day.',
     colour: '#c9ab70',
     gradient: ['#c9ab7022', '#c9ab7008'],
   },
   full_notes_day: {
-    emoji: '📝',
+    icon: <FileText size={96} strokeWidth={1.5} />,
     title: 'Full Notes',
     subtitle: 'Every domain documented. Knowledge locked in.',
     colour: '#80a394',
     gradient: ['#80a39422', '#80a39408'],
   },
   quiz_complete: {
-    emoji: '🧠',
+    icon: <Brain size={96} strokeWidth={1.5} />,
     title: 'Quiz Complete',
     subtitle: 'All review questions answered. Solid recall.',
     colour: '#8fa3d0',
     gradient: ['#8fa3d022', '#8fa3d008'],
   },
   perfect_week: {
-    emoji: '🔥',
+    icon: <Flame size={96} strokeWidth={1.5} />,
     title: 'Perfect Week',
     subtitle: 'Seven days. Three domains. Zero gaps.',
     colour: '#c9ab70',
     gradient: ['#c9ab7030', '#80a39410'],
   },
   week_complete: {
-    emoji: '✅',
+    icon: <CheckCircle size={96} strokeWidth={1.5} />,
     title: 'Week Complete',
     subtitle: 'Another week of the curriculum done.',
     colour: '#80a394',
     gradient: ['#80a39422', '#8fa3d010'],
   },
   streak: {
-    emoji: '⚡',
+    icon: <Zap size={96} strokeWidth={1.5} />,
     title: 'Streak Milestone',
     subtitle: 'Consistency is the compounding asset.',
     colour: '#c9ab70',
@@ -168,16 +169,16 @@ export async function GET(req: NextRequest) {
           textAlign: 'center',
         }}
       >
-        {/* Emoji */}
         <div
           style={{
             display: 'flex',
             fontSize: '96px',
             lineHeight: 1,
+            color: meta.colour,
             filter: 'drop-shadow(0 0 32px ' + meta.colour + '66)',
           }}
         >
-          {meta.emoji}
+          {meta.icon}
         </div>
 
         {/* Achievement name */}

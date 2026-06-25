@@ -9,10 +9,10 @@ import type { LefDomain, ResourceType } from '@/lib/database.types';
 import type { Domain } from '@/data/curriculum-data';
 
 const TYPE_LABEL: Record<string, string> = {
-  video: '▶ Video',
-  article: '📄 Article',
-  tool: '🔧 Tool',
-  other: '🔗 Other',
+  video: 'Video',
+  article: 'Article',
+  tool: 'Tool',
+  other: 'Other',
 };
 
 // GET /api/resources?day=N&domain=X  — approved resources for a day (public)

@@ -101,7 +101,6 @@ async function sendContentFlagEmail(params: {
   const adminUrl = `${getSiteUrl()}/admin/content-flags`;
   const { url, title, day_number, domain, content_type, reason, flaggedBy } = params;
 
-  const typeIcon = content_type === 'video' ? '▶' : '📄';
   const typeLabel = content_type === 'video' ? 'Video' : 'Article';
   const domainLabel = domain ? (DOMAIN_LABELS[domain as Domain] ?? domain) : '';
   const dayLine = day_number
@@ -110,7 +109,7 @@ async function sendContentFlagEmail(params: {
 
   const cardHtml = `
   <div class="card">
-    <div class="row"><div class="lbl">Type</div><div class="val">${typeIcon} ${typeLabel}</div></div>
+    <div class="row"><div class="lbl">Type</div><div class="val">${typeLabel}</div></div>
     <div class="row"><div class="lbl">Location</div><div class="val">${dayLine}</div></div>
     <div class="row"><div class="lbl">Title</div><div class="val">${sanitizeHtmlText(title)}</div></div>
     <div class="row"><div class="lbl">URL</div><div class="val"><a href="${url}">${sanitizeHtmlText(url)}</a></div></div>
@@ -119,10 +118,10 @@ async function sendContentFlagEmail(params: {
   </div>`;
 
   await sendAdminEmail({
-    subject: `[LEF OS] ⚑ ${typeLabel} flagged — Day ${day_number ?? '?'} ${domain ?? ''}`,
+    subject: `[LEF OS] Flagged: ${typeLabel} — Day ${day_number ?? '?'} ${domain ?? ''}`,
     html: buildEmailLayout({
-      title: `${typeIcon} Study resource flagged as broken or wrong`,
-      badgeText: '⚑ Content Flagged',
+      title: `Study resource flagged as broken or wrong`,
+      badgeText: 'Content Flagged',
       subTitle: `A user flagged a ${typeLabel.toLowerCase()} link in the enriched study content. Review and update enriched-content.json if needed.`,
       cardHtml,
       actionButton: { text: 'View all flagged content →', url: adminUrl },

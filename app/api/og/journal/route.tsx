@@ -9,11 +9,7 @@ const DOMAIN_COLOURS: Record<string, string> = {
   finance: '#8fa3d0',
 };
 
-const DOMAIN_ICONS: Record<string, string> = {
-  law: '⚖️',
-  economics: '📊',
-  finance: '💰',
-};
+
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -29,7 +25,7 @@ export async function GET(req: NextRequest) {
   const textMuted = isDark ? '#857e76' : '#716c65';
   const surfaceBg = isDark ? '#1e1e1e' : '#f2f0ec';
   const accentColour = DOMAIN_COLOURS[domain] ?? DOMAIN_COLOURS.law;
-  const domainIcon = DOMAIN_ICONS[domain] ?? '⚖️';
+
 
   // Truncate insight to fit the card
   const displayInsight = insight.length > 220 ? insight.slice(0, 217) + '…' : insight;
@@ -86,7 +82,7 @@ export async function GET(req: NextRequest) {
             padding: '10px 18px',
           }}
         >
-          <span style={{ fontSize: '22px' }}>{domainIcon}</span>
+
           <span
             style={{
               fontSize: '15px',

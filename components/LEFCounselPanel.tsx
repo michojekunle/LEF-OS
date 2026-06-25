@@ -10,6 +10,9 @@ import {
   RefreshCw,
   MessageSquareIcon,
   Send,
+  Lightbulb,
+  FileText,
+  Globe,
 } from 'lucide-react';
 import { type Message, ChatBody, ChatInput } from './counsel';
 import { QuizResultModal } from './QuizResultModal';
@@ -361,15 +364,15 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
 
   const starterPills = [
     {
-      label: "💡 Explain today's concepts",
+      label: <span className="inline-flex items-center gap-1.5"><Lightbulb size={12} /> Explain today's concepts</span>,
       query: "Can you explain today's Law, Economics, and Finance topics in simple terms?",
     },
     {
-      label: '📝 Give me a quick quiz',
+      label: <span className="inline-flex items-center gap-1.5"><FileText size={12} /> Give me a quick quiz</span>,
       query: "Give me a quick 3-question multiple-choice quiz based on today's study topics.",
     },
     {
-      label: '🇳🇬 Apply to Nigeria context',
+      label: <span className="inline-flex items-center gap-1.5"><Globe size={12} /> Apply to Nigeria context</span>,
       query: "How do today's topics apply practically to a business or founder in Nigeria?",
     },
   ];

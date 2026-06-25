@@ -1,7 +1,9 @@
+import React from 'react';
+
 type Props = {
   value: number;
   max: number;
-  label?: string;
+  label?: React.ReactNode;
   accent?: 'gold' | 'sage' | 'slate' | 'red' | 'success';
   showCount?: boolean;
   className?: string;
