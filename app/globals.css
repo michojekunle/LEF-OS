@@ -859,13 +859,14 @@ a,
 }
 
 .sankofa-marquee-text {
-  font-size: clamp(8rem, 25vw, 30rem);
+  font-size: clamp(6rem, 25vw, 30rem);
   font-weight: 700;
   text-transform: uppercase;
   color: transparent;
   -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
   line-height: 0.8;
-  opacity: 0.5;
+  opacity: 1;
+  white-space: nowrap;
 }
 
 .sankofa-intro-content {
@@ -993,6 +994,58 @@ a,
   opacity: 0.7;
   margin-top: 40px;
   max-width: 600px;
+}
+
+/* Domain Slide Layout Variations */
+.sankofa-domain-panel.layout-left {
+  align-items: flex-start;
+  text-align: left;
+}
+.sankofa-domain-panel.layout-right {
+  align-items: flex-end;
+  text-align: right;
+}
+.sankofa-domain-panel.layout-center {
+  align-items: center;
+  text-align: center;
+}
+.sankofa-domain-panel.layout-split {
+  flex-direction: row;
+  justify-content: space-between;
+  text-align: left;
+  padding: 0 10vw;
+}
+.sankofa-domain-panel.layout-split > div:first-child {
+  flex: 1;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  padding-right: 4vw;
+}
+.sankofa-domain-panel.layout-split > h3 {
+  flex: 2;
+  padding-left: 4vw;
+}
+.sankofa-domain-panel.layout-inverted {
+  background-color: #F4F0EA !important;
+  color: #0A0A0A !important;
+}
+.sankofa-domain-panel.layout-inverted .sankofa-h2-editorial {
+  color: #0A0A0A !important;
+}
+.sankofa-domain-panel.layout-inverted .sankofa-phase-label {
+  color: #a88444 !important; /* Darker gold for light mode */
+}
+
+.sankofa-giant-icon {
+  position: absolute;
+  top: 50%;
+  right: 10%;
+  transform: translateY(-50%);
+  width: 50vh;
+  height: 50vh;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 0;
+  color: #F4F0EA;
 }
 
 /* Brutalist Form */

@@ -10,17 +10,18 @@ import { CustomCursor } from '@/components/sankofa/CustomCursor';
 import { MagneticButton } from '@/components/sankofa/MagneticButton';
 import { CinematicPreloader } from '@/components/sankofa/CinematicPreloader';
 import { SoundDesign } from '@/components/sankofa/SoundDesign';
+import { Globe2, Landmark, Users, Lightbulb, Map, Coins } from 'lucide-react';
 
 const bebas = Bebas_Neue({ subsets: ['latin'], weight: '400' });
 const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['300', '400', '700'], style: ['normal', 'italic'] });
 
 const DOMAINS = [
-  { id: '01', name: 'Africa', desc: "Before the borders were drawn. The first universities, the wealth of Mali, the architectures of Zimbabwe. What if the first economies weren't born in Europe?" },
-  { id: '02', name: 'World', desc: 'Every civilization. Every era. Tracing the global trade routes that connected empires before the modern age.' },
-  { id: '03', name: 'Economies', desc: 'How wealth was built and stolen. The ledger of human progress is written in debt, resources, and innovation.' },
-  { id: '04', name: 'Politics', desc: 'Power, empire, resistance. How the structures of governance evolved and who they were designed to protect.' },
-  { id: '05', name: 'People', desc: "The figures behind the forces. History isn't a timeline of events, it is a web of human ambition and failure." },
-  { id: '06', name: 'Ideas', desc: 'Religion, science, and philosophy. The intellectual foundations that justified conquests and sparked revolutions.' },
+  { id: '01', name: 'Africa', icon: Map, question: 'AFRICA: THE CRADLE OR THE FUTURE?', shortDesc: 'Before the borders were drawn. The first universities, the wealth of Mali, the architectures of Zimbabwe.', statement: "What if the first economies weren't born in Europe? We reconstruct the economic ledgers of ancient kingdoms to understand the true origin of global trade." },
+  { id: '02', name: 'World', icon: Globe2, question: 'THE WORLD AS IT IS, OR AS IT WAS WRITTEN?', shortDesc: 'Every civilization. Every era. Tracing the global trade routes that connected empires before the modern age.', statement: "History is written by the victors, but economics is written by the survivors. We trace the shifting centers of power from the Silk Road to the transatlantic exchange." },
+  { id: '03', name: 'Economies', icon: Coins, question: 'HOW WAS THE WEALTH TRULY BUILT?', shortDesc: 'How wealth was built and stolen. The ledger of human progress is written in debt, resources, and innovation.', statement: "The modern financial system didn't emerge from a void. It was forged through extraction, innovation, and debt. We audit the ledgers of human progress." },
+  { id: '04', name: 'Politics', icon: Landmark, question: 'POWER, POLICY, OR CONTROL?', shortDesc: 'Power, empire, resistance. How the structures of governance evolved and who they were designed to protect.', statement: "Governance is the art of institutionalizing power. We dissect the laws and treaties that were designed to protect the few and control the many." },
+  { id: '05', name: 'People', icon: Users, question: 'WHO ARE THE FIGURES BEHIND THE FORCES?', shortDesc: "The figures behind the forces. History isn't a timeline of events, it is a web of human ambition and failure.", statement: "Behind every empire is an architect, and behind every collapse is a populace pushed too far. We profile the humans driving the mechanisms of power." },
+  { id: '06', name: 'Ideas', icon: Lightbulb, question: 'WHAT JUSTIFIES THE CONQUEST?', shortDesc: 'Religion, science, and philosophy. The intellectual foundations that justified conquests and sparked revolutions.', statement: "Ideas are the blueprints of empires. From divine right to manifest destiny, we explore the intellectual foundations that justified both conquest and revolution." },
 ];
 
 function useDeviceOrientation() {
@@ -79,21 +80,21 @@ export default function SankofaPage() {
   const velocitySkew = useTransform(smoothVelocity, [-1000, 1000], [5, -5]);
 
   // Dynamic Background Transitions
-  const backgroundColor = useTransform(scrollYProgress, [0, 0.05, 0.15], ['#F5F0E8', '#F5F0E8', '#0A0A0A']);
-  const color = useTransform(scrollYProgress, [0, 0.05, 0.15], ['#1C1408', '#1C1408', '#F4F0EA']);
+  const backgroundColor = useTransform(scrollYProgress, [0, 0.05, 0.08], ['#F5F0E8', '#F5F0E8', '#0A0A0A']);
+  const color = useTransform(scrollYProgress, [0, 0.05, 0.08], ['#1C1408', '#1C1408', '#F4F0EA']);
 
   // Marquee Parallax (Dual Band) & Text Scrubbing
   const introRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: introProgress } = useScroll({ target: introRef, offset: ["start end", "end start"] });
-  const marquee1X = useTransform(introProgress, [0, 1], ['10vw', '-100vw']);
-  const marquee2X = useTransform(introProgress, [0, 1], ['-100vw', '10vw']);
+  const marquee1X = useTransform(introProgress, [0, 1], ['100vw', '-100vw']);
+  const marquee2X = useTransform(introProgress, [0, 1], ['-100vw', '100vw']);
   
-
+  // Staggered text timings (delayed until after background is fully dark at 0.2)
+  const labelOpacity = useTransform(introProgress, [0.2, 0.25, 0.9, 0.95], [0, 1, 1, 0]);
+  const titleOpacity = useTransform(introProgress, [0.25, 0.3, 0.9, 0.95], [0, 1, 1, 0]);
+  const descOpacity = useTransform(introProgress, [0.35, 0.45, 0.9, 0.95], [0, 1, 1, 0]);
+  const descY = useTransform(introProgress, [0.35, 0.45], [30, 0]);
   
-  // Sinking Tarot Cards Roadmap
-  // Stripped out glitchy scale and shadow hooks for pure CSS stacking
-  const roadmapRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: roadmapProgress } = useScroll({ target: roadmapRef, offset: ["start start", "end end"] });
 
   // Hero Parallax
   const heroY = useTransform(scrollY, [0, 1000], [0, 300]);
@@ -103,11 +104,12 @@ export default function SankofaPage() {
   // Horizontal Scroll & Haptic Feedback
   const horizontalRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: horizontalProgress } = useScroll({ target: horizontalRef, offset: ["start start", "end end"] });
-  const x = useTransform(horizontalProgress, [0, 1], ['0%', `-${((DOMAINS.length - 1) * 100) / DOMAINS.length}%`]);
+  const totalSlides = DOMAINS.length * 2;
+  const x = useTransform(horizontalProgress, [0, 1], ['0%', `-${((totalSlides - 1) * 100) / totalSlides}%`]);
 
   const prevDomainIndex = useRef(0);
   useMotionValueEvent(horizontalProgress, "change", (latest) => {
-    const activeIndex = Math.round(latest * (DOMAINS.length - 1));
+    const activeIndex = Math.round(latest * (totalSlides - 1));
     if (activeIndex !== prevDomainIndex.current) {
       prevDomainIndex.current = activeIndex;
       // Trigger short physical vibration on mobile when snapping to a new domain
@@ -230,19 +232,19 @@ export default function SankofaPage() {
             SANKOFA
           </motion.h1>
         </section>        {/* 2. THE INTRODUCTION */}
-        <section ref={introRef} className="sankofa-intro-section" style={{ height: '300vh', padding: 0 }}>
+        <motion.section ref={introRef} className="sankofa-intro-section" style={{ height: '300vh', padding: 0 }}>
           <div style={{ position: 'sticky', top: 0, height: '100vh', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: '100%', display: 'flex', flexDirection: 'column', gap: '2vh', pointerEvents: 'none', zIndex: 0 }}>
+            <motion.div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: '100%', display: 'flex', flexDirection: 'column', gap: '2vh', pointerEvents: 'none', zIndex: 0 }}>
               <motion.div style={{ x: marquee1X, skewX: velocitySkew }}>
                 <div className={`sankofa-marquee-text ${bebas.className}`}>FRAGMENTED</div>
               </motion.div>
               <motion.div style={{ x: marquee2X, skewX: velocitySkew }}>
                 <div className={`sankofa-marquee-text ${bebas.className}`}>SCATTERED</div>
               </motion.div>
-            </div>
+            </motion.div>
             
             <div className="sankofa-intro-content" style={{ padding: '0 24px' }}>
-              <motion.div style={{ opacity: useTransform(introProgress, [0.1, 0.2, 0.8, 0.9], [0, 1, 1, 0]) }}>
+              <motion.div style={{ opacity: labelOpacity }}>
                 <div className={`sankofa-phase-label ${bebas.className}`} style={{ marginBottom: '20px', fontSize: '24px', color: '#c9ab70' }}>THE FRAGMENTED RECORD</div>
               </motion.div>
               <motion.h2 
@@ -251,8 +253,7 @@ export default function SankofaPage() {
                   textAlign: 'left', 
                   margin: 0,
                   color: '#F4F0EA',
-                  opacity: useTransform(introProgress, [0.2, 0.3, 0.8, 0.9], [0, 1, 1, 0]),
-                  y: useTransform(introProgress, [0.2, 0.3], [30, 0])
+                  opacity: titleOpacity
                 }}
               >
                 History was not lost. It was scattered.
@@ -264,8 +265,8 @@ export default function SankofaPage() {
                   maxWidth: '800px', 
                   fontSize: '1.4rem',
                   color: '#F4F0EA',
-                  opacity: useTransform(introProgress, [0.4, 0.5, 0.8, 0.9], [0, 1, 1, 0]),
-                  y: useTransform(introProgress, [0.4, 0.5], [30, 0])
+                  opacity: descOpacity,
+                  y: descY
                 }}
               >
                 The traditional narrative of human civilization is a curated timeline designed by empires. 
@@ -274,25 +275,57 @@ export default function SankofaPage() {
               </motion.p>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* 3. HORIZONTAL SCROLL DOMAINS */}
-        <div ref={horizontalRef} className="sankofa-horizontal-wrapper" style={{ height: `${DOMAINS.length * 100}vh` }}>
+        <motion.div ref={horizontalRef} className="sankofa-horizontal-wrapper" style={{ height: `${DOMAINS.length * 2 * 100}vh` }}>
           <div className="sankofa-horizontal-sticky">
-            <motion.div style={{ x, width: `${DOMAINS.length * 100}vw` }} className="sankofa-horizontal-container">
-              {DOMAINS.map((d) => (
-                <motion.div key={d.id} className="sankofa-domain-panel" style={{ skewX: velocitySkew }}>
-                  <div className={`sankofa-domain-number ${bebas.className}`}>{d.id}</div>
-                  <h3 className={`sankofa-domain-title ${cormorant.className}`}>{d.name}</h3>
-                  <p className="sankofa-domain-desc">{d.desc}</p>
-                </motion.div>
-              ))}
+            <motion.div style={{ x, width: `${DOMAINS.length * 2 * 100}vw` }} className="sankofa-horizontal-container">
+              {DOMAINS.map((d, index) => {
+                const Icon = d.icon;
+                const layoutALayouts = ['layout-left', 'layout-right', 'layout-center'];
+                const layoutA = layoutALayouts[index % 3];
+                const layoutB = index % 2 === 0 ? 'layout-split' : 'layout-inverted';
+
+                return (
+                  <React.Fragment key={d.id}>
+                    {/* Slide A: Question and short desc */}
+                    <motion.div className={`sankofa-domain-panel ${layoutA}`} style={{ skewX: velocitySkew, position: 'relative' }}>
+                      {layoutA === 'layout-right' && <Icon className="sankofa-giant-icon" />}
+                      <div className={`sankofa-domain-number ${bebas.className}`}>{d.id}</div>
+                      <h3 className={`sankofa-domain-title ${cormorant.className}`} style={{ fontSize: 'clamp(3rem, 6vw, 8rem)', marginBottom: '1rem', textTransform: 'uppercase', zIndex: 10 }}>
+                        {d.question}
+                      </h3>
+                      <p className="sankofa-domain-desc" style={{ zIndex: 10 }}>{d.shortDesc}</p>
+                    </motion.div>
+                    
+                    {/* Slide B: Deep dive statement with tag */}
+                    <motion.div className={`sankofa-domain-panel ${layoutB}`} style={{ skewX: velocitySkew }}>
+                      {layoutB === 'layout-split' ? (
+                        <>
+                          <div className={`sankofa-phase-label ${bebas.className}`} style={{ fontSize: '24px' }}>{d.name}</div>
+                          <h3 className={`sankofa-h2-editorial ${cormorant.className}`} style={{ fontSize: 'clamp(2rem, 4vw, 4rem)', fontWeight: 600, color: '#F4F0EA', maxWidth: '900px' }}>
+                            {d.statement}
+                          </h3>
+                        </>
+                      ) : (
+                        <>
+                          <div className={`sankofa-phase-label ${bebas.className}`} style={{ marginBottom: '1.5rem', fontSize: '24px' }}>{d.name}</div>
+                          <h3 className={`sankofa-h2-editorial ${cormorant.className}`} style={{ fontSize: 'clamp(2rem, 4vw, 4rem)', fontWeight: 600, maxWidth: '900px' }}>
+                            {d.statement}
+                          </h3>
+                        </>
+                      )}
+                    </motion.div>
+                  </React.Fragment>
+                );
+              })}
             </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         {/* 4. THE DEPLOYMENT ROADMAP */}
-        <section ref={roadmapRef} className="sankofa-roadmap-section">
+        <section className="sankofa-roadmap-section">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -306,7 +339,7 @@ export default function SankofaPage() {
             <div className="sankofa-roadmap-grid">
               <div className="sankofa-roadmap-card">
                 <div style={{ position: 'relative', zIndex: 20 }}>
-                  <div className="sankofa-phase-label">Phase 01 — NOW</div>
+                  <div className="sankofa-phase-label">Phase 01 — FAPEM</div>
                   <h3 className={`sankofa-phase-title ${cormorant.className}`}>The Foundation</h3>
                   <p className="sankofa-phase-desc" style={{ maxWidth: '800px' }}>
                     Activating the Waitlist. We are gathering the initial 10,000 historians, researchers, and early access members while finalizing the raw database architecture and UI framework.
@@ -316,7 +349,7 @@ export default function SankofaPage() {
 
               <div className="sankofa-roadmap-card">
                 <div style={{ position: 'relative', zIndex: 20 }}>
-                  <div className="sankofa-phase-label">Phase 02 — NEXT</div>
+                  <div className="sankofa-phase-label">Phase 02 — KORAE</div>
                   <h3 className={`sankofa-phase-title ${cormorant.className}`}>The Vault</h3>
                   <p className="sankofa-phase-desc" style={{ maxWidth: '800px' }}>
                     Opening the beta archive. This phase introduces daily curated stories, interactive 3D historical artifacts, and immersive brutalist reading experiences exclusively to waitlist members.
@@ -326,7 +359,7 @@ export default function SankofaPage() {
 
               <div className="sankofa-roadmap-card">
                 <div style={{ position: 'relative', zIndex: 20 }}>
-                  <div className="sankofa-phase-label">Phase 03 — FUTURE</div>
+                  <div className="sankofa-phase-label">Phase 03 — AMANSAN</div>
                   <h3 className={`sankofa-phase-title ${cormorant.className}`}>The Encyclopedia</h3>
                   <p className="sankofa-phase-desc" style={{ maxWidth: '800px' }}>
                     A fully decentralized, community-verified web of global historical interconnections. Users will be able to submit, verify, and trace the flow of power across civilizations in real-time.

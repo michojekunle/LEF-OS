@@ -117,7 +117,7 @@ function parseScore(text: string, knownTotal = 0): { answered: number; total: nu
  *  `/day` is in the list because the day detail page renders its own inline
  *  LEFCounselPanel — having two panels would also cause global quiz events to
  *  fire twice. */
-const FLOATING_HIDDEN_PATHS = ['/roadmap', '/journal', '/stats', '/export', '/settings', '/day'];
+const FLOATING_HIDDEN_PATHS = ['/roadmap', '/journal', '/stats', '/export', '/settings', '/day', '/sankofa'];
 
 type Props = {
   day: number;
