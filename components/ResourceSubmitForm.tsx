@@ -12,10 +12,10 @@ type Props = {
 };
 
 const TYPE_OPTIONS: { value: ResourceType; label: string }[] = [
-  { value: 'video', label: '▶ Video' },
-  { value: 'article', label: '📄 Article' },
-  { value: 'tool', label: '🔧 Tool / App' },
-  { value: 'other', label: '🔗 Other' },
+  { value: 'video', label: 'Video' },
+  { value: 'article', label: 'Article' },
+  { value: 'tool', label: 'Tool / App' },
+  { value: 'other', label: 'Other' },
 ];
 
 export function ResourceSubmitForm({ day, defaultDomain = 'law', userId }: Props) {

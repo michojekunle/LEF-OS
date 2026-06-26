@@ -617,3 +617,504 @@ a,
 [role='button'] {
   touch-action: manipulation;
 }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   SANKOFA AWWWARDS OVERHAUL — PARCHMENT TO OBSIDIAN
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme='sankofa'] {
+  --s-bg-light: #F5F0E8;
+  --s-bg-dark: #0A0A0A;
+  --s-text-light: #1C1408;
+  --s-text-dark: #F4F0EA;
+  --s-accent: #C4633A;
+  --s-border-light: rgba(28, 20, 8, 0.1);
+  --s-border-dark: rgba(244, 240, 234, 0.1);
+}
+
+.sankofa-page {
+  background-color: #F5F0E8; /* Initial bright background */
+  color: #1C1408;
+  min-height: 100vh;
+  position: relative;
+  /* overflow-x: hidden removed because it breaks position: sticky horizontally */
+  transition: background-color 2s ease, color 2s ease;
+}
+
+.sankofa-page ::selection {
+  background: var(--s-accent);
+  color: #fff;
+}
+
+/* Typography as Architecture */
+.sankofa-h1-massive {
+  font-size: clamp(4rem, 15vw, 18rem);
+  font-weight: 700;
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  margin: 0;
+  z-index: 10;
+  position: relative;
+  /* We remove exclusion blend mode because we transition colors */
+}
+
+.sankofa-h2-editorial {
+  font-size: clamp(2rem, 5vw, 5rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sankofa-body-minimal {
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+
+/* Sections */
+.sankofa-hero-awwwards {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hero Metadata */
+.sankofa-hero-meta {
+  position: absolute;
+  padding: 4vw;
+  z-index: 20;
+}
+
+.sankofa-meta-tl { top: 0; left: 0; text-align: left; max-width: 300px; }
+.sankofa-meta-tr { top: 0; right: 0; text-align: right; }
+.sankofa-meta-bl { bottom: 0; left: 0; text-align: left; max-width: 400px; }
+.sankofa-meta-br { bottom: 0; right: 0; text-align: right; }
+
+.sankofa-def-text {
+  font-family: 'DM Mono', 'Helvetica Neue', monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  line-height: 1.6;
+}
+
+.sankofa-manifesto-text {
+  font-size: clamp(1rem, 1.5vw, 1.5rem);
+  line-height: 1.4;
+  opacity: 0.8;
+}
+
+.sankofa-scroll-prompt {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sankofa-scroll-prompt::before {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 20px;
+  background-color: currentColor;
+  animation: pulse-line 2s infinite;
+}
+
+@keyframes pulse-line {
+  0% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  50.1% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* ── MOBILE RESPONSIVENESS ── */
+@media (max-width: 768px) {
+  .sankofa-hero-meta {
+    padding: 24px;
+  }
+  /* The Spine layout for ARCHIVE_01 */
+  .sankofa-meta-tr {
+    display: block !important;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%) rotate(90deg);
+    transform-origin: right center;
+    white-space: nowrap;
+    opacity: 0.5;
+    padding: 0 24px;
+  }
+
+  /* Glassmorphism Manifesto */
+  .sankofa-meta-bl {
+    display: block !important;
+    bottom: 80px;
+    left: 24px;
+    right: 24px;
+    max-width: none;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    z-index: 30;
+  }
+  .sankofa-meta-bl .sankofa-manifesto-text {
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  /* Reposition scroll prompt to the bottom center */
+  .sankofa-meta-br {
+    right: 50%;
+    transform: translateX(50%);
+    bottom: 24px;
+    padding: 0;
+  }
+  .sankofa-meta-tl {
+    top: 32px;
+    left: 24px;
+    padding: 0;
+    max-width: 80vw;
+  }
+  
+  .sankofa-hero-floating-img {
+    width: 70%;
+    max-width: 300px;
+    top: 50%;
+  }
+
+  .sankofa-h1-massive {
+    font-size: clamp(3rem, 15vw, 18rem);
+  }
+
+  .sankofa-input-brutalist {
+    font-size: 18px;
+    padding: 12px 0;
+  }
+  
+  .sankofa-btn-brutalist {
+    font-size: 14px;
+    padding: 0 12px;
+  }
+}
+
+.sankofa-hero-floating-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  z-index: 0;
+  /* Parchment image blending */
+  /* mix-blend-mode: multiply; */
+  opacity: 0.9;
+}
+
+.sankofa-statement-section {
+  padding: 20vh 24px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Intro & Roadmap Sections */
+.sankofa-intro-section {
+  padding: 15vh 24px;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+  position: relative;
+  overflow: clip;
+}
+
+.sankofa-marquee-container {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sankofa-marquee-text {
+  font-size: clamp(6rem, 25vw, 30rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+  line-height: 0.8;
+  opacity: 1;
+  white-space: nowrap;
+}
+
+.sankofa-intro-content {
+  position: relative;
+  z-index: 10;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.sankofa-roadmap-section {
+  padding: 15vh 24px 30vh;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sankofa-roadmap-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 80px;
+  position: relative;
+}
+
+.sankofa-roadmap-card {
+  position: sticky;
+  height: 70vh;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto 10vh;
+  padding: 8vw;
+  background: #0A0A0A; /* Solid brutalist black to cover underlying cards */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  box-shadow: 0 -30px 60px rgba(0,0,0,0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+  transform-origin: top center;
+  overflow: hidden; /* Ensure overlay respects border radius */
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+}
+
+.sankofa-roadmap-card:nth-child(1) { top: 10vh; z-index: 1; }
+.sankofa-roadmap-card:nth-child(2) { top: 15vh; z-index: 2; }
+.sankofa-roadmap-card:nth-child(3) { top: 20vh; z-index: 3; }
+
+.sankofa-phase-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #c9ab70;
+  opacity: 0.8;
+}
+
+.sankofa-phase-title {
+  font-size: clamp(3rem, 6vw, 6rem);
+  line-height: 1;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+.sankofa-phase-desc {
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  line-height: 1.5;
+  opacity: 0.7;
+  max-width: 800px;
+}
+
+/* Horizontal Scroll Area */
+.sankofa-horizontal-wrapper {
+  position: relative;
+  /* height handled by React inline style */
+}
+
+.sankofa-horizontal-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.sankofa-horizontal-container {
+  display: flex;
+  height: 100vh;
+  width: max-content;
+}
+
+.sankofa-domain-panel {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+  flex-shrink: 0;
+}
+
+.sankofa-domain-number {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 24px;
+  border-bottom: 2px solid currentColor;
+  padding-bottom: 12px;
+  margin-bottom: 24px;
+  opacity: 0.6;
+}
+
+.sankofa-domain-title {
+  font-size: clamp(4rem, 12vw, 15rem);
+  font-style: normal;
+  margin: 0;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.sankofa-domain-desc {
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  opacity: 0.7;
+  margin-top: 40px;
+  max-width: 600px;
+}
+
+/* Domain Slide Layout Variations */
+.sankofa-domain-panel.layout-left {
+  align-items: flex-start;
+  text-align: left;
+}
+.sankofa-domain-panel.layout-right {
+  align-items: flex-end;
+  text-align: right;
+}
+.sankofa-domain-panel.layout-center {
+  align-items: center;
+  text-align: center;
+}
+.sankofa-domain-panel.layout-split {
+  flex-direction: row;
+  justify-content: space-between;
+  text-align: left;
+  padding: 0 10vw;
+}
+.sankofa-domain-panel.layout-split > div:first-child {
+  flex: 1;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  padding-right: 4vw;
+}
+.sankofa-domain-panel.layout-split > h3 {
+  flex: 2;
+  padding-left: 4vw;
+}
+.sankofa-domain-panel.layout-inverted {
+  background-color: #F4F0EA !important;
+  color: #0A0A0A !important;
+}
+.sankofa-domain-panel.layout-inverted .sankofa-h2-editorial {
+  color: #0A0A0A !important;
+}
+.sankofa-domain-panel.layout-inverted .sankofa-phase-label {
+  color: #a88444 !important; /* Darker gold for light mode */
+}
+
+.sankofa-giant-icon {
+  position: absolute;
+  top: 50%;
+  right: 10%;
+  transform: translateY(-50%);
+  width: 50vh;
+  height: 50vh;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 0;
+  color: #F4F0EA;
+}
+
+/* Brutalist Form */
+.sankofa-waitlist-awwwards {
+  padding: 20vh 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.sankofa-isolated-bird {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  max-width: 150vw;
+  z-index: 0;
+  mix-blend-mode: lighten;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.sankofa-form-brutalist {
+  display: flex;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 64px;
+  border-bottom: 2px solid currentColor;
+  position: relative;
+  z-index: 2;
+}
+
+.sankofa-input-brutalist {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 32px;
+  padding: 16px 0;
+  outline: none;
+}
+.sankofa-input-brutalist::placeholder {
+  color: inherit;
+  opacity: 0.4;
+}
+
+.sankofa-btn-brutalist {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0 24px;
+  transition: color 0.3s ease;
+}
+.sankofa-btn-brutalist:hover {
+  color: var(--s-accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body:has(.sankofa-page) * {
+    cursor: none !important;
+  }
+}

@@ -55,6 +55,13 @@
       "description": "Read public insights from the journey",
       "url": "/journal",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sankofa",
+      "short_name": "Sankofa",
+      "description": "Coming soon — Be the griot.",
+      "url": "/sankofa",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

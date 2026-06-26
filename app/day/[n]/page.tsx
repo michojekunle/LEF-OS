@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowRight, CalendarDays } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CalendarDays, Scale, BarChart, Landmark } from 'lucide-react';
 import {
   TOTAL_CALENDAR_DAYS,
   findDayMeta,
@@ -332,7 +332,13 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
               return (
                 <div key={d} className="space-y-2">
                   <span className="block text-xs font-semibold uppercase tracking-wider text-text-muted">
-                    {d === 'law' ? '⚖️ Law' : d === 'economics' ? '📊 Economics' : '💰 Finance'}{' '}
+                    {d === 'law' ? (
+                      <span className="inline-flex items-center gap-1"><Scale className="h-3 w-3" /> Law</span>
+                    ) : d === 'economics' ? (
+                      <span className="inline-flex items-center gap-1"><BarChart className="h-3 w-3" /> Economics</span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1"><Landmark className="h-3 w-3" /> Finance</span>
+                    )}{' '}
                     Resources
                   </span>
                   <ul className="space-y-1.5">

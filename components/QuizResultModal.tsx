@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { X, RefreshCw, Zap } from 'lucide-react';
+import { X, RefreshCw, Zap, Target, Brain, FileText } from 'lucide-react';
 
 const CONFETTI_COLOURS = [
   '#c9ab70',
@@ -46,7 +46,7 @@ export function QuizResultModal({ answered, total, topic, onMoreQuestions, onDis
 
   const percentage = total > 0 ? Math.round((answered / total) * 100) : 0;
 
-  const emoji = isPerfect ? '🎯' : isAttempted ? '🧠' : '📝';
+  const Icon = isPerfect ? Target : isAttempted ? Brain : FileText;
   const title = isPerfect ? 'Perfect score!' : isAttempted ? 'Quiz attempted!' : 'Quiz started';
   const subtitle = isPerfect
     ? `You answered all ${total} questions on ${topic}.`
@@ -112,7 +112,7 @@ export function QuizResultModal({ answered, total, topic, onMoreQuestions, onDis
 
         {/* Emoji + title */}
         <div className="space-y-2">
-          <div className="text-5xl">{emoji}</div>
+          <div className="flex justify-center text-text-muted"><Icon className="h-12 w-12" /></div>
           <h2 className="font-display text-2xl font-bold tracking-tight text-text-primary">
             {title}
           </h2>

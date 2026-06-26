@@ -1,45 +1,45 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { X, Download, Twitter, Linkedin } from 'lucide-react';
+import { X, Download, Twitter, Linkedin, Trophy, FileText, Brain, Flame, CheckCircle, Zap } from 'lucide-react';
 import type { Achievement, AchievementType } from '@/lib/achievements';
 
 const META: Record<
   AchievementType,
-  { emoji: string; title: string; subtitle: string; colour: string }
+  { icon: React.ReactNode; title: string; subtitle: string; colour: string }
 > = {
   perfect_day: {
-    emoji: '🏆',
+    icon: <Trophy size={60} strokeWidth={1.5} />,
     title: 'Perfect Day',
     subtitle: 'Law · Economics · Finance — all three, one session.',
     colour: 'var(--gold)',
   },
   full_notes_day: {
-    emoji: '📝',
+    icon: <FileText size={60} strokeWidth={1.5} />,
     title: 'Full Notes',
     subtitle: 'Every domain documented for the day.',
     colour: 'var(--sage)',
   },
   quiz_complete: {
-    emoji: '🧠',
+    icon: <Brain size={60} strokeWidth={1.5} />,
     title: 'Quiz Complete',
     subtitle: 'All review questions answered. Solid recall.',
     colour: 'var(--slate-blue)',
   },
   perfect_week: {
-    emoji: '🔥',
+    icon: <Flame size={60} strokeWidth={1.5} />,
     title: 'Perfect Week',
     subtitle: 'Seven days. Three domains. Zero gaps.',
     colour: 'var(--gold)',
   },
   week_complete: {
-    emoji: '✅',
+    icon: <CheckCircle size={60} strokeWidth={1.5} />,
     title: 'Week Complete',
     subtitle: 'Another week of the curriculum down.',
     colour: 'var(--sage)',
   },
   streak: {
-    emoji: '⚡',
+    icon: <Zap size={60} strokeWidth={1.5} />,
     title: 'Streak Milestone',
     subtitle: 'Consistency is the compounding asset.',
     colour: 'var(--gold)',
@@ -86,7 +86,7 @@ export function AchievementModal({ achievement, onDismiss }: Props) {
       : '';
 
   const encodedText = encodeURIComponent(
-    `${meta.emoji} ${meta.title} — ${meta.subtitle}\n\nLEF OS · Law · Economics · Finance`,
+    `${meta.title} — ${meta.subtitle}\n\nLEF OS · Law · Economics · Finance`,
   );
   const siteUrl = encodeURIComponent(
     typeof window !== 'undefined' ? window.location.origin : 'https://lef-os.vercel.app',
@@ -153,9 +153,8 @@ export function AchievementModal({ achievement, onDismiss }: Props) {
           <X size={16} />
         </button>
 
-        {/* Emoji */}
-        <div className="text-6xl leading-none" role="img" aria-label={meta.title}>
-          {meta.emoji}
+        <div className="text-gold" role="img" aria-label={meta.title}>
+          {meta.icon}
         </div>
 
         {/* Title + subtitle */}

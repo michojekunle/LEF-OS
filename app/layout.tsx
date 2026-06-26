@@ -156,6 +156,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* Sankofa fonts — Cormorant Garamond (headings), Source Serif 4 (body), DM Mono (metadata) */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=DM+Mono:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body>
         <ThemeProvider>

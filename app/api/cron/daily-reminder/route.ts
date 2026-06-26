@@ -294,10 +294,10 @@ export async function GET(request: Request) {
 }
 
 // Per-domain visual styling for the email cards
-const DOMAIN_STYLE: Record<Domain, { label: string; icon: string; colour: string }> = {
-  law: { label: 'Law', icon: '⚖️', colour: '#c9ab70' },
-  economics: { label: 'Economics', icon: '📊', colour: '#7C9E8F' },
-  finance: { label: 'Finance', icon: '💰', colour: '#8B9ECC' },
+const DOMAIN_STYLE: Record<Domain, { label: string; colour: string }> = {
+  law: { label: 'Law', colour: '#c9ab70' },
+  economics: { label: 'Economics', colour: '#7C9E8F' },
+  finance: { label: 'Finance', colour: '#8B9ECC' },
 };
 
 function buildDomainCardHtml(
@@ -309,7 +309,7 @@ function buildDomainCardHtml(
   const topicHtml = topic ? sanitizeHtmlText(topic) : fallback;
   return `
     <div class="card" style="border-left: 3px solid ${style.colour}; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0;">
-      <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">${style.icon} ${style.label}</div>
+      <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #857e76; margin-bottom: 4px;">${style.label}</div>
       <p style="font-size: 14px; margin: 0; color: #ede8e0;">${topicHtml}</p>
     </div>`;
 }
@@ -345,7 +345,7 @@ function getReminderEmailHtml(
   const cardHtml = `
   <div class="card" style="text-align: center; padding: 16px;">
     <div style="font-size: 16px; font-weight: bold; color: #c9ab70;">
-      ${streak > 0 ? `🔥 Current Streak: ${streak} Days` : '🌱 Start your study streak today!'}
+      ${streak > 0 ? `Current Streak: ${streak} Days` : 'Start your study streak today!'}
     </div>
   </div>
 

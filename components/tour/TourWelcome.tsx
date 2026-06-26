@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useTour } from './TourProvider';
 
-const DOMAIN_EMOJIS: Array<{ emoji: string; color: string; delay: number }> = [
-  { emoji: '⚖️', color: 'var(--gold)', delay: 0 },
-  { emoji: '📊', color: 'var(--sage)', delay: 120 },
-  { emoji: '💰', color: 'var(--slate-blue)', delay: 240 },
+import { Scale, BarChart, Landmark } from 'lucide-react';
+
+const DOMAIN_EMOJIS: Array<{ emoji: React.ReactNode; color: string; delay: number }> = [
+  { emoji: <Scale size={32} />, color: 'var(--gold)', delay: 0 },
+  { emoji: <BarChart size={32} />, color: 'var(--sage)', delay: 120 },
+  { emoji: <Landmark size={32} />, color: 'var(--slate-blue)', delay: 240 },
 ];
 
 export function TourWelcome() {

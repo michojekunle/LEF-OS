@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { Flame, CheckCircle2, Calendar, Bell, X, ArrowRight, BookOpen } from 'lucide-react';
+import { Flame, CheckCircle2, Calendar, Bell, X, ArrowRight, BookOpen, Scale, BarChart, Landmark, ClipboardList } from 'lucide-react';
 import Link from 'next/link';
 import {
   getDayNumber,
@@ -346,13 +346,26 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
         <section className="card space-y-4 p-5" data-tour="domain-progress">
           <h3 className="text-sm font-semibold text-text-primary">Per-domain progress</h3>
           {course.preferredDomains.includes('law') && (
-            <ProgressBar value={lawDone} max={TOTAL_CURRICULUM_DAYS} label="⚖️ Law" accent="gold" />
+            <ProgressBar
+              value={lawDone}
+              max={TOTAL_CURRICULUM_DAYS}
+              label={
+                <span className="inline-flex items-center gap-1">
+                  <Scale className="h-3 w-3" /> Law
+                </span>
+              }
+              accent="gold"
+            />
           )}
           {course.preferredDomains.includes('economics') && (
             <ProgressBar
               value={econDone}
               max={TOTAL_CURRICULUM_DAYS}
-              label="📊 Economics"
+              label={
+                <span className="inline-flex items-center gap-1">
+                  <BarChart className="h-3 w-3" /> Economics
+                </span>
+              }
               accent="sage"
             />
           )}
@@ -360,7 +373,11 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
             <ProgressBar
               value={finDone}
               max={TOTAL_CURRICULUM_DAYS}
-              label="💰 Finance"
+              label={
+                <span className="inline-flex items-center gap-1">
+                  <Landmark className="h-3 w-3" /> Finance
+                </span>
+              }
               accent="slate"
             />
           )}
@@ -374,7 +391,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
           <h2 className="text-xs uppercase tracking-[0.18em] text-text-secondary">Entry history</h2>
           {entries.length === 0 ? (
             <div className="card space-y-3 p-8 text-center">
-              <p className="text-2xl">📋</p>
+              <ClipboardList className="mx-auto h-8 w-8 text-text-muted" />
               <p className="text-sm font-medium text-text-primary">No entries yet</p>
               <p className="mx-auto max-w-xs text-sm text-text-secondary">
                 Log your first study session above and it will appear here. Your history, streak,

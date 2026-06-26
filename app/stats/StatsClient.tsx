@@ -11,6 +11,9 @@ import {
   BookOpen,
   TrendingUp,
   ArrowRight,
+  BarChart,
+  Scale,
+  Landmark,
 } from 'lucide-react';
 import {
   getOverallProgress,
@@ -85,7 +88,7 @@ export function StatsClient({ initialEntries }: Props) {
     return (
       <div className="mx-auto max-w-content px-5 py-16 md:px-6">
         <div className="mx-auto max-w-md space-y-5 text-center">
-          <div className="text-5xl">📊</div>
+          <BarChart className="mx-auto h-12 w-12 text-text-muted" />
           <h1 className="font-display text-2xl tracking-tight">No stats yet</h1>
           <p className="text-sm leading-relaxed text-text-secondary">
             Your learning statistics will appear here once you start logging study days. Stats track
@@ -163,7 +166,11 @@ export function StatsClient({ initialEntries }: Props) {
               <ProgressBar
                 value={lawDone}
                 max={TOTAL_CURRICULUM_DAYS}
-                label="⚖️ Law Domain"
+                label={
+                  <span className="inline-flex items-center gap-1">
+                    <Scale className="h-3 w-3" /> Law Domain
+                  </span>
+                }
                 accent="gold"
               />
             )}
@@ -171,7 +178,11 @@ export function StatsClient({ initialEntries }: Props) {
               <ProgressBar
                 value={econDone}
                 max={TOTAL_CURRICULUM_DAYS}
-                label="📊 Economics Domain"
+                label={
+                  <span className="inline-flex items-center gap-1">
+                    <BarChart className="h-3 w-3" /> Economics Domain
+                  </span>
+                }
                 accent="sage"
               />
             )}
@@ -179,7 +190,11 @@ export function StatsClient({ initialEntries }: Props) {
               <ProgressBar
                 value={finDone}
                 max={TOTAL_CURRICULUM_DAYS}
-                label="💰 Finance Domain"
+                label={
+                  <span className="inline-flex items-center gap-1">
+                    <Landmark className="h-3 w-3" /> Finance Domain
+                  </span>
+                }
                 accent="slate"
               />
             )}
