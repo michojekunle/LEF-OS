@@ -635,7 +635,7 @@ a,
 .sankofa-page {
   background-color: #F5F0E8; /* Initial bright background */
   color: #1C1408;
-  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
   /* overflow-x: hidden removed because it breaks position: sticky horizontally */
   transition: background-color 2s ease, color 2s ease;
@@ -678,7 +678,7 @@ a,
 
 /* Sections */
 .sankofa-hero-awwwards {
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -810,6 +810,29 @@ a,
     font-size: 14px;
     padding: 0 12px;
   }
+
+  /* Mobile Layout Adjustments for Domains */
+  .sankofa-domain-panel.layout-split {
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    padding: 24px !important;
+    gap: 24px;
+  }
+  .sankofa-domain-panel.layout-split > div:first-child {
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-right: 0 !important;
+    padding-bottom: 24px;
+    width: 100%;
+    flex: none !important;
+  }
+  .sankofa-domain-panel.layout-split > h3 {
+    padding-left: 0 !important;
+    flex: none !important;
+    font-size: clamp(2rem, 8vw, 3rem) !important;
+  }
+
 }
 
 .sankofa-hero-floating-img {
@@ -828,7 +851,7 @@ a,
 
 .sankofa-statement-section {
   padding: 20vh 24px;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -845,7 +868,7 @@ a,
   align-items: center;
   text-align: left;
   position: relative;
-  overflow: clip;
+  overflow: hidden;
 }
 
 .sankofa-marquee-container {
@@ -945,20 +968,20 @@ a,
 .sankofa-horizontal-sticky {
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: 100dvh;
   width: 100vw;
   overflow: hidden;
 }
 
 .sankofa-horizontal-container {
   display: flex;
-  height: 100vh;
+  height: 100dvh;
   width: max-content;
 }
 
 .sankofa-domain-panel {
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1017,6 +1040,7 @@ a,
 }
 .sankofa-domain-panel.layout-split > div:first-child {
   flex: 1;
+  min-width: 0;
   border-right: 1px solid rgba(255,255,255,0.1);
   padding-right: 4vw;
 }
@@ -1085,6 +1109,7 @@ a,
 
 .sankofa-input-brutalist {
   flex: 1;
+  min-width: 0;
   background: transparent;
   border: none;
   color: inherit;
