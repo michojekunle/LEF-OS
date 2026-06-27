@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { Star, Send, Loader2, Scale, BarChart, Landmark } from 'lucide-react';
+import { Send, Loader2, Scale, BarChart, Landmark } from 'lucide-react';
 import type { DailyEntry } from '@/lib/utils';
 import { isoDate } from '@/lib/utils';
 import { upsertEntryAction } from '@/app/actions/entries';
@@ -121,21 +121,44 @@ export function DailyLogForm({ day, date, existing, onSaved, preferredDomains }:
 
       <div>
         <div className="mb-2 text-xs uppercase tracking-[0.18em] text-text-secondary">
-          Depth — how deeply did you study?
+          Discipline Tier — Your Commitment Today
         </div>
-        <div className="flex items-center gap-1">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <button
-              type="button"
-              key={n}
-              onClick={() => setRating(rating === n ? 0 : n)}
-              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md p-2.5 transition-colors hover:bg-surface-2"
-              aria-label={`${n} star${n > 1 ? 's' : ''}`}
-              data-tour-action="star-rating"
-            >
-              <Star size={22} className={n <= rating ? 'fill-gold text-gold' : 'text-text-muted'} />
-            </button>
-          ))}
+        <div className="flex flex-col gap-2">
+          {[
+            { value: 3, label: 'A', desc: 'Hardcore (~3 hrs)', colorClass: 'text-gold border-gold bg-gold/10' },
+            { value: 2, label: 'B', desc: 'Dedicated (~2 hrs)', colorClass: 'text-sage border-sage bg-sage/10' },
+            { value: 1, label: 'C', desc: 'Minimum Viable (15 mins)', colorClass: 'text-slate-blue border-slate-blue bg-slate-blue/10' },
+          ].map((tier) => {
+            const isActive = rating === tier.value;
+            // Fallback for old entries that might have 4 or 5: we map them visually to A (value 3).
+            const isFallbackA = tier.value === 3 && rating > 3;
+            const selected = isActive || isFallbackA;
+            
+            return (
+              <button
+                type="button"
+                key={tier.value}
+                onClick={() => setRating(rating === tier.value ? 0 : tier.value)}
+                className={`flex items-center gap-3 rounded-lg border p-3 text-left transition-colors ${
+                  selected
+                    ? tier.colorClass
+                    : 'border-[var(--border-subtle)] text-text-secondary hover:border-[var(--border)] hover:bg-surface-2 hover:text-text-primary'
+                }`}
+              >
+                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md border font-mono text-lg font-bold ${
+                  selected ? 'border-current bg-current/10' : 'border-[var(--border-subtle)]'
+                }`}>
+                  {tier.label}
+                </div>
+                <div>
+                  <div className={`text-sm font-medium ${selected ? 'text-current' : 'text-text-primary'}`}>
+                    Tier {tier.label}
+                  </div>
+                  <div className={`text-xs opacity-80`}>{tier.desc}</div>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 

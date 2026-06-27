@@ -127,17 +127,15 @@ export function EntryCard({
           <span className="text-xs text-text-secondary">{formatDate(entry.entry_date)}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <Star
-              key={n}
-              size={12}
-              className={
-                entry.study_rating && n <= entry.study_rating
-                  ? 'fill-gold text-gold'
-                  : 'text-text-muted'
-              }
-            />
-          ))}
+          {entry.study_rating ? (
+            <span className={`inline-flex items-center rounded-sm px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+              entry.study_rating >= 3 ? 'bg-gold/10 text-gold' :
+              entry.study_rating === 2 ? 'bg-sage/10 text-sage' :
+              'bg-slate-blue/10 text-slate-blue'
+            }`}>
+              {entry.study_rating >= 3 ? 'Tier A' : entry.study_rating === 2 ? 'Tier B' : 'Tier C'}
+            </span>
+          ) : null}
         </div>
       </header>
 
