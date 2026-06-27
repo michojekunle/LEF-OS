@@ -88,8 +88,10 @@ export async function GET(req: NextRequest) {
     if (e.finance_completed) flags.push('Finance');
     lines.push('');
     if (flags.length) lines.push(`**Completed**: ${flags.join(' · ')}`);
-    if (e.study_rating)
-      lines.push(`**Depth**: ${'★'.repeat(e.study_rating)}${'☆'.repeat(5 - e.study_rating)}`);
+    if (e.study_rating) {
+      const tier = e.study_rating >= 3 ? 'A (Hardcore)' : e.study_rating === 2 ? 'B (Dedicated)' : 'C (Minimum Viable)';
+      lines.push(`**Depth**: Tier ${tier}`);
+    }
     if (wantInsights && e.is_public && e.share_insight)
       lines.push(`**Public insight**: ${e.share_insight}`);
     lines.push('');

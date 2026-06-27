@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
         e.law_completed,
         e.economics_completed,
         e.finance_completed,
-        e.study_rating ?? '',
+        e.study_rating ? (e.study_rating >= 3 ? 'A' : e.study_rating === 2 ? 'B' : 'C') : '',
         e.is_public,
         ...(wantInsights ? [e.share_insight ?? ''] : []),
         ...(wantJournal ? [e.journal_text ?? ''] : []),

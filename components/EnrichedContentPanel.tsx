@@ -31,6 +31,8 @@ type EnrichedData = {
 /** Keyed as `${domain}_${questionIndex}` → saved answer text */
 type SavedAnswers = Record<string, string>;
 
+export type StudyTier = 'A' | 'B' | 'C';
+
 type Props = {
   day: number;
   data: Record<'law' | 'economics' | 'finance', EnrichedData | null>;
@@ -47,6 +49,7 @@ export function EnrichedContentPanel({
   savedAnswers = {},
   preferredDomains,
 }: Props) {
+  const [activeTier, setActiveTier] = useState<StudyTier>('B');
   const allDomains = ['law', 'economics', 'finance'] as const;
   const domains = preferredDomains
     ? allDomains.filter((d) => preferredDomains.includes(d))
@@ -57,12 +60,29 @@ export function EnrichedContentPanel({
 
   return (
     <section className="space-y-6">
-      <div>
-        <h2 className="text-sm font-semibold text-text-primary md:text-base">Study Targets</h2>
-        <p className="mt-1 text-sm leading-relaxed text-text-secondary">
-          Summaries, objectives, study outlines, verified resources, and review questions for each
-          domain today.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-sm font-semibold text-text-primary md:text-base">Study Targets</h2>
+          <p className="mt-1 text-sm leading-relaxed text-text-secondary">
+            Summaries, objectives, study outlines, verified resources, and review questions for each
+            domain today.
+          </p>
+        </div>
+        <div className="flex shrink-0 overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-surface p-1 shadow-sm">
+          {(['C', 'B', 'A'] as StudyTier[]).map((t) => (
+            <button
+              key={t}
+              onClick={() => setActiveTier(t)}
+              className={`rounded-md px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                activeTier === t
+                  ? 'bg-text-primary text-surface shadow-sm'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
+              }`}
+            >
+              Tier {t}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -78,6 +98,7 @@ export function EnrichedContentPanel({
               day={day}
               userId={userId}
               savedAnswers={savedAnswers}
+              tier={activeTier}
             />
           );
         })}
@@ -92,23 +113,32 @@ function DomainAccordion({
   day,
   userId,
   savedAnswers,
+  tier,
 }: {
   domain: string;
   content: EnrichedData;
   day: number;
   userId?: string;
   savedAnswers: SavedAnswers;
+  tier: StudyTier;
 }) {
+  const slicedObjectives = tier === 'C' ? content.objectives?.slice(0, 1) : content.objectives;
+  const slicedOutline = tier === 'C' ? [] : content.outline;
+  const slicedVideos = tier === 'C' ? [] : tier === 'B' ? content.videos?.slice(0, 1) : content.videos;
+  const slicedArticles = tier === 'C' ? [] : tier === 'B' ? content.articles?.slice(0, 1) : content.articles;
+  const slicedQuestions = tier === 'C' ? content.questions?.slice(0, 1) : tier === 'B' ? content.questions?.slice(0, 2) : content.questions;
+
+  const totalQuestions = slicedQuestions?.length ?? 0;
+
   const [isOpen, setIsOpen] = useState(false);
   const [answers, setAnswers] = useState<Record<number, string>>(() => {
     const init: Record<number, string> = {};
-    (content.questions ?? []).forEach((_, i) => {
+    (slicedQuestions ?? []).forEach((_, i) => {
       const key = `${domain}_${i}`;
       if (savedAnswers[key]) init[i] = savedAnswers[key];
     });
     return init;
   });
-  const totalQuestions = content.questions?.length ?? 0;
 
   const handleAnswerChange = useCallback((index: number, value: string) => {
     setAnswers((prev) => {
@@ -166,13 +196,13 @@ function DomainAccordion({
 
             {/* Objectives & Outline grid */}
             <div className="grid gap-6 md:grid-cols-2">
-              {content.objectives?.length > 0 && (
+              {slicedObjectives?.length > 0 && (
                 <div className="space-y-2.5">
                   <h4 className="label-caps flex items-center gap-1.5 text-text-muted">
                     <Target size={13} /> Learning Objectives
                   </h4>
                   <ul className="space-y-2.5 pl-1 text-sm leading-[1.65] text-text-primary">
-                    {content.objectives.map((obj, i) => (
+                    {slicedObjectives.map((obj, i) => (
                       <li key={i} className="flex gap-2.5">
                         <span className="mt-[3px] h-1.5 w-1.5 shrink-0 rounded-full bg-gold opacity-60" />
                         <span>{obj}</span>
@@ -182,13 +212,13 @@ function DomainAccordion({
                 </div>
               )}
 
-              {content.outline?.length > 0 && (
+              {slicedOutline?.length > 0 && (
                 <div className="space-y-2.5">
                   <h4 className="label-caps flex items-center gap-1.5 text-text-muted">
                     <List size={13} /> Study Outline
                   </h4>
                   <ol className="space-y-2 pl-1 text-sm leading-[1.65] text-text-primary">
-                    {content.outline.map((item, i) => (
+                    {slicedOutline.map((item, i) => (
                       <li key={i} className="flex gap-2.5">
                         <span className="label-caps mt-0.5 min-w-[18px] tabular-nums text-text-secondary">
                           {i + 1}.
@@ -202,14 +232,14 @@ function DomainAccordion({
             </div>
 
             {/* Resources */}
-            {(content.videos?.length > 0 || content.articles?.length > 0) && (
+            {(slicedVideos?.length > 0 || slicedArticles?.length > 0) && (
               <div className="space-y-3">
                 <h4 className="label-caps text-text-muted">Resources</h4>
                 <div className="grid gap-3 md:grid-cols-2">
-                  {content.videos?.length > 0 && (
+                  {slicedVideos?.length > 0 && (
                     <div className="space-y-2">
                       <span className="label-caps text-text-secondary">Video</span>
-                      {content.videos.map((vid, i) => (
+                      {slicedVideos.map((vid, i) => (
                         <div key={i} className="group relative flex items-stretch gap-1">
                           <a
                             href={vid.url}
@@ -234,10 +264,10 @@ function DomainAccordion({
                       ))}
                     </div>
                   )}
-                  {content.articles?.length > 0 && (
+                  {slicedArticles?.length > 0 && (
                     <div className="space-y-2">
                       <span className="label-caps text-text-secondary">Reading</span>
-                      {content.articles.map((art, i) => (
+                      {slicedArticles.map((art, i) => (
                         <div key={i} className="group relative flex items-stretch gap-1">
                           <a
                             href={art.url}
@@ -267,7 +297,7 @@ function DomainAccordion({
             )}
 
             {/* Review Questions + Answer Inputs */}
-            {content.questions?.length > 0 && (
+            {slicedQuestions?.length > 0 && (
               <div className="space-y-3 rounded-lg border border-[var(--border-subtle)] bg-surface-2 p-4 md:p-5">
                 <div className="flex items-center justify-between">
                   <h4 className="label-caps flex items-center gap-1.5 text-text-muted">
@@ -280,7 +310,7 @@ function DomainAccordion({
                   </span>
                 </div>
                 <ol className="space-y-5">
-                  {content.questions.map((q, i) => {
+                  {slicedQuestions.map((q, i) => {
                     const answerKey = `${domain}_${i}`;
                     const savedAnswer = savedAnswers[answerKey] ?? '';
                     return (

@@ -86,14 +86,16 @@ export default function SankofaPage() {
   // Marquee Parallax (Dual Band) & Text Scrubbing
   const introRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: introProgress } = useScroll({ target: introRef, offset: ["start end", "end start"] });
-  const marquee1X = useTransform(introProgress, [0, 1], ['100vw', '-100vw']);
-  const marquee2X = useTransform(introProgress, [0, 1], ['-100vw', '100vw']);
+  const marquee1X = useTransform(introProgress, [0, 1], ['100%', '-100%']);
+  const marquee2X = useTransform(introProgress, [0, 1], ['-100%', '100%']);
   
   // Staggered text timings (delayed until after background is fully dark at 0.2)
-  const labelOpacity = useTransform(introProgress, [0.2, 0.25, 0.9, 0.95], [0, 1, 1, 0]);
-  const titleOpacity = useTransform(introProgress, [0.25, 0.3, 0.9, 0.95], [0, 1, 1, 0]);
-  const descOpacity = useTransform(introProgress, [0.35, 0.45, 0.9, 0.95], [0, 1, 1, 0]);
-  const descY = useTransform(introProgress, [0.35, 0.45], [30, 0]);
+  // Adjust opacities so they start appearing immediately when the section enters
+  const labelOpacity = useTransform(introProgress, [0.05, 0.15, 0.9, 0.95], [0, 1, 1, 0]);
+  const titleOpacity = useTransform(introProgress, [0.15, 0.25, 0.9, 0.95], [0, 1, 1, 0]);
+  const descOpacity = useTransform(introProgress, [0.25, 0.35, 0.9, 0.95], [0, 1, 1, 0]);
+  const descY = useTransform(introProgress, [0.25, 0.35], [30, 0]);
+  const marqueeOpacity = useTransform(introProgress, [0.0, 0.3, 0.4, 0.9, 1.0], [0, 0, 1, 1, 0]);
   
 
   // Hero Parallax
@@ -151,7 +153,7 @@ export default function SankofaPage() {
           backgroundColor, 
           color,
           height: isArchiveEntered ? 'auto' : '100vh',
-          overflow: isArchiveEntered ? 'visible' : 'hidden'
+          overflow: isArchiveEntered ? 'clip' : 'hidden'
         }}
       >
         <style dangerouslySetInnerHTML={{
@@ -234,7 +236,7 @@ export default function SankofaPage() {
         </section>        {/* 2. THE INTRODUCTION */}
         <motion.section ref={introRef} className="sankofa-intro-section" style={{ height: '300vh', padding: 0 }}>
           <div style={{ position: 'sticky', top: 0, height: '100vh', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
-            <motion.div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: '100%', display: 'flex', flexDirection: 'column', gap: '2vh', pointerEvents: 'none', zIndex: 0 }}>
+            <motion.div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: '100%', display: 'flex', flexDirection: 'column', gap: '2vh', pointerEvents: 'none', zIndex: 0, opacity: marqueeOpacity }}>
               <motion.div style={{ x: marquee1X, skewX: velocitySkew }}>
                 <div className={`sankofa-marquee-text ${bebas.className}`}>FRAGMENTED</div>
               </motion.div>
@@ -256,7 +258,17 @@ export default function SankofaPage() {
                   opacity: titleOpacity
                 }}
               >
-                History was not lost. It was scattered.
+                {"History was not lost. It was scattered.".split('').map((char, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: false, margin: "-20%" }}
+                    transition={{ duration: 0.1, delay: i * 0.03 }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
               </motion.h2>
               <motion.p 
                 className="sankofa-phase-desc" 
@@ -286,11 +298,21 @@ export default function SankofaPage() {
                 const layoutALayouts = ['layout-left', 'layout-right', 'layout-center'];
                 const layoutA = layoutALayouts[index % 3];
                 const layoutB = index % 2 === 0 ? 'layout-split' : 'layout-inverted';
+                
+                // Add some random aesthetics based on index
+                const yOffset = (index % 3) * 5;
+                const rotation = index % 2 === 0 ? 2 : -2;
 
                 return (
                   <React.Fragment key={d.id}>
                     {/* Slide A: Question and short desc */}
                     <motion.div className={`sankofa-domain-panel ${layoutA}`} style={{ skewX: velocitySkew, position: 'relative' }}>
+                      {/* Random visual noise or aesthetic element */}
+                      {index % 2 !== 0 && (
+                        <div style={{ position: 'absolute', top: '10%', left: '5%', opacity: 0.05, fontSize: '20vw', fontFamily: 'monospace', zIndex: 0, transform: `rotate(${rotation}deg)` }}>
+                          0{index + 1}
+                        </div>
+                      )}
                       {layoutA === 'layout-right' && <Icon className="sankofa-giant-icon" />}
                       <div className={`sankofa-domain-number ${bebas.className}`}>{d.id}</div>
                       <h3 className={`sankofa-domain-title ${cormorant.className}`} style={{ fontSize: 'clamp(3rem, 6vw, 8rem)', marginBottom: '1rem', textTransform: 'uppercase', zIndex: 10 }}>
