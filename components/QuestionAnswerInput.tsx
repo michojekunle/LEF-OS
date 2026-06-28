@@ -33,6 +33,23 @@ export function QuestionAnswerInput({
   const lastSavedRef = useRef(initialAnswer);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const storageKey = `lef_anon_ans_${dayNumber}_${domain}_${questionIndex}`;
+
+  // Restore anonymous answer from localStorage on mount
+  useEffect(() => {
+    if (userId) return;
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        setText(saved);
+        lastSavedRef.current = saved;
+        setIsOpen(true);
+      }
+    } catch (e) {
+      console.warn('Failed to load anonymous answer from localStorage:', e);
+    }
+  }, [userId, storageKey]);
+
   // Auto-resize textarea
   function resize(): void {
     const el = textareaRef.current;
@@ -44,7 +61,25 @@ export function QuestionAnswerInput({
   const save = useCallback(
     async (value: string): Promise<void> => {
       if (value === lastSavedRef.current) return;
-      if (!userId) return;
+
+      if (!userId) {
+        // Save to localStorage for guests
+        try {
+          if (value.trim() === '') {
+            localStorage.removeItem(storageKey);
+          } else {
+            localStorage.setItem(storageKey, value);
+          }
+          lastSavedRef.current = value;
+          setSaveState('saved');
+          onAnswerChange?.(value);
+          setTimeout(() => setSaveState('idle'), 2500);
+        } catch (e) {
+          setSaveState('error');
+          setTimeout(() => setSaveState('idle'), 3000);
+        }
+        return;
+      }
 
       setSaveState('saving');
       try {

@@ -52,6 +52,14 @@ export default function SankofaPage() {
   // Smooth scroll
   useEffect(() => {
     setMounted(true);
+    try {
+      if (sessionStorage.getItem('sankofa-preloader-skipped') === 'true') {
+        setIsArchiveEntered(true);
+      }
+    } catch (e) {
+      console.warn('Failed to read preloader bypass from sessionStorage:', e);
+    }
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -144,7 +152,16 @@ export default function SankofaPage() {
     <>
       <CustomCursor />
       <SoundDesign isEnabled={isArchiveEntered} />
-      <CinematicPreloader onEnter={() => setIsArchiveEntered(true)} />
+      {!isArchiveEntered && (
+        <CinematicPreloader
+          onEnter={() => {
+            setIsArchiveEntered(true);
+            try {
+              sessionStorage.setItem('sankofa-preloader-skipped', 'true');
+            } catch (e) {}
+          }}
+        />
+      )}
 
       <motion.div 
         data-theme="sankofa" 

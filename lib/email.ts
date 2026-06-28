@@ -152,8 +152,9 @@ export function buildBriefEmailHtml(params: {
   cards: BriefDomainCard[];
   reflectionQuestion: string | null;
   siteUrl: string;
+  unsubscribeUrl: string;
 }): string {
-  const { greeting, day, totalDays, cards, reflectionQuestion, siteUrl } = params;
+  const { greeting, day, totalDays, cards, reflectionQuestion, siteUrl, unsubscribeUrl } = params;
 
   const domainCardsHtml = cards
     .map((c) => {
@@ -205,7 +206,7 @@ export function buildBriefEmailHtml(params: {
       url: `${siteUrl}/day/${day}`,
     },
     footerText:
-      "You're receiving this because you opted in to the daily brief.<br/>Manage email preferences in Settings.",
+      `You're receiving this because you opted in to the daily brief.<br/>Manage preferences in <a href="${siteUrl}/settings" style="color:#c9ab70;">Settings</a> or <a href="${unsubscribeUrl}" style="color:#c9ab70;">unsubscribe instantly</a>.`,
   });
 }
 

@@ -217,6 +217,26 @@ export function LEFCounselPanel({ day, topics, isFloating = false, userId }: Pro
       if (detail.complete) {
         // eslint-disable-next-line no-console
         console.log('[LEFCounsel] Quiz complete via QuizBlock — opening result modal', detail);
+
+        // Persist quiz score to database for authenticated users
+        if (userId) {
+          const domainParam = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('domain') : null;
+          const domain = domainParam || 'general';
+          fetch('/api/quizzes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              day_number: day,
+              domain,
+              score: detail.correct,
+              total: detail.total,
+            }),
+          }).catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error('[LEFCounsel] Failed to save quiz score:', err);
+          });
+        }
+
         // Show QuizResultModal with the LOCAL score (correct out of total).
         // Slight delay so the user sees the inline correctness feedback first.
         setTimeout(() => {

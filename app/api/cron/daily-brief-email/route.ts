@@ -141,6 +141,7 @@ export async function GET(request: Request) {
         .find((q): q is string => Boolean(q)) ?? null;
 
     const siteUrl = getSiteUrl(new URL(request.url).origin);
+    const unsubscribeUrl = `${siteUrl}/api/unsubscribe?userId=${s.user_id}`;
     const html = buildBriefEmailHtml({
       greeting: `Good morning — Day ${curriculumDay} is ready.`,
       day: curriculumDay,
@@ -148,6 +149,7 @@ export async function GET(request: Request) {
       cards,
       reflectionQuestion,
       siteUrl,
+      unsubscribeUrl,
     });
 
     const sent = await dispatchEmail({
