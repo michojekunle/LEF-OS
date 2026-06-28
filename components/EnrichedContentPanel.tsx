@@ -16,17 +16,8 @@ import { QuestionAnswerInput } from './QuestionAnswerInput';
 
 import { DOMAIN_LABELS, DOMAIN_ACCENT_CARD } from '@/lib/domain';
 import type { Domain } from '@/data/curriculum-data';
-
-type EnrichedData = {
-  topic: string;
-  summary: string;
-  objectives: string[];
-  outline: string[];
-  videos: { title: string; url: string }[];
-  articles: { title: string; url: string }[];
-  questions: string[];
-  status: string;
-};
+import { type EnrichedData, hookFromEnriched } from '@/lib/enriched-content';
+import { readingTime } from '@/lib/reading-time';
 
 /** Keyed as `${domain}_${questionIndex}` → saved answer text */
 type SavedAnswers = Record<string, string>;
@@ -86,22 +77,31 @@ export function EnrichedContentPanel({
       </div>
 
       <div className="space-y-4">
-        {domains.map((d) => {
-          const content = data[d];
-          if (!content || content.status !== 'success') return null;
-
-          return (
-            <DomainAccordion
-              key={d}
-              domain={d}
-              content={content}
-              day={day}
-              userId={userId}
-              savedAnswers={savedAnswers}
-              tier={activeTier}
-            />
+        {(() => {
+          // Find the index of the first domain that actually has data so we can
+          // auto-expand its accordion on load (better first-visit UX than 3
+          // collapsed labels staring at the reader).
+          const firstWithDataIdx = domains.findIndex(
+            (d) => data[d] && data[d]?.status === 'success',
           );
-        })}
+          return domains.map((d, idx) => {
+            const content = data[d];
+            if (!content || content.status !== 'success') return null;
+
+            return (
+              <DomainAccordion
+                key={d}
+                domain={d}
+                content={content}
+                day={day}
+                userId={userId}
+                savedAnswers={savedAnswers}
+                tier={activeTier}
+                defaultOpen={idx === firstWithDataIdx}
+              />
+            );
+          });
+        })()}
       </div>
     </section>
   );
@@ -114,6 +114,7 @@ function DomainAccordion({
   userId,
   savedAnswers,
   tier,
+  defaultOpen = false,
 }: {
   domain: string;
   content: EnrichedData;
@@ -121,6 +122,8 @@ function DomainAccordion({
   userId?: string;
   savedAnswers: SavedAnswers;
   tier: StudyTier;
+  /** First domain with data auto-opens so first-visit isn't 3 silent labels. */
+  defaultOpen?: boolean;
 }) {
   const slicedObjectives = tier === 'C' ? content.objectives?.slice(0, 1) : content.objectives;
   const slicedOutline = tier === 'C' ? [] : content.outline;
@@ -130,7 +133,7 @@ function DomainAccordion({
 
   const totalQuestions = slicedQuestions?.length ?? 0;
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [answers, setAnswers] = useState<Record<number, string>>(() => {
     const init: Record<number, string> = {};
     (slicedQuestions ?? []).forEach((_, i) => {
@@ -174,11 +177,23 @@ function DomainAccordion({
 
         {isOpen && (
           <div className="space-y-7 border-t border-[var(--border-subtle)] p-5 md:p-6">
+            {/* Story opener — the brief's TL;DR appears here too as a soft hook */}
+            {hookFromEnriched(content, 40) && (
+              <p className="border-l-2 border-gold/40 pl-4 text-base italic leading-relaxed text-text-secondary md:text-[17px]">
+                {hookFromEnriched(content, 40)}
+              </p>
+            )}
+
             {/* Summary */}
             {content.summary && (
               <div className="space-y-2.5">
-                <h4 className="label-caps flex items-center gap-1.5 text-text-muted">
-                  <BookOpen size={13} /> Summary
+                <h4 className="label-caps flex items-center justify-between gap-2 text-text-muted">
+                  <span className="inline-flex items-center gap-1.5">
+                    <BookOpen size={13} /> Summary
+                  </span>
+                  <span className="font-mono text-[9px] tracking-widest text-text-muted">
+                    {readingTime(content.summary).label}
+                  </span>
                 </h4>
                 <div className="space-y-3">
                   {content.summary
@@ -198,8 +213,13 @@ function DomainAccordion({
             <div className="grid gap-6 md:grid-cols-2">
               {slicedObjectives?.length > 0 && (
                 <div className="space-y-2.5">
-                  <h4 className="label-caps flex items-center gap-1.5 text-text-muted">
-                    <Target size={13} /> Learning Objectives
+                  <h4 className="label-caps flex items-center justify-between gap-2 text-text-muted">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Target size={13} /> Learning Objectives
+                    </span>
+                    <span className="font-mono text-[9px] tracking-widest text-text-muted">
+                      {readingTime(slicedObjectives.join(' ')).label}
+                    </span>
                   </h4>
                   <ul className="space-y-2.5 pl-1 text-sm leading-[1.65] text-text-primary">
                     {slicedObjectives.map((obj, i) => (
@@ -214,8 +234,13 @@ function DomainAccordion({
 
               {slicedOutline?.length > 0 && (
                 <div className="space-y-2.5">
-                  <h4 className="label-caps flex items-center gap-1.5 text-text-muted">
-                    <List size={13} /> Study Outline
+                  <h4 className="label-caps flex items-center justify-between gap-2 text-text-muted">
+                    <span className="inline-flex items-center gap-1.5">
+                      <List size={13} /> Study Outline
+                    </span>
+                    <span className="font-mono text-[9px] tracking-widest text-text-muted">
+                      {readingTime(slicedOutline.join(' ')).label}
+                    </span>
                   </h4>
                   <ol className="space-y-2 pl-1 text-sm leading-[1.65] text-text-primary">
                     {slicedOutline.map((item, i) => (
