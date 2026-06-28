@@ -24,6 +24,7 @@ type Props = {
   defaultPublic: boolean;
   initialSettings: {
     daily_reminder_enabled: boolean;
+    daily_brief_email_enabled?: boolean;
     timezone: string;
     course_start_date?: string | null;
     course_duration_months?: number | null;
@@ -70,6 +71,7 @@ export function SettingsClient({
           <PreferencesForm
             userId={userId}
             initialReminderEnabled={initialSettings.daily_reminder_enabled}
+            initialBriefEmailEnabled={initialSettings.daily_brief_email_enabled ?? false}
             initialTimezone={initialSettings.timezone}
             initialCourseStartDate={initialSettings.course_start_date}
             initialCourseDurationMonths={initialSettings.course_duration_months}
