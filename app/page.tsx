@@ -106,20 +106,35 @@ export default async function LandingPage() {
         </p>
         <p className="mt-3 font-mono text-xs tracking-wider text-text-muted">{metaLine}</p>
 
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Link href="/roadmap" className="btn btn-primary" data-tour="explore-cta">
-            Explore the Curriculum <ArrowRight size={14} />
+        <div className="mt-8 flex flex-col gap-3">
+          {/* Primary CTA — the cheapest path into the curriculum, no signup */}
+          <Link
+            href="/brief"
+            className="btn btn-primary inline-flex w-fit items-center gap-2 px-5 py-3 text-base"
+            data-tour="brief-cta"
+          >
+            Read Today&apos;s Lesson — 5 min <ArrowRight size={16} />
           </Link>
-          {!isAuthed && (
-            <Link href="/login" className="btn btn-secondary">
-              Track My Journey
+          <p className="text-xs text-text-muted">
+            No signup required — open today&apos;s brief and start reading.
+          </p>
+
+          {/* Secondary CTAs */}
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <Link href="/roadmap" className="btn btn-secondary" data-tour="explore-cta">
+              Explore the Curriculum <ArrowRight size={14} />
             </Link>
-          )}
-          {isAuthed && (
-            <Link href="/dashboard" className="btn btn-secondary">
-              Go to Dashboard <ArrowRight size={14} />
-            </Link>
-          )}
+            {!isAuthed && (
+              <Link href="/login" className="btn btn-secondary">
+                Track My Journey
+              </Link>
+            )}
+            {isAuthed && (
+              <Link href="/dashboard" className="btn btn-secondary">
+                Go to Dashboard <ArrowRight size={14} />
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* PROGRESS */}

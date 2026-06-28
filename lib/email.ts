@@ -128,3 +128,86 @@ export async function sendAdminEmail(params: { subject: string; html: string }):
   if (!adminEmail) return false;
   return sendEmail({ to: adminEmail, ...params });
 }
+
+// ── Daily Brief email ────────────────────────────────────────────────────────
+
+type BriefDomainCard = {
+  domain: 'law' | 'economics' | 'finance';
+  icon: string;
+  label: string;
+  colour: string; // hex for left border + accent
+  topic: string | null;
+  hook: string | null; // 60-word hook
+  readingTimeLabel: string; // e.g. "2 min read"
+};
+
+/**
+ * Build the HTML body for the daily 5-minute brief email.
+ * Renders one card per provided domain (caller filters to user's preferences).
+ */
+export function buildBriefEmailHtml(params: {
+  greeting: string;
+  day: number;
+  totalDays: number;
+  cards: BriefDomainCard[];
+  reflectionQuestion: string | null;
+  siteUrl: string;
+  unsubscribeUrl: string;
+}): string {
+  const { greeting, day, totalDays, cards, reflectionQuestion, siteUrl, unsubscribeUrl } = params;
+
+  const domainCardsHtml = cards
+    .map((c) => {
+      const topic = c.topic ? sanitizeHtmlText(c.topic) : 'Review & integration day';
+      const hook = c.hook ? sanitizeHtmlText(c.hook) : '';
+      return `
+        <div style="border-left: 3px solid ${c.colour}; padding: 14px 18px; margin-bottom: 14px; border-radius: 0 8px 8px 0; background: #161616;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: ${c.colour};">
+              ${c.icon} ${c.label}
+            </div>
+            <div style="font-family: monospace; font-size: 9px; letter-spacing: 0.18em; color: #857e76;">
+              ${sanitizeHtmlText(c.readingTimeLabel)}
+            </div>
+          </div>
+          <div style="font-size: 17px; font-weight: 600; color: #ede8e0; line-height: 1.4; margin-bottom: ${hook ? '8px' : '0'};">
+            ${topic}
+          </div>
+          ${hook ? `<p style="font-size: 14px; line-height: 1.65; color: #b8afa4; margin: 0;">${hook}</p>` : ''}
+        </div>`;
+    })
+    .join('');
+
+  const reflectionHtml = reflectionQuestion
+    ? `
+      <div style="border-top: 1px solid #2a2a2a; margin-top: 24px; padding-top: 20px;">
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: #c9ab70; margin-bottom: 10px;">
+          🪞 Reflect
+        </div>
+        <p style="font-size: 15px; font-style: italic; color: #ede8e0; line-height: 1.55; margin: 0;">
+          "${sanitizeHtmlText(reflectionQuestion)}"
+        </p>
+      </div>`
+    : '';
+
+  const cardHtml = `
+    <p style="font-size: 14px; color: #b8afa4; margin-bottom: 18px;">${sanitizeHtmlText(greeting)}</p>
+    ${domainCardsHtml}
+    ${reflectionHtml}
+  `;
+
+  return buildEmailLayout({
+    title: `Day ${day} · 5-minute brief`,
+    badgeText: `Day ${day} of ${totalDays}`,
+    subTitle: 'A bite-sized lesson — read it before coffee.',
+    cardHtml,
+    actionButton: {
+      text: 'Open the full lesson →',
+      url: `${siteUrl}/day/${day}`,
+    },
+    footerText:
+      `You're receiving this because you opted in to the daily brief.<br/>Manage preferences in <a href="${siteUrl}/settings" style="color:#c9ab70;">Settings</a> or <a href="${unsubscribeUrl}" style="color:#c9ab70;">unsubscribe instantly</a>.`,
+  });
+}
+
+export type { BriefDomainCard };

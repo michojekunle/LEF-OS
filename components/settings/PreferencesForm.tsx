@@ -36,6 +36,7 @@ const DOMAIN_OPTIONS = [
 type Props = {
   userId: string;
   initialReminderEnabled: boolean;
+  initialBriefEmailEnabled?: boolean;
   initialTimezone: string;
   initialCourseStartDate?: string | null;
   initialCourseDurationMonths?: number | null;
@@ -57,6 +58,7 @@ const DURATION_OPTIONS = [4, 5, 6, 7, 8, 9, 10, 11, 12] as const;
 export function PreferencesForm({
   userId,
   initialReminderEnabled,
+  initialBriefEmailEnabled = false,
   initialTimezone,
   initialCourseStartDate,
   initialCourseDurationMonths,
@@ -65,6 +67,7 @@ export function PreferencesForm({
   const toast = useToast();
   const router = useRouter();
   const [dailyReminderEnabled, setDailyReminderEnabled] = useState(initialReminderEnabled);
+  const [briefEmailEnabled, setBriefEmailEnabled] = useState(initialBriefEmailEnabled);
   const [timezone, setTimezone] = useState(initialTimezone);
   const [preferredDomains, setPreferredDomains] = useState<Set<string>>(
     new Set(
@@ -115,6 +118,7 @@ export function PreferencesForm({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .update({
           daily_reminder_enabled: dailyReminderEnabled,
+          daily_brief_email_enabled: briefEmailEnabled,
           timezone,
           course_start_date: courseStartDate || null,
           course_duration_months: courseDurationMonths,
@@ -289,6 +293,24 @@ export function PreferencesForm({
               <span className="text-sm font-medium text-text-primary">Enable daily reminders</span>
               <p className="mt-0.5 text-xs text-text-secondary">
                 Receive accountability emails and logs reminders matching your curriculum track.
+              </p>
+            </div>
+          </label>
+
+          <label className="flex cursor-pointer select-none items-start gap-3">
+            <input
+              type="checkbox"
+              checked={briefEmailEnabled}
+              onChange={(e) => setBriefEmailEnabled(e.target.checked)}
+              className="mt-1 rounded border-border accent-gold"
+            />
+            <div>
+              <span className="text-sm font-medium text-text-primary">
+                Send me the 5-min brief by email
+              </span>
+              <p className="mt-0.5 text-xs text-text-secondary">
+                One bite-sized lesson — topic, hook, and reflection — delivered at 7am your local
+                time each day.
               </p>
             </div>
           </label>

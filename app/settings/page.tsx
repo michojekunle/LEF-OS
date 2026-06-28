@@ -25,7 +25,7 @@ export default async function SettingsPage() {
       sb
         .from('user_settings')
         .select(
-          'daily_reminder_enabled, timezone, course_start_date, course_duration_months, preferred_domains',
+          'daily_reminder_enabled, daily_brief_email_enabled, timezone, course_start_date, course_duration_months, preferred_domains',
         )
         .eq('user_id', userData.user.id)
         .maybeSingle(),

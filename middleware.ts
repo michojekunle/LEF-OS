@@ -3,7 +3,11 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import type { Database } from '@/lib/database.types';
 import { getPublicEnv } from '@/lib/env';
 
-const PROTECTED_PREFIXES = ['/dashboard', '/today', '/day', '/stats', '/settings', '/export'];
+// `/day` is deliberately PUBLIC — anonymous users can read the curriculum.
+// Auth-protected writes (log form, notes, questions, review answers) are
+// gated by component-level conditional render, server-action auth checks,
+// and Supabase RLS. See plan: "5-Minute Daily Lesson" Part 1.
+const PROTECTED_PREFIXES = ['/dashboard', '/today', '/stats', '/settings', '/export'];
 
 export async function middleware(req: NextRequest) {
   let res = NextResponse.next({ request: { headers: req.headers } });

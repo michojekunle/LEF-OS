@@ -22,6 +22,7 @@ import { hasSupabaseConfig } from '@/lib/supabase';
 import { supabaseServer } from '@/lib/supabase-server';
 import type { DailyEntry, DayNote, Question } from '@/lib/database.types';
 import { DayLogPanel } from './DayLogPanel';
+import { DayKeyboardNav } from '@/components/DayKeyboardNav';
 import { LEFCounselPanel } from '@/components/LEFCounselPanel';
 import { EnrichedContentPanel } from '@/components/EnrichedContentPanel';
 import { CommunityResources } from '@/components/CommunityResources';
@@ -31,17 +32,55 @@ import fs from 'fs';
 import path from 'path';
 
 type Params = { n: string };
+type SearchParams = { domain?: string };
 
-export async function generateMetadata({ params }: { params: Promise<Params> }) {
+const VALID_DOMAIN_OG = new Set(['law', 'economics', 'finance']);
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<Params>;
+  searchParams: Promise<SearchParams>;
+}) {
   const { n } = await params;
+  const { domain: rawDomain } = await searchParams;
   const day = Number(n);
   if (!Number.isFinite(day) || day < 1 || day > TOTAL_CALENDAR_DAYS) {
     return { title: 'Day — LEF' };
   }
-  const meta =
-    findDayMeta('law', day) ?? findDayMeta('economics', day) ?? findDayMeta('finance', day);
+
+  // When linked from a /brief share, the URL has `?domain=law|economics|finance`
+  // and we render the per-domain brief OG card; otherwise fall back to the
+  // generic site OG image from app/layout.tsx.
+  const domain = rawDomain && VALID_DOMAIN_OG.has(rawDomain) ? rawDomain : null;
+  const meta = domain
+    ? findDayMeta(domain as Domain, day)
+    : findDayMeta('law', day) ?? findDayMeta('economics', day) ?? findDayMeta('finance', day);
   const subj = meta?.topic ? ` · ${meta.topic.slice(0, 60)}` : '';
-  return { title: `Day ${day}${subj} — LEF` };
+  const title = `Day ${day}${subj} — LEF`;
+
+  if (!domain) {
+    return { title };
+  }
+
+  // Per-domain share — emit OG meta pointing to the brief image
+  const ogPath = `/api/og/brief?day=${day}&domain=${domain}`;
+  return {
+    title,
+    description: meta?.topic ?? "Today's 5-minute LEF lesson",
+    openGraph: {
+      title,
+      description: meta?.topic ?? "Today's 5-minute LEF lesson",
+      images: [{ url: ogPath, width: 1200, height: 630, alt: meta?.topic ?? `LEF Day ${day}` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description: meta?.topic ?? "Today's 5-minute LEF lesson",
+      images: [ogPath],
+    },
+  };
 }
 
 export const dynamic = 'force-dynamic';
@@ -191,16 +230,28 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <DayKeyboardNav
+        prevHref={prev ? `/day/${prev}` : null}
+        nextHref={next ? `/day/${next}` : null}
+      />
       <header className="space-y-3">
         {/* Top bar: breadcrumb + quick prev/next + actions */}
         <div className="flex items-center justify-between gap-3">
-          {/* Breadcrumb: Roadmap › Day N [Today] */}
-          <div className="flex items-center gap-2">
+          {/* Breadcrumb: Brief · Roadmap › Day N [Today] */}
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/brief"
+              className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.18em] text-text-secondary hover:text-gold"
+              title="Back to the 5-minute brief"
+            >
+              <ArrowLeft size={11} /> 5-min brief
+            </Link>
+            <span className="text-text-muted">·</span>
             <Link
               href="/roadmap"
               className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.18em] text-text-secondary hover:text-text-primary"
             >
-              <ArrowLeft size={11} /> Roadmap
+              Roadmap
             </Link>
             {isToday && (
               <span className="bg-gold/15 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-gold">
