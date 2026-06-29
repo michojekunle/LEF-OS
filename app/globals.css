@@ -656,7 +656,8 @@ a,
   margin: 0;
   z-index: 10;
   position: relative;
-  /* We remove exclusion blend mode because we transition colors */
+  mix-blend-mode: difference;
+  color: #FFFFFF !important;
 }
 
 .sankofa-h2-editorial {
@@ -807,7 +808,7 @@ a,
     width: 60%;
     max-width: 250px;
     height: fit-content;
-    z-index: 10; /* Bring in front of the massive typography watermark */
+    z-index: 2; /* Layer behind the watermark text */
     filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.4));
     pointer-events: none;
   }
@@ -818,7 +819,7 @@ a,
     width: 100%;
     margin: 0;
     position: relative;
-    z-index: 1; /* Layer behind the artifact */
+    z-index: 10; /* Layer in front of the artifact */
   }
 
   .sankofa-input-brutalist {
@@ -865,7 +866,7 @@ a,
   width: 100%;
   max-width: 600px;
   height: fit-content;
-  z-index: 0;
+  z-index: 2;
   /* Parchment image blending */
   /* mix-blend-mode: multiply; */
   opacity: 0.9;
@@ -993,14 +994,12 @@ a,
   height: 100dvh;
   width: 100vw;
   overflow: hidden;
-  touch-action: pan-y;
 }
 
 .sankofa-horizontal-container {
   display: flex;
   height: 100dvh;
   width: max-content;
-  touch-action: pan-y;
 }
 
 .sankofa-domain-panel {

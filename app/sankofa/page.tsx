@@ -104,10 +104,6 @@ export default function SankofaPage() {
   const marquee2X = useTransform(introProgress, [0, 1], ['-100%', '100%']);
   
   // Staggered text timings (delayed until after background is fully dark at 0.2)
-  const labelOpacity = useTransform(introProgress, [0.1, 0.2, 0.8, 0.9], [0, 1, 1, 0]);
-  const titleOpacity = useTransform(introProgress, [0.2, 0.3, 0.8, 0.9], [0, 1, 1, 0]);
-  const descOpacity = useTransform(introProgress, [0.4, 0.5, 0.8, 0.9], [0, 1, 1, 0]);
-  const descY = useTransform(introProgress, [0.4, 0.5], [30, 0]);
   const marqueeOpacity = useTransform(introProgress, [0.0, 0.3, 0.4, 0.9, 1.0], [0, 0, 1, 1, 0]);
   
 
@@ -268,7 +264,12 @@ export default function SankofaPage() {
             </motion.div>
             
             <div className="sankofa-intro-content" style={{ padding: '0 24px' }}>
-              <motion.div style={{ opacity: labelOpacity }}>
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+              >
                 <div className={`sankofa-phase-label ${bebas.className}`} style={{ marginBottom: '20px', fontSize: '24px', color: '#c9ab70' }}>THE FRAGMENTED RECORD</div>
               </motion.div>
               <motion.h2 
@@ -276,29 +277,33 @@ export default function SankofaPage() {
                 style={{ 
                   textAlign: 'left', 
                   margin: 0,
-                  color: '#F4F0EA',
-                  opacity: titleOpacity
+                  color: '#F4F0EA'
                 }}
               >
-                {"History was not lost. It was scattered.".split(' ').map((word, wIdx, arr) => (
-                  <ScrollWord
+                {"History was not lost. It was scattered.".split(' ').map((word, wIdx) => (
+                  <motion.span
                     key={wIdx}
-                    word={word}
-                    index={wIdx}
-                    total={arr.length}
-                    progress={introProgress}
-                  />
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-10%" }}
+                    transition={{ duration: 0.4, delay: wIdx * 0.08, ease: 'easeOut' }}
+                    style={{ display: 'inline-block', marginRight: '0.25em' }}
+                  >
+                    {word}
+                  </motion.span>
                 ))}
               </motion.h2>
               <motion.p 
                 className="sankofa-phase-desc" 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 0.8, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
                 style={{ 
                   marginTop: '40px', 
                   maxWidth: '800px', 
                   fontSize: '1.4rem',
-                  color: '#F4F0EA',
-                  opacity: descOpacity,
-                  y: descY
+                  color: '#F4F0EA'
                 }}
               >
                 The traditional narrative of human civilization is a curated timeline designed by empires. 
@@ -475,31 +480,5 @@ export default function SankofaPage() {
 
       </motion.div>
     </>
-  );
-}
-
-interface ScrollWordProps {
-  word: string;
-  index: number;
-  total: number;
-  progress: MotionValue<number>;
-}
-
-function ScrollWord({ word, index, total, progress }: ScrollWordProps) {
-  const start = 0.2 + (index / total) * 0.05;
-  const wordOpacity = useTransform(progress, [start, start + 0.05], [0, 1]);
-  const wordY = useTransform(progress, [start, start + 0.05], [15, 0]);
-
-  return (
-    <motion.span
-      style={{
-        opacity: wordOpacity,
-        y: wordY,
-        display: 'inline-block',
-        marginRight: '0.25em',
-      }}
-    >
-      {word}
-    </motion.span>
   );
 }
