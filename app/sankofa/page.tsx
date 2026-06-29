@@ -275,24 +275,27 @@ export default function SankofaPage() {
                   opacity: titleOpacity
                 }}
               >
-                {"History was not lost. It was scattered.".split(' ').map((word, wIdx) => (
-                  <span key={wIdx} style={{ display: 'inline-block', marginRight: '0.25em' }}>
-                    {word.split('').map((char, cIdx) => {
-                      const i = wIdx * 10 + cIdx;
-                      return (
-                        <motion.span
-                          key={cIdx}
-                          initial={{ opacity: 0 }}
-                          whileInView={{ opacity: 1 }}
-                          viewport={{ once: false, margin: "-20% 0px -20% 0px" }}
-                          transition={{ duration: 0.1, delay: i * 0.03 }}
-                        >
-                          {char}
-                        </motion.span>
-                      );
-                    })}
-                  </span>
-                ))}
+                {"History was not lost. It was scattered.".split(' ').map((word, wIdx, arr) => {
+                  const start = 0.25 + (wIdx / arr.length) * 0.25;
+                  // eslint-disable-next-line react-hooks/rules-of-hooks
+                  const wordOpacity = useTransform(introProgress, [start, start + 0.08], [0, 1]);
+                  // eslint-disable-next-line react-hooks/rules-of-hooks
+                  const wordY = useTransform(introProgress, [start, start + 0.08], [15, 0]);
+
+                  return (
+                    <motion.span
+                      key={wIdx}
+                      style={{
+                        opacity: wordOpacity,
+                        y: wordY,
+                        display: 'inline-block',
+                        marginRight: '0.25em',
+                      }}
+                    >
+                      {word}
+                    </motion.span>
+                  );
+                })}
               </motion.h2>
               <motion.p 
                 className="sankofa-phase-desc" 

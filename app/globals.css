@@ -792,13 +792,17 @@ a,
   }
   
   .sankofa-hero-floating-img {
-    width: 70%;
-    max-width: 300px;
-    top: 50%;
+    width: 75%;
+    max-width: 320px;
+    top: 48%;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.7));
   }
 
   .sankofa-h1-massive {
-    font-size: clamp(3rem, 15vw, 18rem);
+    font-size: clamp(4.5rem, 22vw, 9rem);
+    text-align: center;
+    width: 100%;
+    margin-top: -10vh; /* Shift up slightly so it layers beautifully with the image */
   }
 
   .sankofa-input-brutalist {
@@ -868,7 +872,7 @@ a,
   align-items: center;
   text-align: left;
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* FIXED: overflow hidden disables sticky positioning of child containers */
 }
 
 .sankofa-marquee-container {
@@ -971,12 +975,14 @@ a,
   height: 100dvh;
   width: 100vw;
   overflow: hidden;
+  touch-action: pan-y;
 }
 
 .sankofa-horizontal-container {
   display: flex;
   height: 100dvh;
   width: max-content;
+  touch-action: pan-y;
 }
 
 .sankofa-domain-panel {
@@ -989,6 +995,7 @@ a,
   text-align: center;
   padding: 24px;
   flex-shrink: 0;
+  touch-action: pan-y;
 }
 
 .sankofa-domain-number {
