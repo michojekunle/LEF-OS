@@ -760,20 +760,21 @@ a,
   /* Glassmorphism Manifesto */
   .sankofa-meta-bl {
     display: block !important;
-    bottom: 80px;
+    bottom: 90px;
     left: 24px;
     right: 24px;
     max-width: none;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    padding: 16px 20px;
+    background: color-mix(in srgb, currentColor 3%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+    border-radius: 8px;
     z-index: 30;
+    transition: background-color 2s ease, border-color 2s ease;
   }
   .sankofa-meta-bl .sankofa-manifesto-text {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     text-align: center;
   }
 
@@ -792,17 +793,27 @@ a,
   }
   
   .sankofa-hero-floating-img {
-    width: 75%;
-    max-width: 320px;
-    top: 48%;
-    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.7));
+    width: 60%;
+    max-width: 250px;
+    top: 44%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    z-index: 10; /* Bring in front of the massive typography watermark */
+    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.4));
+    pointer-events: none;
   }
 
   .sankofa-h1-massive {
-    font-size: clamp(4.5rem, 22vw, 9rem);
+    font-size: clamp(3.8rem, 18vw, 7.5rem);
     text-align: center;
     width: 100%;
-    margin-top: -10vh; /* Shift up slightly so it layers beautifully with the image */
+    position: absolute;
+    top: 39%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    z-index: 1; /* Layer behind the artifact */
   }
 
   .sankofa-input-brutalist {
