@@ -929,8 +929,8 @@ a,
   font-size: clamp(6rem, 25vw, 30rem);
   font-weight: 700;
   text-transform: uppercase;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.03); /* Subtle fill for presence */
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.25); /* Thicker and brighter outline */
   line-height: 0.8;
   opacity: 1;
   white-space: nowrap;
