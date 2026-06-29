@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { motion, useScroll, useTransform, AnimatePresence, useVelocity, useSpring, useMotionValueEvent, useMotionValue, useMotionTemplate } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence, useVelocity, useSpring, useMotionValueEvent, useMotionValue, useMotionTemplate, MotionValue } from 'framer-motion';
 import Lenis from 'lenis';
 import { Bebas_Neue, Cormorant_Garamond } from 'next/font/google';
 
@@ -275,27 +275,15 @@ export default function SankofaPage() {
                   opacity: titleOpacity
                 }}
               >
-                {"History was not lost. It was scattered.".split(' ').map((word, wIdx, arr) => {
-                  const start = 0.25 + (wIdx / arr.length) * 0.25;
-                  // eslint-disable-next-line react-hooks/rules-of-hooks
-                  const wordOpacity = useTransform(introProgress, [start, start + 0.08], [0, 1]);
-                  // eslint-disable-next-line react-hooks/rules-of-hooks
-                  const wordY = useTransform(introProgress, [start, start + 0.08], [15, 0]);
-
-                  return (
-                    <motion.span
-                      key={wIdx}
-                      style={{
-                        opacity: wordOpacity,
-                        y: wordY,
-                        display: 'inline-block',
-                        marginRight: '0.25em',
-                      }}
-                    >
-                      {word}
-                    </motion.span>
-                  );
-                })}
+                {"History was not lost. It was scattered.".split(' ').map((word, wIdx, arr) => (
+                  <ScrollWord
+                    key={wIdx}
+                    word={word}
+                    index={wIdx}
+                    total={arr.length}
+                    progress={introProgress}
+                  />
+                ))}
               </motion.h2>
               <motion.p 
                 className="sankofa-phase-desc" 
@@ -482,5 +470,31 @@ export default function SankofaPage() {
 
       </motion.div>
     </>
+  );
+}
+
+interface ScrollWordProps {
+  word: string;
+  index: number;
+  total: number;
+  progress: MotionValue<number>;
+}
+
+function ScrollWord({ word, index, total, progress }: ScrollWordProps) {
+  const start = 0.25 + (index / total) * 0.25;
+  const wordOpacity = useTransform(progress, [start, start + 0.08], [0, 1]);
+  const wordY = useTransform(progress, [start, start + 0.08], [15, 0]);
+
+  return (
+    <motion.span
+      style={{
+        opacity: wordOpacity,
+        y: wordY,
+        display: 'inline-block',
+        marginRight: '0.25em',
+      }}
+    >
+      {word}
+    </motion.span>
   );
 }
