@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { motion, useScroll, useTransform, AnimatePresence, useVelocity, useSpring, useMotionValueEvent, useMotionValue, useMotionTemplate } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence, useVelocity, useSpring, useMotionValueEvent, useMotionValue, useMotionTemplate, MotionValue } from 'framer-motion';
 import Lenis from 'lenis';
 import { Bebas_Neue, Cormorant_Garamond } from 'next/font/google';
 
@@ -45,20 +45,26 @@ function useDeviceOrientation() {
   return orientation;
 }
 
+// Module-level state to track if preloader has run in the current session.
+// This allows the splash screen to play on hard reloads (which resets bundle state)
+// but bypasses it during Next.js client-side navigation.
+let hasPlayedPreloader = false;
+
 export default function SankofaPage() {
   const [mounted, setMounted] = useState(false);
   const [isArchiveEntered, setIsArchiveEntered] = useState(false);
 
-  // Smooth scroll
+  // Mount and preloader bypass check
   useEffect(() => {
     setMounted(true);
-    try {
-      if (sessionStorage.getItem('sankofa-preloader-skipped') === 'true') {
-        setIsArchiveEntered(true);
-      }
-    } catch (e) {
-      console.warn('Failed to read preloader bypass from sessionStorage:', e);
+    if (hasPlayedPreloader) {
+      setIsArchiveEntered(true);
     }
+  }, []);
+
+  // Smooth scroll - only initialize after archive is entered
+  useEffect(() => {
+    if (!isArchiveEntered) return;
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -77,7 +83,7 @@ export default function SankofaPage() {
     requestAnimationFrame(raf);
 
     return () => lenis.destroy();
-  }, []);
+  }, [isArchiveEntered]);
 
   // Shared scroll state
   const { scrollY, scrollYProgress } = useScroll();
@@ -98,11 +104,6 @@ export default function SankofaPage() {
   const marquee2X = useTransform(introProgress, [0, 1], ['-100%', '100%']);
   
   // Staggered text timings (delayed until after background is fully dark at 0.2)
-  // Adjust opacities so they start appearing immediately when the section enters
-  const labelOpacity = useTransform(introProgress, [0.05, 0.15, 0.9, 0.95], [0, 1, 1, 0]);
-  const titleOpacity = useTransform(introProgress, [0.15, 0.25, 0.9, 0.95], [0, 1, 1, 0]);
-  const descOpacity = useTransform(introProgress, [0.25, 0.35, 0.9, 0.95], [0, 1, 1, 0]);
-  const descY = useTransform(introProgress, [0.25, 0.35], [30, 0]);
   const marqueeOpacity = useTransform(introProgress, [0.0, 0.3, 0.4, 0.9, 1.0], [0, 0, 1, 1, 0]);
   
 
@@ -156,9 +157,7 @@ export default function SankofaPage() {
         <CinematicPreloader
           onEnter={() => {
             setIsArchiveEntered(true);
-            try {
-              sessionStorage.setItem('sankofa-preloader-skipped', 'true');
-            } catch (e) {}
+            hasPlayedPreloader = true;
           }}
         />
       )}
@@ -215,9 +214,11 @@ export default function SankofaPage() {
             transition={{ duration: 1, delay: 0.6 }}
             className="sankofa-hero-meta sankofa-meta-tr"
           >
-            <div className="sankofa-def-text" style={{ textAlign: 'right' }}>
-              ARCHIVE_01<br/>
-              VOL. 2026
+            <div className="sankofa-rotated-spine-wrapper">
+              <div className="sankofa-def-text" style={{ textAlign: 'right' }}>
+                ARCHIVE_01<br/>
+                VOL. 2026
+              </div>
             </div>
           </motion.div>
 
@@ -248,7 +249,8 @@ export default function SankofaPage() {
           </motion.div>
           
           <motion.h1 style={{ y: heroY, x: gyroY, opacity: heroOpacity, skewY: velocitySkew }} className={`sankofa-h1-massive ${cormorant.className}`}>
-            SANKOFA
+            <span className="sankofa-h1-part-1">SAN</span>
+            <span className="sankofa-h1-part-2">KOFA</span>
           </motion.h1>
         </section>        {/* 2. THE INTRODUCTION */}
         <motion.section ref={introRef} className="sankofa-intro-section" style={{ height: '300vh', padding: 0 }}>
@@ -263,7 +265,12 @@ export default function SankofaPage() {
             </motion.div>
             
             <div className="sankofa-intro-content" style={{ padding: '0 24px' }}>
-              <motion.div style={{ opacity: labelOpacity }}>
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+              >
                 <div className={`sankofa-phase-label ${bebas.className}`} style={{ marginBottom: '20px', fontSize: '24px', color: '#c9ab70' }}>THE FRAGMENTED RECORD</div>
               </motion.div>
               <motion.h2 
@@ -271,38 +278,33 @@ export default function SankofaPage() {
                 style={{ 
                   textAlign: 'left', 
                   margin: 0,
-                  color: '#F4F0EA',
-                  opacity: titleOpacity
+                  color: '#F4F0EA'
                 }}
               >
                 {"History was not lost. It was scattered.".split(' ').map((word, wIdx) => (
-                  <span key={wIdx} style={{ display: 'inline-block', marginRight: '0.25em' }}>
-                    {word.split('').map((char, cIdx) => {
-                      const i = wIdx * 10 + cIdx;
-                      return (
-                        <motion.span
-                          key={cIdx}
-                          initial={{ opacity: 0 }}
-                          whileInView={{ opacity: 1 }}
-                          viewport={{ once: false, margin: "-20% 0px -20% 0px" }}
-                          transition={{ duration: 0.1, delay: i * 0.03 }}
-                        >
-                          {char}
-                        </motion.span>
-                      );
-                    })}
-                  </span>
+                  <motion.span
+                    key={wIdx}
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-10%" }}
+                    transition={{ duration: 0.4, delay: wIdx * 0.08, ease: 'easeOut' }}
+                    style={{ display: 'inline-block', marginRight: '0.25em' }}
+                  >
+                    {word}
+                  </motion.span>
                 ))}
               </motion.h2>
               <motion.p 
                 className="sankofa-phase-desc" 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 0.8, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
                 style={{ 
                   marginTop: '40px', 
                   maxWidth: '800px', 
                   fontSize: '1.4rem',
-                  color: '#F4F0EA',
-                  opacity: descOpacity,
-                  y: descY
+                  color: '#F4F0EA'
                 }}
               >
                 The traditional narrative of human civilization is a curated timeline designed by empires. 

@@ -656,7 +656,8 @@ a,
   margin: 0;
   z-index: 10;
   position: relative;
-  /* We remove exclusion blend mode because we transition colors */
+  mix-blend-mode: difference;
+  color: #FFFFFF !important;
 }
 
 .sankofa-h2-editorial {
@@ -750,30 +751,36 @@ a,
     display: block !important;
     top: 50%;
     right: 0;
-    transform: translateY(-50%) rotate(90deg);
+    white-space: nowrap;
+    opacity: 0.4;
+    padding: 0 16px;
+    z-index: 20;
+  }
+
+  .sankofa-rotated-spine-wrapper {
+    transform: rotate(90deg);
     transform-origin: right center;
     white-space: nowrap;
-    opacity: 0.5;
-    padding: 0 24px;
   }
 
   /* Glassmorphism Manifesto */
   .sankofa-meta-bl {
     display: block !important;
-    bottom: 80px;
+    bottom: 90px;
     left: 24px;
     right: 24px;
     max-width: none;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    padding: 16px 20px;
+    background: color-mix(in srgb, currentColor 3%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+    border-radius: 8px;
     z-index: 30;
+    transition: background-color 2s ease, border-color 2s ease;
   }
   .sankofa-meta-bl .sankofa-manifesto-text {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     text-align: center;
   }
 
@@ -792,13 +799,48 @@ a,
   }
   
   .sankofa-hero-floating-img {
-    width: 70%;
-    max-width: 300px;
-    top: 50%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: 60%;
+    max-width: 250px;
+    height: fit-content;
+    z-index: 2; /* Layer behind the watermark text */
+    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.4));
+    pointer-events: none;
   }
 
   .sankofa-h1-massive {
-    font-size: clamp(3rem, 15vw, 18rem);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+    align-items: stretch;
+    justify-content: center;
+    margin: 0;
+    position: relative;
+    z-index: 10; /* Layer in front of the artifact */
+  }
+
+  .sankofa-h1-part-1 {
+    display: block !important;
+    text-align: left;
+    font-size: clamp(3.8rem, 18vw, 6.8rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    margin-bottom: 25vh; /* Push KOFA down, centering the image in the gap */
+  }
+
+  .sankofa-h1-part-2 {
+    display: block !important;
+    text-align: right;
+    font-size: clamp(3.8rem, 18vw, 6.8rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
   }
 
   .sankofa-input-brutalist {
@@ -837,13 +879,15 @@ a,
 
 .sankofa-hero-floating-img {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
   width: 100%;
   max-width: 600px;
-  height: auto;
-  z-index: 0;
+  height: fit-content;
+  z-index: 2;
   /* Parchment image blending */
   /* mix-blend-mode: multiply; */
   opacity: 0.9;
@@ -868,7 +912,7 @@ a,
   align-items: center;
   text-align: left;
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* FIXED: overflow hidden disables sticky positioning of child containers */
 }
 
 .sankofa-marquee-container {
@@ -885,8 +929,8 @@ a,
   font-size: clamp(6rem, 25vw, 30rem);
   font-weight: 700;
   text-transform: uppercase;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.03); /* Subtle fill for presence */
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.25); /* Thicker and brighter outline */
   line-height: 0.8;
   opacity: 1;
   white-space: nowrap;
@@ -989,6 +1033,7 @@ a,
   text-align: center;
   padding: 24px;
   flex-shrink: 0;
+  touch-action: pan-y;
 }
 
 .sankofa-domain-number {
