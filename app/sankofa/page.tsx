@@ -103,11 +103,10 @@ export default function SankofaPage() {
   const marquee2X = useTransform(introProgress, [0, 1], ['-100%', '100%']);
   
   // Staggered text timings (delayed until after background is fully dark at 0.2)
-  // Adjust opacities so they start appearing immediately when the section enters
-  const labelOpacity = useTransform(introProgress, [0.05, 0.15, 0.9, 0.95], [0, 1, 1, 0]);
-  const titleOpacity = useTransform(introProgress, [0.15, 0.25, 0.9, 0.95], [0, 1, 1, 0]);
-  const descOpacity = useTransform(introProgress, [0.25, 0.35, 0.9, 0.95], [0, 1, 1, 0]);
-  const descY = useTransform(introProgress, [0.25, 0.35], [30, 0]);
+  const labelOpacity = useTransform(introProgress, [0.1, 0.2, 0.8, 0.9], [0, 1, 1, 0]);
+  const titleOpacity = useTransform(introProgress, [0.2, 0.3, 0.8, 0.9], [0, 1, 1, 0]);
+  const descOpacity = useTransform(introProgress, [0.4, 0.5, 0.8, 0.9], [0, 1, 1, 0]);
+  const descY = useTransform(introProgress, [0.4, 0.5], [30, 0]);
   const marqueeOpacity = useTransform(introProgress, [0.0, 0.3, 0.4, 0.9, 1.0], [0, 0, 1, 1, 0]);
   
 
@@ -486,9 +485,9 @@ interface ScrollWordProps {
 }
 
 function ScrollWord({ word, index, total, progress }: ScrollWordProps) {
-  const start = 0.25 + (index / total) * 0.25;
-  const wordOpacity = useTransform(progress, [start, start + 0.08], [0, 1]);
-  const wordY = useTransform(progress, [start, start + 0.08], [15, 0]);
+  const start = 0.2 + (index / total) * 0.05;
+  const wordOpacity = useTransform(progress, [start, start + 0.05], [0, 1]);
+  const wordY = useTransform(progress, [start, start + 0.05], [15, 0]);
 
   return (
     <motion.span

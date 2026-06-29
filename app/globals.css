@@ -795,7 +795,7 @@ a,
   .sankofa-hero-floating-img {
     width: 60%;
     max-width: 250px;
-    top: 44%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     position: absolute;
@@ -805,14 +805,11 @@ a,
   }
 
   .sankofa-h1-massive {
-    font-size: clamp(3.8rem, 18vw, 7.5rem);
+    font-size: clamp(3.2rem, 16vw, 6.5rem);
     text-align: center;
     width: 100%;
-    position: absolute;
-    top: 39%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     margin: 0;
+    position: relative;
     z-index: 1; /* Layer behind the artifact */
   }
 
