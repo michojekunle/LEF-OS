@@ -49,7 +49,7 @@ export default function SankofaPage() {
   const [mounted, setMounted] = useState(false);
   const [isArchiveEntered, setIsArchiveEntered] = useState(false);
 
-  // Smooth scroll
+  // Mount and session storage check
   useEffect(() => {
     setMounted(true);
     try {
@@ -59,6 +59,11 @@ export default function SankofaPage() {
     } catch (e) {
       console.warn('Failed to read preloader bypass from sessionStorage:', e);
     }
+  }, []);
+
+  // Smooth scroll - only initialize after archive is entered
+  useEffect(() => {
+    if (!isArchiveEntered) return;
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -77,7 +82,7 @@ export default function SankofaPage() {
     requestAnimationFrame(raf);
 
     return () => lenis.destroy();
-  }, []);
+  }, [isArchiveEntered]);
 
   // Shared scroll state
   const { scrollY, scrollYProgress } = useScroll();

@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { CURRICULUM, DOMAIN_META, type Domain } from '@/data/curriculum-data';
 import { DOMAIN_ACCENT_TEXT } from '@/lib/domain';
-import { ProgressBar } from '@/components/ProgressBar';
+import { InteractiveHero } from '@/components/InteractiveHero';
 import {
   getDayNumber,
   isBeforeCourse,
@@ -89,69 +89,14 @@ export default async function LandingPage() {
   return (
     <div className="mx-auto max-w-content px-5 md:px-6">
       {/* HERO */}
-      <section className="pb-12 pt-12 md:pb-16 md:pt-20">
-        <div className="reveal mb-6 flex items-center gap-2 text-xs uppercase tracking-[0.32em] text-text-secondary">
-          <Sparkles size={12} className="text-gold" />
-          <span>Founder&apos;s Learning OS</span>
-        </div>
-        <h1 className="reveal font-display text-[clamp(2.8rem,10vw,5rem)] leading-[0.95] tracking-tight text-text-primary">
-          Law
-          <span className="text-text-muted"> · </span>
-          <span className="accent-econ">Economics</span>
-          <span className="text-text-muted"> · </span>
-          <span className="accent-finance">Finance</span>
-        </h1>
-        <p className="reveal mt-6 max-w-xl text-base text-text-secondary md:text-lg">
-          {subheadLine}
-        </p>
-        <p className="mt-3 font-mono text-xs tracking-wider text-text-muted">{metaLine}</p>
-
-        <div className="mt-8 flex flex-col gap-3">
-          {/* Primary CTA — the cheapest path into the curriculum, no signup */}
-          <Link
-            href="/brief"
-            className="btn btn-primary inline-flex w-fit items-center gap-2 px-5 py-3 text-base"
-            data-tour="brief-cta"
-          >
-            Read Today&apos;s Lesson — 5 min <ArrowRight size={16} />
-          </Link>
-          <p className="text-xs text-text-muted">
-            No signup required — open today&apos;s brief and start reading.
-          </p>
-
-          {/* Secondary CTAs */}
-          <div className="mt-2 flex flex-wrap items-center gap-3">
-            <Link href="/roadmap" className="btn btn-secondary" data-tour="explore-cta">
-              Explore the Curriculum <ArrowRight size={14} />
-            </Link>
-            {!isAuthed && (
-              <Link href="/login" className="btn btn-secondary">
-                Track My Journey
-              </Link>
-            )}
-            {isAuthed && (
-              <Link href="/dashboard" className="btn btn-secondary">
-                Go to Dashboard <ArrowRight size={14} />
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {/* PROGRESS */}
-        <div className="mt-12 max-w-md" data-tour="hero-progress-bar">
-          <ProgressBar value={dayShown} max={courseWindow.totalDays} label={progressLabel} />
-        </div>
-
-        {/* Personalisation hint for unauthenticated users */}
-        {!isAuthed && (
-          <p className="mt-4 text-xs text-text-muted">
-            <Link href="/login" className="text-gold hover:underline">
-              Sign in
-            </Link>{' '}
-            to set your own start date, duration (4–12 months), and which domains you want to study.
-          </p>
-        )}
-      </section>
+      <InteractiveHero
+        isAuthed={isAuthed}
+        subheadLine={subheadLine}
+        metaLine={metaLine}
+        progressLabel={progressLabel}
+        dayShown={dayShown}
+        totalDays={courseWindow.totalDays}
+      />
 
       <div className="divider" />
 
