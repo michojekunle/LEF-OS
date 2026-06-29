@@ -218,9 +218,11 @@ export default function SankofaPage() {
             transition={{ duration: 1, delay: 0.6 }}
             className="sankofa-hero-meta sankofa-meta-tr"
           >
-            <div className="sankofa-def-text" style={{ textAlign: 'right' }}>
-              ARCHIVE_01<br/>
-              VOL. 2026
+            <div className="sankofa-rotated-spine-wrapper">
+              <div className="sankofa-def-text" style={{ textAlign: 'right' }}>
+                ARCHIVE_01<br/>
+                VOL. 2026
+              </div>
             </div>
           </motion.div>
 

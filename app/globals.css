@@ -750,11 +750,16 @@ a,
     display: block !important;
     top: 50%;
     right: 0;
-    transform: translateY(-50%) rotate(90deg);
+    white-space: nowrap;
+    opacity: 0.4;
+    padding: 0 16px;
+    z-index: 20;
+  }
+
+  .sankofa-rotated-spine-wrapper {
+    transform: rotate(90deg);
     transform-origin: right center;
     white-space: nowrap;
-    opacity: 0.5;
-    padding: 0 24px;
   }
 
   /* Glassmorphism Manifesto */
@@ -793,19 +798,22 @@ a,
   }
   
   .sankofa-hero-floating-img {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
     width: 60%;
     max-width: 250px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    position: absolute;
+    height: fit-content;
     z-index: 10; /* Bring in front of the massive typography watermark */
     filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.4));
     pointer-events: none;
   }
 
   .sankofa-h1-massive {
-    font-size: clamp(3.2rem, 16vw, 6.5rem);
+    font-size: clamp(2.4rem, 11vw, 4.2rem);
     text-align: center;
     width: 100%;
     margin: 0;
@@ -849,12 +857,14 @@ a,
 
 .sankofa-hero-floating-img {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
   width: 100%;
   max-width: 600px;
-  height: auto;
+  height: fit-content;
   z-index: 0;
   /* Parchment image blending */
   /* mix-blend-mode: multiply; */
