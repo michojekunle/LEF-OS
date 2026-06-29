@@ -45,19 +45,20 @@ function useDeviceOrientation() {
   return orientation;
 }
 
+// Module-level state to track if preloader has run in the current session.
+// This allows the splash screen to play on hard reloads (which resets bundle state)
+// but bypasses it during Next.js client-side navigation.
+let hasPlayedPreloader = false;
+
 export default function SankofaPage() {
   const [mounted, setMounted] = useState(false);
   const [isArchiveEntered, setIsArchiveEntered] = useState(false);
 
-  // Mount and session storage check
+  // Mount and preloader bypass check
   useEffect(() => {
     setMounted(true);
-    try {
-      if (sessionStorage.getItem('sankofa-preloader-skipped') === 'true') {
-        setIsArchiveEntered(true);
-      }
-    } catch (e) {
-      console.warn('Failed to read preloader bypass from sessionStorage:', e);
+    if (hasPlayedPreloader) {
+      setIsArchiveEntered(true);
     }
   }, []);
 
@@ -160,9 +161,7 @@ export default function SankofaPage() {
         <CinematicPreloader
           onEnter={() => {
             setIsArchiveEntered(true);
-            try {
-              sessionStorage.setItem('sankofa-preloader-skipped', 'true');
-            } catch (e) {}
+            hasPlayedPreloader = true;
           }}
         />
       )}
