@@ -814,12 +814,33 @@ a,
   }
 
   .sankofa-h1-massive {
-    font-size: clamp(2.4rem, 11vw, 4.2rem);
-    text-align: center;
+    display: flex;
+    flex-direction: column;
     width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+    align-items: stretch;
+    justify-content: center;
     margin: 0;
     position: relative;
     z-index: 10; /* Layer in front of the artifact */
+  }
+
+  .sankofa-h1-part-1 {
+    display: block !important;
+    text-align: left;
+    font-size: clamp(3.8rem, 18vw, 6.8rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    margin-bottom: 25vh; /* Push KOFA down, centering the image in the gap */
+  }
+
+  .sankofa-h1-part-2 {
+    display: block !important;
+    text-align: right;
+    font-size: clamp(3.8rem, 18vw, 6.8rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
   }
 
   .sankofa-input-brutalist {

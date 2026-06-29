@@ -249,7 +249,8 @@ export default function SankofaPage() {
           </motion.div>
           
           <motion.h1 style={{ y: heroY, x: gyroY, opacity: heroOpacity, skewY: velocitySkew }} className={`sankofa-h1-massive ${cormorant.className}`}>
-            SANKOFA
+            <span className="sankofa-h1-part-1">SAN</span>
+            <span className="sankofa-h1-part-2">KOFA</span>
           </motion.h1>
         </section>        {/* 2. THE INTRODUCTION */}
         <motion.section ref={introRef} className="sankofa-intro-section" style={{ height: '300vh', padding: 0 }}>
