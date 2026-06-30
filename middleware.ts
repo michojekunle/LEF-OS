@@ -7,7 +7,7 @@ import { getPublicEnv } from '@/lib/env';
 // Auth-protected writes (log form, notes, questions, review answers) are
 // gated by component-level conditional render, server-action auth checks,
 // and Supabase RLS. See plan: "5-Minute Daily Lesson" Part 1.
-const PROTECTED_PREFIXES = ['/dashboard', '/today', '/stats', '/settings', '/export'];
+const PROTECTED_PREFIXES = ['/dashboard', '/today', '/stats', '/settings', '/export', '/sankofa/vault', '/sankofa/admin'];
 
 export async function middleware(req: NextRequest) {
   let res = NextResponse.next({ request: { headers: req.headers } });

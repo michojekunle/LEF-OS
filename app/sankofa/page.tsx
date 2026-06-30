@@ -104,7 +104,6 @@ export default function SankofaPage() {
   const marquee2X = useTransform(introProgress, [0, 1], ['-100%', '100%']);
   
   // Staggered text timings (delayed until after background is fully dark at 0.2)
-  const marqueeOpacity = useTransform(introProgress, [0.0, 0.3, 0.4, 0.9, 1.0], [0, 0, 1, 1, 0]);
   
 
   // Hero Parallax
@@ -140,11 +139,33 @@ export default function SankofaPage() {
   const [email, setEmail] = useState('');
   const [formState, setFormState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || formState === 'loading') return;
     setFormState('loading');
-    setTimeout(() => setFormState('success'), 1000); // Simulate
+    setAlreadyRegistered(false);
+    try {
+      const res = await fetch('/api/sankofa/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setFormState('error');
+        return;
+      }
+      if (data.message === 'already_registered') {
+        setAlreadyRegistered(true);
+        setFormState('success');
+        return;
+      }
+      setFormState('success');
+    } catch {
+      setFormState('error');
+    }
   };
 
   if (!mounted) return null;
@@ -255,7 +276,13 @@ export default function SankofaPage() {
         </section>        {/* 2. THE INTRODUCTION */}
         <motion.section ref={introRef} className="sankofa-intro-section" style={{ height: '300vh', padding: 0 }}>
           <div style={{ position: 'sticky', top: 0, height: '100vh', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
-            <motion.div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: '100%', display: 'flex', flexDirection: 'column', gap: '2vh', pointerEvents: 'none', zIndex: 0, opacity: marqueeOpacity }}>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 0.8 }}
+              viewport={{ once: false, margin: "-10% 0px" }}
+              transition={{ duration: 0.8 }}
+              style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: '100%', display: 'flex', flexDirection: 'column', gap: '2vh', pointerEvents: 'none', zIndex: 0 }}
+            >
               <motion.div style={{ x: marquee1X, skewX: velocitySkew }}>
                 <div className={`sankofa-marquee-text ${bebas.className}`}>FRAGMENTED</div>
               </motion.div>
@@ -439,29 +466,36 @@ export default function SankofaPage() {
           <div style={{ width: '100%', maxWidth: '600px', marginTop: '40px', zIndex: 2 }}>
             <AnimatePresence mode="wait">
               {formState === 'success' ? (
-                <motion.div 
+                <motion.div
                   key="success"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="sankofa-body-minimal"
                 >
-                  The archive awaits. You are on the list.
+                  {alreadyRegistered
+                    ? "You're already on the list. The archive remembers you."
+                    : 'The archive awaits. You are on the list.'}
                 </motion.div>
               ) : (
-                <motion.form 
+                <motion.form
                   key="form"
                   exit={{ opacity: 0, y: -20 }}
-                  onSubmit={handleSubmit} 
+                  onSubmit={handleSubmit}
                   className="sankofa-form-brutalist"
                 >
-                  <input 
-                    type="email" 
-                    placeholder="ENTER YOUR EMAIL" 
+                  <input
+                    type="email"
+                    placeholder="ENTER YOUR EMAIL"
                     className={`sankofa-input-brutalist ${cormorant.className}`}
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     required
                   />
+                  {formState === 'error' && (
+                    <p style={{ color: '#c0392b', fontSize: '0.85rem', marginTop: '8px', letterSpacing: '0.05em' }}>
+                      Something went wrong. Please try again.
+                    </p>
+                  )}
                   <MagneticButton type="submit">
                     <div className={`sankofa-btn-brutalist ${bebas.className}`}>
                       {formState === 'loading' ? 'WAIT...' : 'JOIN'}
