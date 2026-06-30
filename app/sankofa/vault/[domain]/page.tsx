@@ -5,6 +5,7 @@ import {
   SANKOFA_DOMAIN_META,
   type SankofaDomain,
 } from '@/lib/sankofa-content';
+import { StoryCard } from '@/components/sankofa/StoryCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -73,68 +74,9 @@ export default async function DomainArchivePage({ params }: Props) {
             THE ARCHIVE IS BEING ASSEMBLED. CHECK BACK SOON.
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', border: '1px solid #1e1e1e' }}>
+          <div style={{ border: '1px solid #1e1e1e' }}>
             {stories.map((story, i) => (
-              <Link
-                key={story.id}
-                href={`/sankofa/vault/story/${story.id}`}
-                style={{ textDecoration: 'none', display: 'block' }}
-              >
-                <article
-                  style={{
-                    padding: '32px',
-                    borderBottom: i < stories.length - 1 ? '1px solid #1e1e1e' : 'none',
-                    display: 'grid',
-                    gridTemplateColumns: '80px 1fr',
-                    gap: '32px',
-                    alignItems: 'start',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', letterSpacing: '0.15em', opacity: 0.3, paddingTop: '6px' }}>
-                    {String(i + 1).padStart(2, '0')}
-                  </div>
-                  <div>
-                    <div style={{ fontFamily: 'monospace', fontSize: '0.6rem', letterSpacing: '0.2em', color: meta.colour, marginBottom: '10px' }}>
-                      {story.era}
-                    </div>
-                    <h2
-                      style={{
-                        fontFamily: '"Cormorant Garamond", serif',
-                        fontSize: 'clamp(1.4rem, 2.5vw, 2rem)',
-                        fontWeight: 700,
-                        lineHeight: 1.2,
-                        color: '#F4F0EA',
-                        margin: '0 0 12px',
-                      }}
-                    >
-                      {story.title}
-                    </h2>
-                    <p
-                      style={{
-                        fontFamily: '"Cormorant Garamond", serif',
-                        fontSize: '1rem',
-                        lineHeight: 1.7,
-                        opacity: 0.6,
-                        margin: '0 0 16px',
-                        maxWidth: '600px',
-                      }}
-                    >
-                      {story.tldr.slice(0, 120)}…
-                    </p>
-                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                      {story.figures.slice(0, 3).map((f) => (
-                        <span
-                          key={f}
-                          style={{ fontFamily: 'monospace', fontSize: '0.6rem', opacity: 0.35, letterSpacing: '0.08em' }}
-                        >
-                          {f}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </article>
-              </Link>
+              <StoryCard key={story.id} story={story} index={i} size="lg" showIndex />
             ))}
           </div>
         )}

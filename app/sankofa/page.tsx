@@ -112,7 +112,7 @@ export default function SankofaPage() {
   const marquee2X = useTransform(introProgress, [0, 1], ['-100%', '100%']);
   
   // Staggered text timings (delayed until after background is fully dark at 0.2)
-  
+  const marqueeOpacity = useTransform(introProgress, [0.0, 0.2, 0.8, 1.0], [0, 0.8, 0.8, 0], { clamp: true });
 
   // Hero Parallax
   const heroY = useTransform(scrollY, [0, 1000], [0, 300]);
@@ -123,7 +123,8 @@ export default function SankofaPage() {
   const horizontalRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: horizontalProgress } = useScroll({ target: horizontalRef, offset: ["start start", "end end"] });
   const totalSlides = DOMAINS.length * 2;
-  const x = useTransform(horizontalProgress, [0, 1], ['0%', `-${((totalSlides - 1) * 100) / totalSlides}%`], { clamp: true });
+  const xValue = useTransform(horizontalProgress, [0, 1], [0, -(((totalSlides - 1) * 100) / totalSlides)], { clamp: true });
+  const x = useMotionTemplate`${xValue}%`;
 
   const prevDomainIndex = useRef(0);
   useMotionValueEvent(horizontalProgress, "change", (latest) => {
@@ -285,11 +286,8 @@ export default function SankofaPage() {
         <motion.section ref={introRef} className="sankofa-intro-section" style={{ height: '300vh', padding: 0 }}>
           <div style={{ position: 'sticky', top: 0, height: '100vh', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
             <motion.div 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 0.8 }}
-              viewport={{ once: false, margin: "-10% 0px" }}
-              transition={{ duration: 0.8 }}
-              style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: '100%', display: 'flex', flexDirection: 'column', gap: '2vh', pointerEvents: 'none', zIndex: 0 }}
+              className="sankofa-marquee-container"
+              style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: '100%', display: 'flex', flexDirection: 'column', gap: '2vh', pointerEvents: 'none', zIndex: 0, opacity: marqueeOpacity }}
             >
               <motion.div style={{ x: marquee1X, skewX: velocitySkew }}>
                 <div className={`sankofa-marquee-text ${bebas.className}`}>FRAGMENTED</div>

@@ -875,7 +875,7 @@ a,
     font-size: clamp(2rem, 8vw, 3rem) !important;
   }
 
-  /* Mobile Horizontal Scroll to Native Swipe Deck Transition */
+  /* Mobile Horizontal Scroll Snap Swipe Deck */
   .sankofa-horizontal-wrapper {
     height: auto !important; /* Remove the massive 1200vh height */
     padding: 60px 0 !important;
@@ -889,7 +889,7 @@ a,
     width: 100vw !important;
     overflow-x: auto !important; /* Enable native horizontal swipe scroll */
     overflow-y: hidden !important;
-    display: flex !important;
+    display: block !important; /* Changed from flex to block to prevent layout-clamping */
     scroll-snap-type: x mandatory; /* Snap scrolling for premium mobile feel */
     -webkit-overflow-scrolling: touch !important;
     padding: 0 24px !important;
@@ -909,6 +909,7 @@ a,
   .sankofa-horizontal-container {
     display: flex !important;
     width: max-content !important;
+    flex-shrink: 0 !important; /* Prevent shrinking to parent viewport width */
     height: auto !important;
     transform: none !important; /* Override vertical-to-horizontal translation scroll hook on mobile */
     gap: 16px;
@@ -916,13 +917,13 @@ a,
 
   .sankofa-domain-panel {
     width: 82vw !important; /* Peeking layout shows next card edge */
-    height: 60vh !important;
-    min-height: 440px;
+    height: auto !important; /* Auto height fits all contents dynamically */
+    min-height: 55dvh !important; /* Generous card scale limit */
     flex-shrink: 0 !important;
     scroll-snap-align: center; /* Snap to container center */
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    padding: 24px !important;
+    padding: 32px 24px !important;
     box-sizing: border-box;
     background: rgba(255, 255, 255, 0.02);
     backdrop-filter: blur(8px);
@@ -931,6 +932,22 @@ a,
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
+    align-items: stretch !important;
+    text-align: left !important;
+  }
+
+  .sankofa-domain-title {
+    font-size: clamp(2.2rem, 8vw, 3.5rem) !important;
+    line-height: 1.1 !important;
+  }
+  
+  .sankofa-h2-editorial {
+    font-size: clamp(1.8rem, 6vw, 2.8rem) !important;
+    line-height: 1.2 !important;
+  }
+
+  .sankofa-marquee-container {
+    opacity: 0.8 !important; /* Bypass iOS WebKit sticky observer bugs by forcing static visibility on mobile */
   }
 }
 

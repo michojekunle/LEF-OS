@@ -6,6 +6,7 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 export function CustomCursor() {
   const [mounted, setMounted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
@@ -17,6 +18,16 @@ export function CustomCursor() {
   useEffect(() => {
     setMounted(true);
     
+    // Check if device is mobile or touch-enabled
+    const checkDevice = () => {
+      const mobileWidth = window.innerWidth <= 768;
+      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      setIsMobile(mobileWidth || hasTouch);
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
@@ -42,12 +53,13 @@ export function CustomCursor() {
     window.addEventListener('mouseover', handleMouseOver);
 
     return () => {
+      window.removeEventListener('resize', checkDevice);
       window.removeEventListener('mousemove', moveCursor);
       window.removeEventListener('mouseover', handleMouseOver);
     };
   }, [cursorX, cursorY]);
 
-  if (!mounted) return null;
+  if (!mounted || isMobile) return null;
 
   return (
     <motion.div
