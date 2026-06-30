@@ -889,7 +889,7 @@ a,
     width: 100vw !important;
     overflow-x: auto !important; /* Enable native horizontal swipe scroll */
     overflow-y: hidden !important;
-    display: flex !important;
+    display: block !important; /* Changed from flex to block to prevent layout-clamping */
     scroll-snap-type: x mandatory; /* Snap scrolling for premium mobile feel */
     -webkit-overflow-scrolling: touch !important;
     padding: 0 24px !important;
@@ -909,6 +909,7 @@ a,
   .sankofa-horizontal-container {
     display: flex !important;
     width: max-content !important;
+    flex-shrink: 0 !important; /* Prevent shrinking to parent viewport width */
     height: auto !important;
     transform: none !important; /* Override vertical-to-horizontal translation scroll hook on mobile */
     gap: 16px;

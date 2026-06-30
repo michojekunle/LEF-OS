@@ -284,20 +284,14 @@ export default function SankofaPage() {
         </section>        {/* 2. THE INTRODUCTION */}
         <motion.section ref={introRef} className="sankofa-intro-section" style={{ height: '300vh', padding: 0 }}>
           <div style={{ position: 'sticky', top: 0, height: '100vh', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 0.8 }}
-              viewport={{ once: false, margin: "-10% 0px" }}
-              transition={{ duration: 0.8 }}
-              style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: '100%', display: 'flex', flexDirection: 'column', gap: '2vh', pointerEvents: 'none', zIndex: 0 }}
-            >
+            <div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: '100%', display: 'flex', flexDirection: 'column', gap: '2vh', pointerEvents: 'none', zIndex: 0 }}>
               <motion.div style={{ x: marquee1X, skewX: velocitySkew }}>
                 <div className={`sankofa-marquee-text ${bebas.className}`}>FRAGMENTED</div>
               </motion.div>
               <motion.div style={{ x: marquee2X, skewX: velocitySkew }}>
                 <div className={`sankofa-marquee-text ${bebas.className}`}>SCATTERED</div>
               </motion.div>
-            </motion.div>
+            </div>
             
             <div className="sankofa-intro-content" style={{ padding: '0 24px' }}>
               <motion.div 
