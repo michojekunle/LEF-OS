@@ -82,7 +82,15 @@ export default function SankofaPage() {
     }
     requestAnimationFrame(raf);
 
-    return () => lenis.destroy();
+    // Force Framer Motion to recalculate scroll offsets after layout is painted and height is stable
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 150);
+
+    return () => {
+      lenis.destroy();
+      clearTimeout(timer);
+    };
   }, [isArchiveEntered]);
 
   // Shared scroll state
@@ -115,7 +123,7 @@ export default function SankofaPage() {
   const horizontalRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: horizontalProgress } = useScroll({ target: horizontalRef, offset: ["start start", "end end"] });
   const totalSlides = DOMAINS.length * 2;
-  const x = useTransform(horizontalProgress, [0, 1], ['0%', `-${((totalSlides - 1) * 100) / totalSlides}%`]);
+  const x = useTransform(horizontalProgress, [0, 1], ['0%', `-${((totalSlides - 1) * 100) / totalSlides}%`], { clamp: true });
 
   const prevDomainIndex = useRef(0);
   useMotionValueEvent(horizontalProgress, "change", (latest) => {
