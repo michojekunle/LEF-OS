@@ -875,6 +875,63 @@ a,
     font-size: clamp(2rem, 8vw, 3rem) !important;
   }
 
+  /* Mobile Horizontal Scroll to Native Swipe Deck Transition */
+  .sankofa-horizontal-wrapper {
+    height: auto !important; /* Remove the massive 1200vh height */
+    padding: 60px 0 !important;
+    background: #0A0A0A; /* Dark domain background */
+  }
+
+  .sankofa-horizontal-sticky {
+    position: relative !important;
+    top: auto !important;
+    height: auto !important;
+    width: 100vw !important;
+    overflow-x: auto !important; /* Enable native horizontal swipe scroll */
+    overflow-y: hidden !important;
+    display: flex !important;
+    scroll-snap-type: x mandatory; /* Snap scrolling for premium mobile feel */
+    -webkit-overflow-scrolling: touch !important;
+    padding: 0 24px !important;
+    box-sizing: border-box;
+    gap: 16px;
+  }
+
+  /* Hide scrollbars for aesthetic deck appearance */
+  .sankofa-horizontal-sticky::-webkit-scrollbar {
+    display: none !important;
+  }
+  .sankofa-horizontal-sticky {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+  }
+
+  .sankofa-horizontal-container {
+    display: flex !important;
+    width: max-content !important;
+    height: auto !important;
+    transform: none !important; /* Override vertical-to-horizontal translation scroll hook on mobile */
+    gap: 16px;
+  }
+
+  .sankofa-domain-panel {
+    width: 82vw !important; /* Peeking layout shows next card edge */
+    height: 60vh !important;
+    min-height: 440px;
+    flex-shrink: 0 !important;
+    scroll-snap-align: center; /* Snap to container center */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 24px !important;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transform: none !important; /* Prevent scroll skews on mobile */
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
 }
 
 .sankofa-hero-floating-img {
