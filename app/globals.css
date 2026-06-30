@@ -875,10 +875,10 @@ a,
     font-size: clamp(2rem, 8vw, 3rem) !important;
   }
 
-  /* Mobile Horizontal Scroll to Native Swipe Deck Transition */
+  /* Mobile Normal Vertical Scroll Layout for Domains */
   .sankofa-horizontal-wrapper {
     height: auto !important; /* Remove the massive 1200vh height */
-    padding: 60px 0 !important;
+    padding: 80px 24px !important;
     background: #0A0A0A; /* Dark domain background */
   }
 
@@ -886,44 +886,29 @@ a,
     position: relative !important;
     top: auto !important;
     height: auto !important;
-    width: 100vw !important;
-    overflow-x: auto !important; /* Enable native horizontal swipe scroll */
-    overflow-y: hidden !important;
-    display: block !important; /* Changed from flex to block to prevent layout-clamping */
-    scroll-snap-type: x mandatory; /* Snap scrolling for premium mobile feel */
-    -webkit-overflow-scrolling: touch !important;
-    padding: 0 24px !important;
-    box-sizing: border-box;
-    gap: 16px;
-  }
-
-  /* Hide scrollbars for aesthetic deck appearance */
-  .sankofa-horizontal-sticky::-webkit-scrollbar {
-    display: none !important;
-  }
-  .sankofa-horizontal-sticky {
-    -ms-overflow-style: none !important;
-    scrollbar-width: none !important;
+    width: 100% !important;
+    overflow: visible !important;
+    display: block !important;
+    padding: 0 !important;
   }
 
   .sankofa-horizontal-container {
     display: flex !important;
-    width: max-content !important;
-    flex-shrink: 0 !important; /* Prevent shrinking to parent viewport width */
+    flex-direction: column !important; /* Stack cards vertically */
+    width: 100% !important;
     height: auto !important;
     transform: none !important; /* Override vertical-to-horizontal translation scroll hook on mobile */
-    gap: 16px;
+    gap: 32px !important; /* Visual spacing between stacked blocks */
   }
 
   .sankofa-domain-panel {
-    width: 82vw !important; /* Peeking layout shows next card edge */
-    height: 60vh !important;
-    min-height: 440px;
+    width: 100% !important; /* Full width block */
+    height: auto !important; /* Auto height fits all contents dynamically */
+    min-height: unset !important; /* Remove card constraints */
     flex-shrink: 0 !important;
-    scroll-snap-align: center; /* Snap to container center */
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    padding: 24px !important;
+    padding: 32px 24px !important;
     box-sizing: border-box;
     background: rgba(255, 255, 255, 0.02);
     backdrop-filter: blur(8px);
@@ -931,7 +916,19 @@ a,
     transform: none !important; /* Prevent scroll skews on mobile */
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  .sankofa-domain-title {
+    font-size: clamp(2.2rem, 8vw, 3.5rem) !important;
+    line-height: 1.1 !important;
+  }
+  
+  .sankofa-h2-editorial {
+    font-size: clamp(1.8rem, 6vw, 2.8rem) !important;
+    line-height: 1.2 !important;
   }
 }
 
