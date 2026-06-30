@@ -875,10 +875,10 @@ a,
     font-size: clamp(2rem, 8vw, 3rem) !important;
   }
 
-  /* Mobile Normal Vertical Scroll Layout for Domains */
+  /* Mobile Horizontal Scroll Snap Swipe Deck */
   .sankofa-horizontal-wrapper {
     height: auto !important; /* Remove the massive 1200vh height */
-    padding: 80px 24px !important;
+    padding: 60px 0 !important;
     background: #0A0A0A; /* Dark domain background */
   }
 
@@ -886,26 +886,41 @@ a,
     position: relative !important;
     top: auto !important;
     height: auto !important;
-    width: 100% !important;
-    overflow: visible !important;
-    display: block !important;
-    padding: 0 !important;
+    width: 100vw !important;
+    overflow-x: auto !important; /* Enable native horizontal swipe scroll */
+    overflow-y: hidden !important;
+    display: block !important; /* Changed from flex to block to prevent layout-clamping */
+    scroll-snap-type: x mandatory; /* Snap scrolling for premium mobile feel */
+    -webkit-overflow-scrolling: touch !important;
+    padding: 0 24px !important;
+    box-sizing: border-box;
+    gap: 16px;
+  }
+
+  /* Hide scrollbars for aesthetic deck appearance */
+  .sankofa-horizontal-sticky::-webkit-scrollbar {
+    display: none !important;
+  }
+  .sankofa-horizontal-sticky {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
   }
 
   .sankofa-horizontal-container {
     display: flex !important;
-    flex-direction: column !important; /* Stack cards vertically */
-    width: 100% !important;
+    width: max-content !important;
+    flex-shrink: 0 !important; /* Prevent shrinking to parent viewport width */
     height: auto !important;
     transform: none !important; /* Override vertical-to-horizontal translation scroll hook on mobile */
-    gap: 32px !important; /* Visual spacing between stacked blocks */
+    gap: 16px;
   }
 
   .sankofa-domain-panel {
-    width: 100% !important; /* Full width block */
+    width: 82vw !important; /* Peeking layout shows next card edge */
     height: auto !important; /* Auto height fits all contents dynamically */
-    min-height: unset !important; /* Remove card constraints */
+    min-height: 55dvh !important; /* Generous card scale limit */
     flex-shrink: 0 !important;
+    scroll-snap-align: center; /* Snap to container center */
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 32px 24px !important;
@@ -916,8 +931,8 @@ a,
     transform: none !important; /* Prevent scroll skews on mobile */
     display: flex !important;
     flex-direction: column !important;
-    justify-content: flex-start !important;
-    align-items: flex-start !important;
+    justify-content: space-between !important;
+    align-items: stretch !important;
     text-align: left !important;
   }
 
@@ -929,6 +944,10 @@ a,
   .sankofa-h2-editorial {
     font-size: clamp(1.8rem, 6vw, 2.8rem) !important;
     line-height: 1.2 !important;
+  }
+
+  .sankofa-marquee-container {
+    opacity: 0.8 !important; /* Bypass iOS WebKit sticky observer bugs by forcing static visibility on mobile */
   }
 }
 
