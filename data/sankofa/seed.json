@@ -1014,5 +1014,38 @@
         "url": ""
       }
     ]
+  },
+  {
+    "id": "heritage_benin_bronzes",
+    "domain": "heritage",
+    "era": "1897–Present",
+    "title": "The Benin Bronzes: The Looted Sacred Archive and the Battle for Memory",
+    "tldr": "In 1897, British troops sacked Benin City, burning the royal palace and looting over 3,000 sacred brass and ivory plaques. When displayed in London, European academics were astonished by their metallurgical perfection — having claimed Africans could never master lost-wax casting. Today, scattered across 160 Western museums, the bronzes stand at the center of the global restitution movement.",
+    "body": "## The Looted Palace\n\nIn February 1897, a British punitive expedition under Admiral Harry Rawson invaded the Kingdom of Benin (in present-day Nigeria). They sacked Benin City, burned down the royal palace, exiled the Oba Ovonramwen, and systematically looted more than 3,000 ceremonial bronze and brass plaques, ivory tusks, and carved altarpieces.\n\nThe official pretext was retribution for an earlier skirmish. The economic reality was palm oil and ivory monopoly — and the sale of the looted art paid for the British military campaign itself.\n\n### The Metallurgical Shock\n\nWhen the bronzes arrived in London, British and German scholars were stunned. The sculptures, cast using the complex cire-perdue (lost-wax) method dating back to the 13th century, exhibited artistic and technical mastery rivaling the finest Renaissance bronzes of Donatello or Cellini.\n\nBecause Victorian colonial theory insisted that Africans were incapable of monumental metallurgy, initial European reports claimed the artifacts must have been cast by shipwrecked Portuguese sailors, Egyptians, or even descendants of the lost city of Atlantis. The truth was far more profound: Benin had perfected an indigenous metallurgical tradition and bureaucratic archival practice over four centuries.\n\n### The Diaspora of Sacred Objects\n\nThe looted bronzes were auctioned off across Europe. Today, they are held in over 160 museums across the Western world — the British Museum, Berlin's Humboldt Forum, the Metropolitan Museum of Art in New York, and private collections.\n\nFor the Edo people, these were not decorative gallery objects; they were historical records, genealogical archives, and living conduits to ancestral veneration. The looting was not just art theft; it was the physical destruction and exile of a civilization's memory.\n\n### The Global Restitution\n\nOver a century later, the Benin Bronzes have become the global bellwether for cultural restitution. In 2022, Germany signed a historic accord transferring ownership of more than 1,100 bronzes back to Nigeria. Other institutions in the UK and US have begun voluntary repatriations, while debates rage over the remaining collections in national museums.\n\nThe battle for the Benin Bronzes is the defining story of Sankofa: the struggle to reach into the past and bring back what empires scattered.",
+    "figures": [
+      "Oba Ovonramwen",
+      "Admiral Harry Rawson",
+      "General James Phillips",
+      "Felix von Luschan"
+    ],
+    "connections": [
+      "africa_mali_empire",
+      "politics_haitian_revolution",
+      "ideas_doctrine_of_discovery"
+    ],
+    "sources": [
+      {
+        "label": "Dan Hicks, The Brutish Museums (2020)",
+        "url": ""
+      },
+      {
+        "label": "Barnaby Phillips, Loot: Britain and the Benin Bronzes (2021)",
+        "url": ""
+      },
+      {
+        "label": "Felwine Sarr & Bénédicte Savoy, The Restitution of African Cultural Heritage (2018)",
+        "url": ""
+      }
+    ]
   }
 ]
