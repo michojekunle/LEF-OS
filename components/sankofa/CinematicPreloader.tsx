@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bebas_Neue } from 'next/font/google';
+import { MousePointerClick } from 'lucide-react';
 
 const bebas = Bebas_Neue({ subsets: ['latin'], weight: '400' });
 
@@ -55,29 +56,57 @@ export function CinematicPreloader({ onEnter }: Props) {
             SANKOFA
           </motion.div>
 
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 2, duration: 1 }}
-            onClick={handleEnter}
-            className={bebas.className}
-            data-cursor-expand="true"
-            style={{
-              marginTop: '60px',
-              background: 'transparent',
-              border: '1px solid rgba(244, 240, 234, 0.3)',
-              color: '#F4F0EA',
-              padding: '12px 32px',
-              fontSize: '1.2rem',
-              letterSpacing: '0.2em',
-              cursor: 'none', // Handled by CustomCursor
-              transition: 'background 0.3s ease',
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: [0, -5, 0] }}
+            transition={{
+              opacity: { delay: 1.5, duration: 0.8 },
+              y: { repeat: Infinity, duration: 2.2, ease: 'easeInOut', delay: 1.8 },
             }}
-            onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(244, 240, 234, 0.1)')}
-            onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+            style={{
+              marginTop: '48px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '12px',
+            }}
           >
-            ENTER ARCHIVE
-          </motion.button>
+            <div style={{ color: '#c9ab70', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <MousePointerClick size={20} style={{ color: '#c9ab70' }} />
+              <span style={{ fontSize: '0.75rem', letterSpacing: '0.25em', fontFamily: 'monospace', color: '#c9ab70' }}>
+                CLICK TO CONTINUE
+              </span>
+            </div>
+
+            <motion.button
+              onClick={handleEnter}
+              className={bebas.className}
+              data-cursor-expand="true"
+              style={{
+                background: 'rgba(201, 171, 112, 0.08)',
+                border: '1px solid rgba(201, 171, 112, 0.4)',
+                color: '#F4F0EA',
+                padding: '12px 36px',
+                fontSize: '1.25rem',
+                letterSpacing: '0.2em',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'rgba(201, 171, 112, 0.2)';
+                e.currentTarget.style.borderColor = '#c9ab70';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'rgba(201, 171, 112, 0.08)';
+                e.currentTarget.style.borderColor = 'rgba(201, 171, 112, 0.4)';
+              }}
+            >
+              CONTINUE TO ARCHIVE
+            </motion.button>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>

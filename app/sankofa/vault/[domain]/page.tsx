@@ -9,7 +9,7 @@ import { StoryCard } from '@/components/sankofa/StoryCard';
 
 export const dynamic = 'force-dynamic';
 
-const VALID_DOMAINS: SankofaDomain[] = ['africa', 'world', 'economies', 'politics', 'people', 'ideas'];
+const VALID_DOMAINS: SankofaDomain[] = ['africa', 'world', 'economies', 'politics', 'people', 'ideas', 'heritage'];
 
 type Props = { params: Promise<{ domain: string }> };
 

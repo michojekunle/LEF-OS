@@ -1,15 +1,7 @@
 'use client';
 
-/**
- * Client-side wrapper that lazy-loads the tour system.
- * `ssr: false` is only valid inside Client Components — this file is the
- * boundary that makes it legal.
- */
 import dynamic from 'next/dynamic';
-
-const TourProvider = dynamic(() => import('@/components/tour').then((m) => m.TourProvider), {
-  ssr: false,
-});
+import { TourProvider } from '@/components/tour/TourProvider';
 
 const TourOrchestrator = dynamic(
   () => import('@/components/tour').then((m) => m.TourOrchestrator),

@@ -12,7 +12,7 @@ import {
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Sankofa Vault' };
 
-const DOMAIN_ORDER: SankofaDomain[] = ['africa', 'world', 'economies', 'politics', 'people', 'ideas'];
+const DOMAIN_ORDER: SankofaDomain[] = ['africa', 'world', 'economies', 'politics', 'people', 'ideas', 'heritage'];
 
 export default async function SankofaVaultPage() {
   if (hasSupabaseConfig()) {

@@ -9,6 +9,10 @@ import {
   getLongestStreak,
   isEntryComplete,
   isoDate,
+  toCurriculumDay,
+  TOTAL_CURRICULUM_DAYS,
+  getAllThursdays,
+  getCourseWindow,
   type DailyEntry,
 } from '../lib/utils';
 
@@ -140,5 +144,31 @@ describe('utils math and date helpers', () => {
 
     expect(getLongestStreak([makeEntry({ law_completed: true })])).toBe(1);
     expect(getLongestStreak([makeEntry({}), makeEntry({})])).toBe(0);
+  });
+
+  it('toCurriculumDay maps calendar days to curriculum topics accurately', () => {
+    // 1:1 mapping when total calendar days <= 111
+    expect(toCurriculumDay(1, 111)).toBe(1);
+    expect(toCurriculumDay(50, 111)).toBe(50);
+    expect(toCurriculumDay(111, 111)).toBe(111);
+    expect(toCurriculumDay(120, 111)).toBe(111);
+
+    // 122 calendar days mapping
+    expect(toCurriculumDay(1, 122)).toBe(1);
+    expect(toCurriculumDay(122, 122)).toBe(111);
+    // After course (e.g. day 130) stays capped at 111
+    expect(toCurriculumDay(130, 122)).toBe(111);
+  });
+
+  it('getAllThursdays returns all Thursdays within cohort window', () => {
+    const window = getCourseWindow(new Date(Date.UTC(2026, 5, 1)), 4);
+    const thursdays = getAllThursdays(window);
+    expect(thursdays.length).toBeGreaterThan(15);
+    // Every returned date must actually be a Thursday (UTCDay === 4)
+    for (const t of thursdays) {
+      expect(t.date.getUTCDay()).toBe(4);
+      expect(t.day).toBeGreaterThanOrEqual(1);
+      expect(t.day).toBeLessThanOrEqual(window.totalDays);
+    }
   });
 });

@@ -130,9 +130,10 @@ export function CourseCompletedView({
     });
   };
 
+  const preferredDomains = course.preferredDomains ?? ['law', 'economics', 'finance'];
   const completionPercentage = Math.round((completedDays / TOTAL_CURRICULUM_DAYS) * 100) || 0;
 
-  const thursdays = useMemo(() => getAllThursdays(), []);
+  const thursdays = useMemo(() => getAllThursdays(course), [course]);
   const thursdaysDone = useMemo(() => {
     const byDate = new Map(entries.map((e) => [e.entry_date, e]));
     return thursdays.filter((t) => {
@@ -142,12 +143,15 @@ export function CourseCompletedView({
     }).length;
   }, [entries, thursdays]);
 
-  const startStr = course.start.toLocaleDateString('en-GB', {
+  const startDate = course.start instanceof Date ? course.start : new Date(course.start);
+  const endDate = course.end instanceof Date ? course.end : new Date(course.end);
+
+  const startStr = startDate.toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
   });
-  const endStr = course.end.toLocaleDateString('en-GB', {
+  const endStr = endDate.toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -193,7 +197,7 @@ export function CourseCompletedView({
             </h1>
 
             <p className="max-w-2xl text-sm leading-relaxed text-text-secondary md:text-base">
-              Congratulations, <span className="font-medium text-text-primary">{displayName ?? email.split('@')[0]}</span>. 
+              Congratulations, <span className="font-medium text-text-primary">{displayName ?? email?.split('@')[0] ?? 'Fellow'}</span>. 
               You have completed the full {course.totalDays}-day calendar journey across Law, Economics, and Finance. 
               You now command the foundational operating frameworks of Nigerian and global enterprise.
             </p>
@@ -203,7 +207,7 @@ export function CourseCompletedView({
               <span>·</span>
               <span>📚 111 Curriculum Topics</span>
               <span>·</span>
-              <span>⚡ {course.preferredDomains.length} Specialized Tracks</span>
+              <span>⚡ {preferredDomains.length} Specialized Tracks</span>
             </div>
           </div>
 
@@ -271,7 +275,7 @@ export function CourseCompletedView({
 
         <div className="grid gap-4 md:grid-cols-3">
           {/* LAW */}
-          {course.preferredDomains.includes('law') && (
+          {preferredDomains.includes('law') && (
             <div className="card flex flex-col justify-between p-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -309,7 +313,7 @@ export function CourseCompletedView({
           )}
 
           {/* ECONOMICS */}
-          {course.preferredDomains.includes('economics') && (
+          {preferredDomains.includes('economics') && (
             <div className="card flex flex-col justify-between p-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -347,7 +351,7 @@ export function CourseCompletedView({
           )}
 
           {/* FINANCE */}
-          {course.preferredDomains.includes('finance') && (
+          {preferredDomains.includes('finance') && (
             <div className="card flex flex-col justify-between p-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -504,7 +508,7 @@ export function CourseCompletedView({
       {/* 6. HEATMAP & THURSDAY REVIEWS */}
       <CalendarHeatmap entries={entries} currentDay={course.totalDays} />
 
-      <ThursdayReviewTracker entries={entries} />
+      <ThursdayReviewTracker entries={entries} course={course} />
 
       {/* 7. COMPLETE ENTRY HISTORY */}
       <section className="space-y-4">
@@ -551,8 +555,14 @@ export function CourseCompletedView({
   );
 }
 
-function ThursdayReviewTracker({ entries }: { entries: DailyEntry[] }) {
-  const thursdays = getAllThursdays();
+function ThursdayReviewTracker({
+  entries,
+  course,
+}: {
+  entries: DailyEntry[];
+  course: CourseContextValue;
+}) {
+  const thursdays = getAllThursdays(course);
   const byDate = new Map(entries.map((e) => [e.entry_date, e]));
   return (
     <section className="card p-5">
