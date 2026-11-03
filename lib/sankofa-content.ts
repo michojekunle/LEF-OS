@@ -1,6 +1,6 @@
 import seedData from '@/data/sankofa/seed.json';
 
-export type SankofaDomain = 'africa' | 'world' | 'economies' | 'politics' | 'people' | 'ideas';
+export type SankofaDomain = 'africa' | 'world' | 'economies' | 'politics' | 'people' | 'ideas' | 'heritage';
 
 export type SankofaSource = { label: string; url: string };
 
@@ -24,6 +24,7 @@ export const SANKOFA_DOMAIN_META: Record<SankofaDomain, { label: string; colour:
   politics:  { label: 'Politics',  colour: '#a07070', icon: '🏛️' },
   people:    { label: 'People',    colour: '#9a8fa0', icon: '👤' },
   ideas:     { label: 'Ideas',     colour: '#a09060', icon: '💡' },
+  heritage:  { label: 'Heritage',  colour: '#c27d54', icon: '🏺' },
 };
 
 const stories: SankofaStory[] = seedData as SankofaStory[];
