@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowRight, CalendarDays, Scale, BarChart, Landmark } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CalendarDays, Scale, BarChart, Landmark, Award, Sparkles } from 'lucide-react';
 import {
   TOTAL_CALENDAR_DAYS,
   findDayMeta,
@@ -17,6 +17,7 @@ import {
   isInCourse,
   clampDay,
   getCourseWindow,
+  TOTAL_CURRICULUM_DAYS,
 } from '@/lib/utils';
 import { hasSupabaseConfig } from '@/lib/supabase';
 import { supabaseServer } from '@/lib/supabase-server';
@@ -298,9 +299,17 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
           </div>
         </div>
 
-        <h1 className="font-display text-4xl tracking-tight md:text-5xl">
-          Day {day} <span className="text-lg text-text-muted">of {courseTotalDays}</span>
-        </h1>
+        <div className="flex flex-wrap items-baseline gap-3">
+          <h1 className="font-display text-4xl tracking-tight md:text-5xl">
+            Day {day} <span className="text-lg text-text-muted">of {courseTotalDays}</span>
+          </h1>
+          {day === TOTAL_CURRICULUM_DAYS && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gold">
+              <Sparkles size={12} className="text-gold" />
+              Final Curriculum Day · Capstone
+            </span>
+          )}
+        </div>
         <div className="flex flex-wrap items-center gap-3 text-xs text-text-secondary">
           <span className="inline-flex items-center gap-1.5">
             <CalendarDays size={12} className="text-text-muted" />
@@ -317,6 +326,26 @@ export default async function DayDetailPage({ params }: { params: Promise<Params
             </span>
           )}
         </div>
+
+        {day === TOTAL_CURRICULUM_DAYS && (
+          <div className="card-2 border-gold/40 bg-gold/5 p-4 text-xs text-text-primary">
+            <div className="flex items-start gap-3">
+              <Award className="mt-0.5 h-5 w-5 shrink-0 text-gold" />
+              <div className="space-y-1">
+                <p className="font-semibold text-gold">
+                  Day 111 is the final curriculum topic of your {courseTotalDays}-day learning journey.
+                </p>
+                <p className="text-text-secondary">
+                  The curriculum contains 111 comprehensive study days spanning your entire {courseTotalDays}-day calendar window.
+                  View your complete mastery audit, stats, and founder graduation portfolio on your{' '}
+                  <Link href="/dashboard" className="font-semibold text-gold underline hover:text-gold-light">
+                    Progress Dashboard →
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </header>
 
       <section

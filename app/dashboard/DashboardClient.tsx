@@ -7,6 +7,7 @@ import {
   getDayNumber,
   getTodayTopics,
   getCurrentStreak,
+  getLongestStreak,
   getOverallProgress,
   getDomainProgress,
   isBeforeCourse,
@@ -18,6 +19,7 @@ import {
   isThursday,
   type DailyEntry,
 } from '@/lib/utils';
+import { CourseCompletedView } from './CourseCompletedView';
 import { DayCard } from '@/components/DayCard';
 import { DailyLogForm } from '@/components/DailyLogForm';
 import { CalendarHeatmap } from '@/components/CalendarHeatmap';
@@ -86,6 +88,7 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
   const monthData = getMonthByCurriculumDay(activeCurriculumDay);
   const streak = useMemo(() => getCurrentStreak(entries, today), [entries, today]);
   const completedDays = useMemo(() => getOverallProgress(entries), [entries]);
+  const longestStreak = useMemo(() => getLongestStreak(entries), [entries]);
   const lawDone = useMemo(() => getDomainProgress(entries, 'law'), [entries]);
   const econDone = useMemo(() => getDomainProgress(entries, 'economics'), [entries]);
   const finDone = useMemo(() => getDomainProgress(entries, 'finance'), [entries]);
@@ -143,13 +146,19 @@ export function DashboardClient({ userId, email, displayName, initialEntries }: 
 
   if (after) {
     return (
-      <div className="mx-auto max-w-content px-5 py-16 text-center md:px-6">
-        <h1 className="mb-3 font-display text-3xl">Course completed.</h1>
-        <p className="text-text-secondary">
-          {course.totalDays} days. {course.preferredDomains.length} domain
-          {course.preferredDomains.length !== 1 ? 's' : ''}. Now go build with it.
-        </p>
-      </div>
+      <CourseCompletedView
+        course={course}
+        entries={entries}
+        userId={userId}
+        email={email}
+        displayName={displayName}
+        completedDays={completedDays}
+        streak={streak}
+        longestStreak={longestStreak}
+        lawDone={lawDone}
+        econDone={econDone}
+        finDone={finDone}
+      />
     );
   }
 
