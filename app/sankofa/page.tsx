@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { motion, useScroll, useTransform, AnimatePresence, useVelocity, useSpring, useMotionValueEvent, useMotionValue, useMotionTemplate, MotionValue } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence, useVelocity, useSpring, useMotionValueEvent } from 'framer-motion';
 import Lenis from 'lenis';
 import { Bebas_Neue, Cormorant_Garamond } from 'next/font/google';
 
@@ -10,7 +10,7 @@ import { CustomCursor } from '@/components/sankofa/CustomCursor';
 import { MagneticButton } from '@/components/sankofa/MagneticButton';
 import { CinematicPreloader } from '@/components/sankofa/CinematicPreloader';
 import { SoundDesign } from '@/components/sankofa/SoundDesign';
-import { Globe2, Landmark, Users, Lightbulb, Map, Coins } from 'lucide-react';
+import { Globe2, Landmark, Users, Lightbulb, Map, Coins, Compass } from 'lucide-react';
 
 const bebas = Bebas_Neue({ subsets: ['latin'], weight: '400' });
 const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['300', '400', '700'], style: ['normal', 'italic'] });
@@ -22,6 +22,7 @@ const DOMAINS = [
   { id: '04', name: 'Politics', icon: Landmark, question: 'POWER, POLICY, OR CONTROL?', shortDesc: 'Power, empire, resistance. How the structures of governance evolved and who they were designed to protect.', statement: "Governance is the art of institutionalizing power. We dissect the laws and treaties that were designed to protect the few and control the many." },
   { id: '05', name: 'People', icon: Users, question: 'WHO ARE THE FIGURES BEHIND THE FORCES?', shortDesc: "The figures behind the forces. History isn't a timeline of events, it is a web of human ambition and failure.", statement: "Behind every empire is an architect, and behind every collapse is a populace pushed too far. We profile the humans driving the mechanisms of power." },
   { id: '06', name: 'Ideas', icon: Lightbulb, question: 'WHAT JUSTIFIES THE CONQUEST?', shortDesc: 'Religion, science, and philosophy. The intellectual foundations that justified conquests and sparked revolutions.', statement: "Ideas are the blueprints of empires. From divine right to manifest destiny, we explore the intellectual foundations that justified both conquest and revolution." },
+  { id: '07', name: 'Heritage', icon: Compass, question: 'WHO GUARDS THE INHERITANCE?', shortDesc: 'Cities built, bronzes displaced, and lineages dispersed. From ancient monumental architecture to the worldwide reclamation of looted memory and diaspora survival.', statement: "When empires conquer, they loot the archive and scatter the people. From the sacred bronzes locked in foreign vaults to the living traditions carried across forced migrations, we trace the global restitution of memory." },
 ];
 
 function useDeviceOrientation() {
@@ -62,9 +63,31 @@ export default function SankofaPage() {
     }
   }, []);
 
-  // Smooth scroll - only initialize after archive is entered
+  // Prevent background scroll while preloader is active, but keep .sankofa-page DOM full height
+  useEffect(() => {
+    if (!isArchiveEntered) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      const timer = setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+        window.dispatchEvent(new Event('scroll'));
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isArchiveEntered]);
+
+  // Smooth scroll - only initialize after archive is entered on pointer/desktop devices
   useEffect(() => {
     if (!isArchiveEntered) return;
+    if (typeof window === 'undefined') return;
+
+    // Do NOT run Lenis on touch/mobile devices — let iOS and Android use native 120Hz momentum scrolling
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    if (isTouch) return;
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -73,21 +96,25 @@ export default function SankofaPage() {
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 1,
-      touchMultiplier: 2,
     });
 
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    const rafId = requestAnimationFrame(raf);
 
-    // Force Framer Motion to recalculate scroll offsets after layout is painted and height is stable
+    lenis.on('scroll', () => {
+      window.dispatchEvent(new Event('scroll'));
+    });
+
     const timer = setTimeout(() => {
+      lenis.resize();
       window.dispatchEvent(new Event('resize'));
-    }, 150);
+    }, 100);
 
     return () => {
+      cancelAnimationFrame(rafId);
       lenis.destroy();
       clearTimeout(timer);
     };
@@ -119,24 +146,69 @@ export default function SankofaPage() {
   const imgY = useTransform(scrollY, [0, 1000], [0, 150]);
   const heroOpacity = useTransform(scrollY, [0, 500], [1, 0]);
 
-  // Horizontal Scroll & Haptic Feedback
+  // Horizontal Scroll & Domain Navigation
   const horizontalRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: horizontalProgress } = useScroll({ target: horizontalRef, offset: ["start start", "end end"] });
+  const horizontalStickyRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: horizontalProgress } = useScroll({ 
+    target: horizontalRef, 
+    offset: ["start start", "end end"] 
+  });
+  
   const totalSlides = DOMAINS.length * 2;
-  const xValue = useTransform(horizontalProgress, [0, 1], [0, -(((totalSlides - 1) * 100) / totalSlides)], { clamp: true });
-  const x = useMotionTemplate`${xValue}%`;
+  // Exact viewport translation: each slide is 100vw, so total translate is (totalSlides - 1) * 100vw
+  const x = useTransform(
+    horizontalProgress, 
+    [0, 1], 
+    ['0vw', `-${(totalSlides - 1) * 100}vw`], 
+    { clamp: true }
+  );
 
+  const [activeDomainIdx, setActiveDomainIdx] = useState(0);
   const prevDomainIndex = useRef(0);
   useMotionValueEvent(horizontalProgress, "change", (latest) => {
-    const activeIndex = Math.round(latest * (totalSlides - 1));
-    if (activeIndex !== prevDomainIndex.current) {
-      prevDomainIndex.current = activeIndex;
+    const activeSlide = Math.round(latest * (totalSlides - 1));
+    const domainIdx = Math.min(DOMAINS.length - 1, Math.floor(activeSlide / 2));
+    setActiveDomainIdx(domainIdx);
+
+    if (activeSlide !== prevDomainIndex.current) {
+      prevDomainIndex.current = activeSlide;
       // Trigger short physical vibration on mobile when snapping to a new domain
       if (typeof navigator !== 'undefined' && navigator.vibrate) {
         navigator.vibrate(30);
       }
     }
   });
+
+  const scrollToDomain = (idx: number) => {
+    if (typeof window === 'undefined') return;
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile && horizontalStickyRef.current) {
+      const panels = horizontalStickyRef.current.querySelectorAll('.sankofa-domain-panel');
+      const targetPanel = panels[idx * 2] as HTMLElement;
+      if (targetPanel) {
+        horizontalStickyRef.current.scrollTo({
+          left: targetPanel.offsetLeft - 24,
+          behavior: 'smooth'
+        });
+      }
+    } else if (horizontalRef.current) {
+      const wrapperTop = horizontalRef.current.offsetTop;
+      const totalScrollableHeight = horizontalRef.current.offsetHeight - window.innerHeight;
+      const targetProgress = (idx * 2) / (totalSlides - 1);
+      window.scrollTo({
+        top: wrapperTop + targetProgress * totalScrollableHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handlePrevDomain = () => {
+    scrollToDomain(Math.max(0, activeDomainIdx - 1));
+  };
+
+  const handleNextDomain = () => {
+    scrollToDomain(Math.min(DOMAINS.length - 1, activeDomainIdx + 1));
+  };
 
   // Device Orientation (Gyroscope Parallax)
   const { beta, gamma } = useDeviceOrientation();
@@ -198,8 +270,7 @@ export default function SankofaPage() {
         style={{ 
           backgroundColor, 
           color,
-          height: isArchiveEntered ? 'auto' : '100vh',
-          overflow: isArchiveEntered ? 'unset' : 'hidden'
+          minHeight: '100dvh',
         }}
       >
         <style dangerouslySetInnerHTML={{
@@ -342,7 +413,7 @@ export default function SankofaPage() {
               >
                 The traditional narrative of human civilization is a curated timeline designed by empires. 
                 Sankofa dismantles this linear approach. We are reconstructing the global archive through interconnected 
-                domains—starting with Africa, moving through global economies, and tracking the raw flow of power and ideas.
+                domains—starting with Africa, tracing global economies, and preserving the living heritage of displaced peoples.
               </motion.p>
             </div>
           </div>
@@ -350,7 +421,43 @@ export default function SankofaPage() {
 
         {/* 3. HORIZONTAL SCROLL DOMAINS */}
         <motion.div ref={horizontalRef} className="sankofa-horizontal-wrapper" style={{ height: `${DOMAINS.length * 2 * 100}vh` }}>
-          <div className="sankofa-horizontal-sticky">
+          <div ref={horizontalStickyRef} className="sankofa-horizontal-sticky">
+            {/* Domain Navigation Controller Bar */}
+            <nav className="sankofa-domain-nav" aria-label="Archive Domains Navigation">
+              <button 
+                type="button" 
+                onClick={handlePrevDomain} 
+                className="sankofa-domain-arrow-btn"
+                aria-label="Previous Domain"
+              >
+                ←
+              </button>
+              
+              <div className="sankofa-domain-counter">
+                {String(activeDomainIdx + 1).padStart(2, '0')}&nbsp;/&nbsp;07
+              </div>
+
+              {DOMAINS.map((d, dIdx) => (
+                <button
+                  key={d.id}
+                  type="button"
+                  onClick={() => scrollToDomain(dIdx)}
+                  className={`sankofa-domain-nav-btn ${activeDomainIdx === dIdx ? 'active' : ''}`}
+                >
+                  {d.name}
+                </button>
+              ))}
+
+              <button 
+                type="button" 
+                onClick={handleNextDomain} 
+                className="sankofa-domain-arrow-btn"
+                aria-label="Next Domain"
+              >
+                →
+              </button>
+            </nav>
+
             <motion.div style={{ x, width: `${DOMAINS.length * 2 * 100}vw` }} className="sankofa-horizontal-container">
               {DOMAINS.map((d, index) => {
                 const Icon = d.icon;
@@ -358,8 +465,7 @@ export default function SankofaPage() {
                 const layoutA = layoutALayouts[index % 3];
                 const layoutB = index % 2 === 0 ? 'layout-split' : 'layout-inverted';
                 
-                // Add some random aesthetics based on index
-                const yOffset = (index % 3) * 5;
+                // Add subtle rotation based on index
                 const rotation = index % 2 === 0 ? 2 : -2;
 
                 return (
